@@ -19,7 +19,22 @@ echo "Task id: ${SGE_TASK_ID}"
 ## List current modules for reproducibility
 module list
 
-## Edit with your job command
+## Locate directory
+ORIGINALDIR=$(awk "NR==${SGE_TASK_ID}" qSVA_dcl01_dirs.txt)
+echo "Processing sample ${ORIGINALDIR}"
+date
+
+BASEDIR=$(basename ${ORIGINALDIR})
+ORIGINALHOME=$(dirname ${ORIGINALDIR})
+
+## Determine amount of data to transfer
+du -sk --apparent-size ${ORIGINALDIR}/ | awk '{$1=$1/(1024^3); print $1, "TB";}'
+
+## List owners of all the files in the original path
+find ${ORIGINALDIR}/ -exec ls -l {} \; | grep -v total | tr -s ' ' | cut -d ' ' -f3,9-
+
+## Copy from dcl01 to dcs04
+rsync -rltgvh --chown=:lieber_lcolladotor ${ORIGINALDIR}/ /dcs04/lieber/lcolladotor/qSVA_LIBD3080/${BASEDIR}/
 
 
 echo "**** Job ends ****"
