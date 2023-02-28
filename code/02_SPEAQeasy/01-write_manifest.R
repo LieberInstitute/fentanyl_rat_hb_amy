@@ -21,8 +21,6 @@ get_fastq_paths = function(read_num) {
     )
 }
 
-dir.create(dirname(man_path), showWarnings = FALSE)
-
 r1 = get_fastq_paths(1)
 sample_ids = ss(basename(r1), '_')
 man = paste(r1, 0, get_fastq_paths(2), 0, sample_ids, sep = '\t')
