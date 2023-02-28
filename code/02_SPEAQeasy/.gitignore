@@ -1,0 +1,6 @@
+#   Ignore all files from the SPEAQeasy repo except the configuration file,
+#   which is important to track the settings SPEAQeasy was run with
+SPEAQeasy/*
+!SPEAQeasy/conf
+SPEAQeasy/conf/*
+!SPEAQeasy/conf/jhpce.config
