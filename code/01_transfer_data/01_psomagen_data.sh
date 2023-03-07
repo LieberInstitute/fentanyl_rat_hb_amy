@@ -5,8 +5,8 @@
 #$ -o logs/psomagen_data.$TASK_ID.txt
 #$ -e logs/psomagen_data.$TASK_ID.txt
 #$ -m e
-#$ -t 1-2
-#$ -tc 2
+#$ -t 3
+#$ -tc 1
 
 echo "**** Job starts ****"
 date
