@@ -1,0 +1,380 @@
+**** Job starts ****
+Tue Mar  7 16:03:52 EST 2023
+**** JHPCE info ****
+User: neagles
+Job id: 3030519
+Job name: psomagen_data
+Hostname: compute-072.cm.cluster
+Task id: 3
+
+Currently Loaded Modules:
+  1) matlab/R2019a     5) gcc/4.4.7
+  2) stata/17          6) COMMUNITY_CENTOS7_DEFAULT_ENV
+  3) JHPCE_tools/1.0   7) JHPCE_CENTOS7_DEFAULT_ENV
+  4) sge/8.1.9
+
+ 
+
+Processing sample /dcs04/lieber/data/transfers/psomagen/AN00013030
+Tue Mar  7 16:03:52 EST 2023
+0.0060111 TB
+wulrich E-36
+wulrich E-36_1.fastq.gz
+wulrich E-36_1.fastq.gz.md5sum
+wulrich E-36_2.fastq.gz
+wulrich E-36_2.fastq.gz.md5sum
+wulrich /dcs04/lieber/data/transfers/psomagen/AN00013030/E-36/E-36_2.fastq.gz.md5sum
+wulrich /dcs04/lieber/data/transfers/psomagen/AN00013030/E-36/E-36_2.fastq.gz
+wulrich /dcs04/lieber/data/transfers/psomagen/AN00013030/E-36/E-36_1.fastq.gz.md5sum
+wulrich /dcs04/lieber/data/transfers/psomagen/AN00013030/E-36/E-36_1.fastq.gz
+sending incremental file list
+created directory /dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00013030
+./
+E-36/
+E-36/E-36_1.fastq.gz
+E-36/E-36_1.fastq.gz.md5sum
+E-36/E-36_2.fastq.gz
+E-36/E-36_2.fastq.gz.md5sum
+
+sent 6.61G bytes  received 225 bytes  75.55M bytes/sec
+total size is 6.61G  speedup is 1.00
+**** Updating permissions for /dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen ****
+Tue Mar  7 16:05:19 EST 2023
+
+**** Note that warning/error messages are expected for files and directories that you are not the owner of.
+The expected warning/error messages are: 
+    'Failed setxattr operation: Operation not permitted'
+ or 'chgrp: changing group of ‘some_JHPCE_file_path’: Operation not permitted'
+ or 'chmod: changing permissions of ‘some_JHPCE_file_path’: Operation not permitted'.
+If for many files you are not the owner (creator of), you will get lots of these warning/error messages, this is expected!
+Error or warnings with another syntax are likely real. ****
+
+You will need to re-run this script anytime you upload files to JHPCE through Cyberduck / WinSCP as they break the ACLs.
+Every new team member on a given project will likely also need to run this script once.
+
+For more details about setting permissions at JHPCE using ACLs, please check https://lcolladotor.github.io/bioc_team_ds/organizing-your-work.html#setting-jhpce-file-permissions.
+
+This message will be displayed for 90 seconds before the script proceeds.
+That way you will have time enough to read it and/or copy it.
+
+**** Setting read (R), write (W), and execute (X) permissions for hickslab ****
+Tue Mar  7 16:06:54 EST 2023
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+
+**** Setting read (R), write (W), and execute (X) permissions for lieber_lcolladotor ****
+Tue Mar  7 16:07:00 EST 2023
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+
+**** Setting read (R), write (W), and execute (X) permissions for lieber_marmaypag ****
+Tue Mar  7 16:07:05 EST 2023
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+Failed setxattr operation: Operation not permitted
+
+**** Running chgrp lieber_lcolladotor ****
+Tue Mar  7 16:07:10 EST 2023
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/11_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/6_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/7_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/10_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/16_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/1_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/4_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/13_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/12_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/5_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/15_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/8_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/2_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/9_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/3_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/14_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/3_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/9_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/14_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/md5sum.txt’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/15_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/2_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/8_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/12_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/5_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/4_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/13_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/16_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/1_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/7_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/10_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/11_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355/6_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/23_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/29_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/19_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/22_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/18_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/28_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/25_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/24_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/32_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/21_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/20_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/31_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/17_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/27_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/30_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/26_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/30_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/26_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/31_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/27_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/17_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/20_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/21_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/24_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/32_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/25_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/28_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/18_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/md5sum.txt’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/22_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/19_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/29_1.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356/23_2.fastq.gz’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356’: Operation not permitted
+chgrp: changing group of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen’: Operation not permitted
+
+**** Setting the group sticky bit ****
+Tue Mar  7 16:07:15 EST 2023
+chmod: changing permissions of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen’: Operation not permitted
+chmod: changing permissions of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012355’: Operation not permitted
+chmod: changing permissions of ‘/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen/AN00012356’: Operation not permitted
+
+**** Checking the nfs4 (ACLs) settings ****
+Tue Mar  7 16:07:20 EST 2023
+
+# file: /dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy/raw-data/FASTQ/psomagen
+A::OWNER@:rwaDxtTcCy
+A::GROUP@:rwaDxtcy
+A:g:lieber_lcolladotor@cm.cluster:rwaDxtcy
+A:g:lieber_marmaypag@cm.cluster:rwaDxtcy
+A:g:hickslab@cm.cluster:rwaDxtcy
+A::EVERYONE@:tcy
+A:fdi:OWNER@:rwaDxtTcCy
+A:fdi:GROUP@:rwaDxtcy
+A:fdig:lieber_lcolladotor@cm.cluster:rwaDxtcy
+A:fdig:lieber_marmaypag@cm.cluster:rwaDxtcy
+A:fdig:hickslab@cm.cluster:rwaDxtcy
+A:fdi:EVERYONE@:tcy
+**** Job ends ****
+Tue Mar  7 16:07:20 EST 2023
