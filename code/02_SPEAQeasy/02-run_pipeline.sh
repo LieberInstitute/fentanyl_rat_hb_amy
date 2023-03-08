@@ -2,6 +2,7 @@
 #$ -l mem_free=40G,h_vmem=40G,h_fsize=800G
 #$ -o ../../processed-data/02_SPEAQeasy/SPEAQeasy_output.log
 #$ -e ../../processed-data/02_SPEAQeasy/SPEAQeasy_output.log
+#$ -N run_pipeline
 #$ -cwd
 
 REPO_DIR=$(git rev-parse --show-toplevel)
