@@ -4,3 +4,6 @@ SPEAQeasy/*
 !SPEAQeasy/conf
 SPEAQeasy/conf/*
 !SPEAQeasy/conf/jhpce.config
+
+#   Ignore hidden files from nextflow
+.nextflow*
