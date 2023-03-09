@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l mem_free=40G,h_vmem=40G,h_fsize=800G
+#$ -l bluejay,mem_free=40G,h_vmem=40G,h_fsize=800G
 #$ -o ../../processed-data/02_SPEAQeasy/SPEAQeasy_output.log
 #$ -e ../../processed-data/02_SPEAQeasy/SPEAQeasy_output.log
 #$ -N run_pipeline
@@ -15,13 +15,14 @@ export _JAVA_OPTIONS="-Xms8g -Xmx10g"
 nextflow $SPEAQEASY_DIR/main.nf \
     --sample "paired" \
     --reference "rat" \
-    --strand "forward" \
+    --strand "reverse" \
     --input "$PROCESSED_DIR" \
     --output "$PROCESSED_DIR/out" \
     -w "$PROCESSED_DIR/work" \
     --annotation "/dcs04/lieber/lcolladotor/annotationFiles_LIBD001/SPEAQeasy/Annotation" \
     -with-report "$PROCESSED_DIR/02_run_pipeline.html" \
-    -profile jhpce
+    -profile jhpce \
+    -resume
 
 #   Log successful runs on non-test data in a central location. Please adjust
 #   the log path here if it is changed at the top!
