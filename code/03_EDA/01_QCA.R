@@ -57,31 +57,56 @@ colData(rse_gene)$detected_num_genes <- apply(assay(rse_gene), 2, function(x){le
 ## 1.2 Evaluate QC metrics of groups of samples
 
 ## Metrics of interest
-qc_metrics <- c('mitoRate', 'rRNA_rate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes')
+qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes')
+
+sample_variables <- c("Brain_Region", "Substance")
 
 # plot <-  ggplot(data.frame(colData(rse_gene)), aes(x=Brain_Region, y=mitoRate, fill=Brain_Region)) +
 #              geom_violin(width=0.98, aes(fill=Brain_Region), alpha=0.5, color='black') +
 #              geom_boxplot(width=0.2, lwd=0.3, aes(col=Brain_Region, alpha=0.1), alpha=0, outlier.shape=NA, show.legend = F) +
 #              geom_point(data=subset(md, outlier), col='#707070', alpha=0.7, show.legend=F)
 
-ggstatsplot::ggbetweenstats(
-    data = data.frame(colData(rse_gene)),
-    x = Brain_Region,
-    y = mitoRate,
-    mean.plotting = FALSE,
-    mean.color = 'black',
-    boxtype = "boxviolin",
-    xlab = "Brain Region",
-    ylab = "mito rate",
-    ## turn off messages
-    bf.message = FALSE,
-    results.subtitle = FALSE,
-    ggtheme = ggplot2::theme_gray(),
-    package = "yarrr", ## package from which color palette is to be taken
-    palette = "info2", ## color palette
-    title = "Comparison of mito rate",
-    point.args = list(alpha=0.7, size=2, position = ggplot2::position_jitterdodge(dodge.width = 0.6))
-)
+
+QC_boxplots <- function(qc_metric, sample_var){
+    plot <- ggstatsplot::ggbetweenstats(
+        data = data.frame(colData(rse_gene)),
+        x = !! rlang::sym(sample_var),
+        y = !! rlang::sym(qc_metric),
+        mean.plotting = FALSE,
+        boxtype = "boxviolin",
+        xlab = sub("_", " ", sample_var),
+        ylab = sub("_", " ", qc_metric),
+        ## turn off messages
+        bf.message = FALSE,
+        results.subtitle = FALSE,
+        outlier.color = "red",
+        ggtheme = ggplot2::theme_gray(),
+        package = "yarrr", ## package for color palette
+        palette = "info2", ## color palette
+        point.args = list(alpha=0.7, size=2, position = ggplot2::position_jitterdodge(dodge.width = 0.6))
+    )
+
+    return(plot)
+}
+
+
+
+for (sample_var in sample_variables) {
+
+    i=1
+    plots = list()
+
+    for (qc_metric in qc_metrics) {
+        plots[[i]]<- QC_boxplots(qc_metric, sample_var)
+        i=i+1
+    }
+    combine_plots(
+        list(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]]),
+        plotgrid.args = list(nrow = 2)
+    )
+    ggsave(paste("plots/01_EDA/01_QCA/QC_boxplots_", sample_var ,".pdf", sep=""), width=35, height=22, units = "cm")
+}
+
 
 
 
