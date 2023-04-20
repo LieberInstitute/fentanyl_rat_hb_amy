@@ -3,12 +3,14 @@ library(here)
 library(SummarizedExperiment)
 library(readxl)
 library(stringr)
+library(sessioninfo)
+
 
 #######################   Exploratory Data Analysis   #######################
 
 
 ##  1. Quality Control Analysis
-
+## Note: features are not filtered and counts are not normalized in this analysis
 
 ## Load RSE object at gene level
 load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=TRUE)
@@ -36,5 +38,29 @@ sample_data$SAMPLE_ID <- str_replace_all(sample_data$`Tissue Punch Label`, c(" "
 sample_data <- sample_data[which(sample_data$SAMPLE_ID %in% rse_gene$SAMPLE_ID),]
 ## Merge data in colData
 colData(rse_gene) <- merge(colData(rse_gene), sample_data, by='SAMPLE_ID')
+
+## Add library size for each sample
+colData(rse_gene)$library_size <- apply(assay(rse_gene), 2, sum)
+
+
+
+## 1.2 Evaluate QC metrics of groups of samples
+
+## Metrics of interest
+qc_metrics <- c('mitoRate', 'rRNA_rate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
