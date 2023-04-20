@@ -42,6 +42,9 @@ colData(rse_gene) <- merge(colData(rse_gene), sample_data, by='SAMPLE_ID')
 ## Add library size for each sample
 colData(rse_gene)$library_size <- apply(assay(rse_gene), 2, sum)
 
+## Add detected number of genes (not zero-expressed genes) for each sample
+colData(rse_gene)$detected_num_genes <- apply(assay(rse_gene), 2, function(x){length(x[which(x>0)])})
+
 
 
 ## 1.2 Evaluate QC metrics of groups of samples
