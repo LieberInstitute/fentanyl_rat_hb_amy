@@ -71,8 +71,8 @@ QC_boxplots <- function(qc_metric, sample_var){
         y = !! rlang::sym(qc_metric),
         mean.plotting = FALSE,
         boxtype = "boxviolin",
-        xlab = sub("_", " ", sample_var),
-        ylab = sub("_", " ", qc_metric),
+        xlab = str_replace_all(sample_var, c("_"=" ")),
+        ylab = str_replace_all(qc_metric, c("_"=" ")),
         ## turn off messages
         bf.message = FALSE,
         results.subtitle = FALSE,
