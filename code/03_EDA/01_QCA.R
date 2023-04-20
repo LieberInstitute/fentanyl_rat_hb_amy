@@ -13,7 +13,7 @@ library(sessioninfo)
 
 
 ##  1. Quality Control Analysis
-## Note: features are not filtered and counts are not normalized in this analysis
+## Note: genes were not filtered and counts were not normalized in these analyses
 
 ## Load RSE object at gene level
 load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=TRUE)
@@ -54,18 +54,15 @@ colData(rse_gene)$detected_num_genes <- apply(assay(rse_gene), 2, function(x){le
 
 
 
-## 1.2 Evaluate QC metrics of groups of samples
+## 1.2 Evaluate QC metrics of samples groups
 
 ## Metrics of interest
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes')
-
+## Sample variables of interest
 sample_variables <- c("Brain_Region", "Substance")
 
-# plot <-  ggplot(data.frame(colData(rse_gene)), aes(x=Brain_Region, y=mitoRate, fill=Brain_Region)) +
-#              geom_violin(width=0.98, aes(fill=Brain_Region), alpha=0.5, color='black') +
-#              geom_boxplot(width=0.2, lwd=0.3, aes(col=Brain_Region, alpha=0.1), alpha=0, outlier.shape=NA, show.legend = F) +
-#              geom_point(data=subset(md, outlier), col='#707070', alpha=0.7, show.legend=F)
 
+## Function to create boxplots of QC metrics for groups of samples
 
 QC_boxplots <- function(qc_metric, sample_var){
     plot <- ggstatsplot::ggbetweenstats(
@@ -90,12 +87,10 @@ QC_boxplots <- function(qc_metric, sample_var){
 }
 
 
-
+## Multiple plots
 for (sample_var in sample_variables) {
-
     i=1
     plots = list()
-
     for (qc_metric in qc_metrics) {
         plots[[i]]<- QC_boxplots(qc_metric, sample_var)
         i=i+1
@@ -110,10 +105,36 @@ for (sample_var in sample_variables) {
 
 
 
+## Check dark dots
+
 ## See https://mran.microsoft.com/snapshot/2018-05-29/web/packages/ggstatsplot/vignettes/ggbetweenstats.html
 
 
 
+
+
+
+
+
+## Reproducibility information
+print('Reproducibility information:')
+Sys.time()
+proc.time()
+options(width = 120)
+session_info()
+
+# setting  value
+# version  R version 4.2.2 (2022-10-31)
+# os       macOS Monterey 12.5.1
+# system   aarch64, darwin20
+# ui       RStudio
+# language (EN)
+# collate  en_US.UTF-8
+# ctype    en_US.UTF-8
+# tz       America/Mexico_City
+# date     2023-04-20
+# rstudio  2022.12.0+353 Elsbeth Geranium (desktop)
+# pandoc   NA
 
 
 
