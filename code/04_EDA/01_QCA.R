@@ -38,9 +38,13 @@ colData(rse_gene)$RIN <- as.numeric(apply(colData(rse_gene), 1, function(x){if (
 colData(rse_gene)$RNA_concentration <- as.vector(sapply(rse_gene$RNA_concentration, function(x){if (strsplit(x, '')[[1]][1]=='*'){strsplit(x, '\\*')[[1]][2]} else {x}}))
 colData(rse_gene)$RNA_concentration <- as.numeric(colData(rse_gene)$RNA_concentration)
 
-## Change numeric to char
+## Change numeric data to char
 colData(rse_gene)$Total_Num_Fentanyl_Sessions <- as.character(colData(rse_gene)$Total_Num_Fentanyl_Sessions)
 colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs <- as.character(colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs)
+
+
+
+
 
 ## 1.2 Evaluate QC metrics for groups of samples
 
@@ -61,28 +65,34 @@ QC_boxplots <- function(qc_metric, sample_var){
         colors=c('amygdala'='palegreen3', 'habenula'='orchid1')
         violin_width=1
         jitter_width=0.1
+        x_label="Brain Region"
     }
     else if (sample_var=="Substance"){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
         violin_width=0.7
         jitter_width=0.1
+        x_label="Substance"
     }
     else if (sample_var=="Brain_Region_and_Substance"){
         colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
         violin_width=0.7
         jitter_width=0.09
+        x_label="Brain Region & Substance"
     }
     else if (sample_var=='Total_Num_Fentanyl_Sessions'){
         colors=c('24'='salmon', '22'='pink2')
         violin_width=0.7
         jitter_width=0.1
+        x_label="Total Number of Fentanyl Sessions"
     }
     else if (sample_var=='Num_Fentanyl_Sessions_six_hrs'){
         colors=c('18'='dodgerblue', '16'='lightskyblue')
         violin_width=0.7
         jitter_width=0.1
+        x_label="Number of 6hrs Fentanyl Sessions"
     }
 
+    y_label=str_replace_all(qc_metric, c("_"=" "))
 
     data <- data.frame(colData(rse_gene))
     plot <- ggplot(data = data, mapping = aes(x = !! rlang::sym(sample_var), y = !! rlang::sym(qc_metric), color = !! rlang::sym(sample_var))) +
@@ -90,23 +100,25 @@ QC_boxplots <- function(qc_metric, sample_var){
                 geom_jitter(width = jitter_width, alpha = 0.7, size = 2) +
                 geom_boxplot(alpha = 0, size = 0.4, width=0.1, color='black') +
                 scale_color_manual(values = colors) +
-                sm_hgrid()
+                sm_hgrid() +
+                labs(y= y_label, x = x_label) +
+                theme(axis.title = element_text(size = (9)),
+                      axis.text = element_text(size = (8)))
 
     return(plot)
 }
 
 
 ## Multiple plots
-
 for (sample_var in sample_variables){
 
     if (sample_var=="Brain_Region_and_Substance"){
-        width=50
-        height=40
+        width=45
+        height=35
     }
     else {
-        width=25
-        height=20
+        width=35
+        height=30
     }
 
     i=1
@@ -121,8 +133,6 @@ for (sample_var in sample_variables){
     )
     ggsave(paste("plots/01_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
-
-
 
 
 
