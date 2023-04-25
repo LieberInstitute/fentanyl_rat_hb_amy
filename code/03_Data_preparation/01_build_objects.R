@@ -33,12 +33,18 @@ identical(colData(rse_gene), colData(rse_jx))
 sample_data <- sample_data[-nrow(sample_data),-ncol(sample_data)]
 ## Correct colnames in sample data
 colnames(sample_data) <- str_replace_all(colnames(sample_data), c(" "="_"))
-## Correct sample ID in sample data
-sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
-## Correct Sample_No. for the extra sample
-sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_No."]="33.0"
+## Change conflicting column names
+colnames(sample_data)[1] <- 'Sample_Num'
+colnames(sample_data)[4] <- 'Num_Fentanyl_Sessions_six_hrs'
+colnames(sample_data)[5] <- 'Total_Num_Fentanyl_Sessions'
+colnames(sample_data)[6] <- 'NanoDrop_(ng/uL)_or_BioA'
 
-## Verify samples are the same in sample_data and rse
+## Add correct sample IDs
+sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
+## Correct Sample_Num for the extra sample
+sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_Num"]="33.0"
+
+## Verify that samples are the same in sample_data and rse
 setdiff(sample_data$SAMPLE_ID, rse_gene$SAMPLE_ID)
 # character(0)
 setdiff(rse_gene$SAMPLE_ID, sample_data$SAMPLE_ID)
