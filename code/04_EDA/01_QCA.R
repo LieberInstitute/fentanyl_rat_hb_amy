@@ -38,7 +38,9 @@ colData(rse_gene)$RIN <- as.numeric(apply(colData(rse_gene), 1, function(x){if (
 colData(rse_gene)$RNA_concentration <- as.vector(sapply(rse_gene$RNA_concentration, function(x){if (strsplit(x, '')[[1]][1]=='*'){strsplit(x, '\\*')[[1]][2]} else {x}}))
 colData(rse_gene)$RNA_concentration <- as.numeric(colData(rse_gene)$RNA_concentration)
 
-
+## Change numeric to char
+colData(rse_gene)$Total_Num_Fentanyl_Sessions <- as.character(colData(rse_gene)$Total_Num_Fentanyl_Sessions)
+colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs <- as.character(colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs)
 
 ## 1.2 Evaluate QC metrics for groups of samples
 
@@ -60,18 +62,27 @@ QC_boxplots <- function(qc_metric, sample_var){
         violin_width=1
         jitter_width=0.1
     }
-
     else if (sample_var=="Substance"){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
         violin_width=0.7
         jitter_width=0.1
     }
-
     else if (sample_var=="Brain_Region_and_Substance"){
         colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
         violin_width=0.7
         jitter_width=0.09
     }
+    else if (sample_var=='Total_Num_Fentanyl_Sessions'){
+        colors=c('24'='salmon', '22'='pink2')
+        violin_width=0.7
+        jitter_width=0.1
+    }
+    else if (sample_var=='Num_Fentanyl_Sessions_six_hrs'){
+        colors=c('18'='dodgerblue', '16'='lightskyblue')
+        violin_width=0.7
+        jitter_width=0.1
+    }
+
 
     data <- data.frame(colData(rse_gene))
     plot <- ggplot(data = data, mapping = aes(x = !! rlang::sym(sample_var), y = !! rlang::sym(qc_metric), color = !! rlang::sym(sample_var))) +
@@ -89,13 +100,13 @@ QC_boxplots <- function(qc_metric, sample_var){
 
 for (sample_var in sample_variables){
 
-    if (sample_var=="Brain_Region_and_Substnace"){
+    if (sample_var=="Brain_Region_and_Substance"){
         width=50
         height=40
     }
     else {
-        width=35
-        height=30
+        width=25
+        height=20
     }
 
     i=1
@@ -108,7 +119,7 @@ for (sample_var in sample_variables){
         list(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]]),
         plotgrid.args = list(nrow = 3)
     )
-    ggsave(paste("plots/01_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=35, height=22, units = "cm")
+    ggsave(paste("plots/01_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
 
 
