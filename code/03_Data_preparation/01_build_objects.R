@@ -37,9 +37,9 @@ colnames(sample_data) <- str_replace_all(colnames(sample_data), c(" "="_"))
 colnames(sample_data)[1] <- 'Sample_Num'
 colnames(sample_data)[4] <- 'Num_Fentanyl_Sessions_six_hrs'
 colnames(sample_data)[5] <- 'Total_Num_Fentanyl_Sessions'
-colnames(sample_data)[6] <- 'NanoDrop_or_BioA'
+colnames(sample_data)[6] <- 'RNA_concentration'
 colnames(sample_data)[7] <- 'RIN_LIBD'
-colnames(sample_data)[9] <- 'Psomagen_Total_RNA_amount'
+colnames(sample_data)[9] <- 'Total_RNA_amount'
 
 ## Add correct sample IDs
 sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
