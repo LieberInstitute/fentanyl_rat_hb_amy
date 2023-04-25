@@ -20,7 +20,7 @@ load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=
 load(here('raw-data/count_objects/rse_exon_Jlab_experiment_n33.Rdata'), verbose=TRUE)
 load(here('raw-data/count_objects/rse_jx_Jlab_experiment_n33.Rdata'), verbose=TRUE)
 ## Load sample data
-sample_data <- as.data.frame(read_excel("raw-data/FentanylvsSaline_SelfAdministration_RNAextraction.xlsx"))
+sample_data <- as.data.frame(read_excel("raw-data/Sample_data.xlsx"))
 
 
 
@@ -35,12 +35,21 @@ identical(colData(rse_gene), colData(rse_jx))
 
 ## Add sample data to colData of gene RSE
 
+## Revome last (empty) line and column
+sample_data <- sample_data[-nrow(sample_data),-ncol(sample_data)]
 ## Correct colnames in sample data
 colnames(sample_data) <- str_replace_all(colnames(sample_data), c(" "="_"))
 ## Correct sample ID in sample data
 sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
-## Discard unused samples
-sample_data <- sample_data[which(sample_data$SAMPLE_ID %in% rse_gene$SAMPLE_ID),]
+## Correct Sample_No. for the extra sample
+sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_No."]="33.0"
+
+## Verify they're the same samples
+setdiff(sample_data$SAMPLE_ID, rse_gene$SAMPLE_ID)
+# character(0)
+setdiff(rse_gene$SAMPLE_ID, sample_data$SAMPLE_ID)
+# character(0)
+
 ## Merge data in colData
 colData(rse_gene) <- merge(colData(rse_gene), sample_data, by='SAMPLE_ID')
 
@@ -50,7 +59,6 @@ colData(rse_gene)$library_size <- apply(assay(rse_gene), 2, sum)
 
 ## Add detected number of genes (not zero-expressed genes) for each sample
 colData(rse_gene)$detected_num_genes <- apply(assay(rse_gene), 2, function(x){length(x[which(x>0)])})
-
 
 
 
