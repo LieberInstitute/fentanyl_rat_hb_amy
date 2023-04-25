@@ -3,4 +3,4 @@
 .RData
 .Ruserdata
 raw-data/*
-raw-data/FentanylvsSaline_SelfAdministration_RNAextraction.xlsx
+processed-data/*
