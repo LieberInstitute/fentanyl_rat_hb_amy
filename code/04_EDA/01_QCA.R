@@ -7,6 +7,7 @@ library(ggplot2)
 library(rlang)
 library(smplot2)
 library(Hmisc)
+library(cowplot)
 library(sessioninfo)
 
 
@@ -133,6 +134,108 @@ for (sample_var in sample_variables){
     )
     ggsave(paste("plots/04_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
+
+
+
+
+
+## 1.3 Compare QC metrics of samples
+
+## Correlation betweern RNA concentration/RNA amount and the rest of QC variables
+
+corrs <- as.data.frame(t(round(cor(data[c('mitoRate', 'totalAssignedGene', 'overallMapRate', 'concordMapRate',
+                          'detected_num_genes', 'RIN', 'library_size')], data[c('RNA_concentration' ,'Total_RNA_amount')],
+                   method = c("pearson")), 3)))
+
+## Create variable with QC metrics
+QC_data <- data.frame('QC_values'=c(unlist(data$mitoRate), unlist(data$overallMapRate), unlist(data$totalAssignedGene),
+                                    unlist(data$concordMapRate), NA, NA, NA),
+                      'QC_var_name'=c(rep('mitoRate', 33), rep('overallMapRate', 33),  rep('totalAssignedGene', 33),
+                                      rep('concordMapRate', 33), 'detected_num_genes', 'RIN', 'library_size'),
+                      'Brain_Region'=c(rep(data$Brain_Region, 4), NA, NA, NA),
+                      'RNA_concentration'=c(rep(data$RNA_concentration, 4), NA, NA, NA),
+                      'Total_RNA_amount'=c(rep(data$Total_RNA_amount, 4), NA, NA, NA))
+
+
+var1 <- 'RNA_concentration'
+var1 <- 'Total_RNA_amount'
+
+corr_plots <- function(var1){
+    if (var1=='RNA_concentration'){
+        dist=150
+    }
+
+    else {
+        dist=0.1
+    }
+
+    values = c('mitoRate'='khaki3', 'totalAssignedGene'='plum2', 'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon',
+               'detected_num_genes'='skyblue2', 'library_size'='palegreen3', 'RIN'='rosybrown3')
+
+    p1 <- ggplot(data, aes(x=eval(parse_expr(var1)), y=detected_num_genes)) +
+        geom_point(aes(shape=Brain_Region), color='skyblue2', show.legend = FALSE) +
+        stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='skyblue2') +
+        theme_classic() +
+        theme(plot.margin = unit(c(1,2,1,2), "cm")) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        labs(x=str_replace_all(var1, c("_"=" ")), y='QC metrics') +
+        geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$detected_num_genes),
+                  label = paste0('r=', corrs[var1, 'detected_num_genes']),
+                  color = 'skyblue2', size=3)
+
+    p2 <- ggplot(data, aes(x=eval(parse_expr(var1)), y=RIN)) +
+        geom_point(aes(shape=Brain_Region), color='rosybrown3', show.legend = FALSE) +
+        stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='rosybrown3') +
+        theme_classic() +
+        theme(plot.margin = unit(c(1,2,1,2), "cm")) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        labs(x=str_replace_all(var1, c("_"=" ")), y='') +
+        geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$RIN),
+                  label = paste0('r=', corrs[var1, 'RIN']),
+                  color = 'rosybrown3', size=3)
+
+    p3 <- ggplot(data, aes(x=eval(parse_expr(var1)), y=library_size)) +
+        geom_point(aes(shape=Brain_Region), color='palegreen3', show.legend = FALSE) +
+        stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='palegreen3') +
+        theme_classic() +
+        theme(plot.margin = unit(c(1,2,1,2), "cm")) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        labs(x=str_replace_all(var1, c("_"=" ")), y='') +
+        geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$library_size),
+                  label = paste0('r=', corrs[var1, 'library_size']),
+                  color = 'palegreen3', size=3)
+
+
+    p4 <- ggplot(QC_data, aes(x=eval(parse_expr(var1)), y=QC_values, color=QC_var_name)) +
+        geom_point(aes(shape=Brain_Region)) +
+        stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm) +
+        theme_classic() +
+        theme(plot.margin = unit(c(1,0,1,0), "cm")) +
+        labs(x=str_replace_all(var1, c("_"=" ")), y='') +
+        scale_color_manual(values = values) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        labs(shape="Brain Region", colour="QC variables") +
+        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$mitoRate)+.03,
+                  label = paste0('r=', corrs[var1, 'mitoRate']),
+                  color = 'khaki3', size=3) +
+        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$totalAssignedGene)+.03,
+                  label = paste0('r=', corrs[var1, 'totalAssignedGene']),
+                  color = 'plum2', size=3) +
+        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$overallMapRate)-0.05,
+                  label = paste0('r=', corrs[var1, 'overallMapRate']),
+                  color = 'turquoise', size=3) +
+        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$concordMapRate)+.07,
+                  label = paste0('r=', corrs[var1, 'concordMapRate']),
+                  color = 'lightsalmon', size=3)
+
+    plot_grid(p1, p2, p3, p4, nrow=1)
+    ggsave(here(paste("plots/04_EDA/01_QCA/Corr_QCmetrics_vs_", var1,".pdf", sep="")), width = 50, height = 10, units = "cm")
+
+
+}
+
+corr_plots('RNA_concentration')
+corr_plots('Total_RNA_amount')
 
 
 
