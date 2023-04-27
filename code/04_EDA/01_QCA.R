@@ -157,16 +157,16 @@ QC_data <- data.frame('QC_values'=c(unlist(data$mitoRate), unlist(data$overallMa
                       'Total_RNA_amount'=c(rep(data$Total_RNA_amount, 4), NA, NA, NA))
 
 
-var1 <- 'RNA_concentration'
-var1 <- 'Total_RNA_amount'
-
+## Plot correlations between RNA quantities and QC metrics of the samples
 corr_plots <- function(var1){
     if (var1=='RNA_concentration'){
         dist=150
+        dist_corr_coeff=0.07
     }
 
     else {
         dist=0.1
+        dist_corr_coeff=0.12
     }
 
     values = c('mitoRate'='khaki3', 'totalAssignedGene'='plum2', 'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon',
@@ -224,7 +224,7 @@ corr_plots <- function(var1){
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$overallMapRate)-0.05,
                   label = paste0('r=', corrs[var1, 'overallMapRate']),
                   color = 'turquoise', size=3) +
-        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$concordMapRate)+.07,
+        geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$concordMapRate)+dist_corr_coeff,
                   label = paste0('r=', corrs[var1, 'concordMapRate']),
                   color = 'lightsalmon', size=3)
 
@@ -236,6 +236,16 @@ corr_plots <- function(var1){
 
 corr_plots('RNA_concentration')
 corr_plots('Total_RNA_amount')
+
+
+
+## 1.3 QC sample filetring
+
+
+
+
+
+
 
 
 
