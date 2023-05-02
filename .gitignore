@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+raw-data/count_objects/*
+raw-data/FASTQ/*
+processed-data/*
