@@ -253,6 +253,31 @@ rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="amygdala")]
 ## overallMapRate, totalAssignedGene
 ## Drop samples with high mitoRates and RIN numbers
 
+## Filter all samples together
+
+outliers_library_size <- isOutlier(rse_gene$library_size, nmads = 3, type="lower")
+outliers_detected_num <- isOutlier(rse_gene$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_conc <- isOutlier(rse_gene$RNA_concentration, nmads = 3, type="lower")
+outliers_RNA_amount <- isOutlier(rse_gene$Total_RNA_amount, nmads = 3, type="lower")
+outliers_totalAssignedGene <- isOutlier(rse_gene$totalAssignedGene, nmads = 3, type="lower")
+outliers_overallMapRate <- isOutlier(rse_gene$overallMapRate, nmads = 3, type="lower")
+outliers_concordMapRate <- isOutlier(rse_gene$concordMapRate, nmads = 3, type="lower")
+outliers_mito<-isOutlier(rse_gene$mitoRate, nmads = 3, type="higher")
+outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="higher")
+
+not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
+                       outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+rse_gene_qc<-rse_gene[,not_outliers]
+
+## Number of samples retained
+dim(rse_gene_qc)[2]
+# 18
+
+## Save data
+save(rse_gene_qc, file = 'processed-data/04_EDA/01_QCA/rse_gene_qc.Rdata')
+
+
+
 # Filter habenula samples
 
 outliers_library_size <- isOutlier(rse_gene_habenula$library_size, nmads = 3, type="lower")
@@ -262,19 +287,44 @@ outliers_RNA_amount <- isOutlier(rse_gene_habenula$Total_RNA_amount, nmads = 3, 
 outliers_totalAssignedGene <- isOutlier(rse_gene_habenula$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene_habenula$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene_habenula$concordMapRate, nmads = 3, type="lower")
+outliers_mito<-isOutlier(rse_gene_habenula$mitoRate, nmads = 3, type="higher")
+outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="higher")
 
-## Drop samples with higher mt and ribo percentages
-outliers_mito<-isOutlier(rse_gene_brain$subsets_Mito_percent, nmads = 3, type="higher")
-outliers_ribo<-isOutlier(rse_gene_brain$subsets_Ribo_percent, nmads = 3, type="higher")
-not_outliers<-which(! (outliers_sum | outliers_det | outliers_mito | outliers_ribo))
-rse_gene_brain_qc<-rse_gene_brain[,not_outliers]
+not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
+                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+rse_gene_habenula_qc<-rse_gene[,not_outliers]
 
 ## Number of samples retained
-dim(rse_gene_brain_qc)[2]
-# 135
-## Save data
-save(rse_gene_brain_qc, file = 'processed-data/03_EDA/02_QC/rse_gene_brain_qc.Rdata')
+dim(rse_gene_habenula_qc)[2]
+# 15
 
+## Save data
+save(rse_gene_habenula_qc, file = 'processed-data/04_EDA/01_QCA/rse_gene_habenula_qc.Rdata')
+
+
+
+# Filter amygdala samples
+
+outliers_library_size <- isOutlier(rse_gene_amygdala$library_size, nmads = 3, type="lower")
+outliers_detected_num <- isOutlier(rse_gene_amygdala$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_conc <- isOutlier(rse_gene_amygdala$RNA_concentration, nmads = 3, type="lower")
+outliers_RNA_amount <- isOutlier(rse_gene_amygdala$Total_RNA_amount, nmads = 3, type="lower")
+outliers_totalAssignedGene <- isOutlier(rse_gene_amygdala$totalAssignedGene, nmads = 3, type="lower")
+outliers_overallMapRate <- isOutlier(rse_gene_amygdala$overallMapRate, nmads = 3, type="lower")
+outliers_concordMapRate <- isOutlier(rse_gene_amygdala$concordMapRate, nmads = 3, type="lower")
+outliers_mito<-isOutlier(rse_gene_amygdala$mitoRate, nmads = 3, type="higher")
+outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="higher")
+
+not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
+                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+rse_gene_amygdala_qc<-rse_gene[,not_outliers]
+
+## Number of samples retained
+dim(rse_gene_amygdala_qc)[2]
+# 14
+
+## Save data
+save(rse_gene_amygdala_qc, file = 'processed-data/04_EDA/01_QCA/rse_gene_amygdala_qc.Rdata')
 
 
 
