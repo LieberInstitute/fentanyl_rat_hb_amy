@@ -250,7 +250,7 @@ rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="habenula")]
 rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="amygdala")]
 
 ## Drop samples with lower library sizes, detected number of genes, RNA concentration, total RNA amount, concordMapRate,
-## overallMapRate, totalAssignedGene
+## overallMapRate and totalAssignedGene
 ## Drop samples with high mitoRates and RIN numbers
 
 ## Filter all samples together
@@ -292,7 +292,7 @@ outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="higher")
 
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
-rse_gene_habenula_qc<-rse_gene[,not_outliers]
+rse_gene_habenula_qc<-rse_gene_habenula[,not_outliers]
 
 ## Number of samples retained
 dim(rse_gene_habenula_qc)[2]
@@ -317,7 +317,7 @@ outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="higher")
 
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
-rse_gene_amygdala_qc<-rse_gene[,not_outliers]
+rse_gene_amygdala_qc<-rse_gene_amygdala[,not_outliers]
 
 ## Number of samples retained
 dim(rse_gene_amygdala_qc)[2]
@@ -329,8 +329,94 @@ save(rse_gene_amygdala_qc, file = 'processed-data/04_EDA/01_QCA/rse_gene_amygdal
 
 
 
+## 1.4.1 Boxplots of QC metrics after sample filtering
+
+## All samples together
+
+## Add new variable to rse_gene with info of samples retained/dropped
+rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+
+## Boxplots
+boxplots_after_QC_filtering <- function(qc_metric, sample_var){
+
+    colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
+
+    if (sample_var=="Brain_Region"){
+        labels=c("Amygdala","Habenula")
+        shapes=c('amygdala'=3, 'habenula'=2)
+        sample_var_label="Brain Region"
+    }
+    else if (sample_var=="Substance"){
+        shapes=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
+        sample_var_label="Substance"
+    }
+    else if (sample_var=="Brain_Region_and_Substance"){
+        shapes=c('Amygdala Fentanyl'=3 , 'Amygdala Saline'=4, 'Habenula Fentanyl'=17, 'Habenula Saline'=18)
+        sample_var_label="Brain Region & Substance"
+    }
+    else if (sample_var=='Total_Num_Fentanyl_Sessions'){
+        shapes=c('24'=8, '22'=1)
+        sample_var_label="Total Number of Fentanyl Sessions"
+    }
+    else if (sample_var=='Num_Fentanyl_Sessions_six_hrs'){
+        shapes=c('18'=8, '16'=1)
+        sample_var_label="Number of 6hrs Fentanyl Sessions"
+    }
+
+    y_label=str_replace_all(qc_metric, c("_"=" "))
+    data <- data.frame(colData(rse_gene))
+
+    ## Median of the QC var values
+    median<-median(eval(parse_expr(paste("rse_gene$", qc_var, sep=""))))
+    ## MAD of the QC var values
+    mad<-mad(eval(parse_expr(paste("rse_gene$", qc_var, sep=""))))
+
+    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_var), color = !! rlang::sym('Retention_after_QC_filtering'))) +
+        geom_jitter(width = 0.2, alpha = 1, size = 2, aes(shape=eval(parse_expr((sample_var))))) +
+        geom_boxplot(alpha = 0, size = 0.3, color='black') +
+        scale_color_manual(values = colors) +
+        scale_shape_manual(labels=labels, values=shapes) +
+        labs(x="", y = y_label, color='Retention after QC filtering', shape=sample_var_label) +
+        sm_hgrid() +
+        ## Median line
+        geom_hline(yintercept = median, size=0.5) +
+        ## Line of median + 3 MADs
+        geom_hline(yintercept = median+(3*mad), size=0.5, linetype=2) +
+        ## Line of median - 3 MADs
+        geom_hline(yintercept = median-(3*mad), size=0.5, linetype=2) +
+        theme(axis.title = element_text(size = (9)),
+              axis.text = element_text(size = (8)),
+              legend.position="right")
 
 
+    return(plot)
+}
+
+
+## Multiple plots
+for (sample_var in sample_variables){
+
+    if (sample_var=="Brain_Region_and_Substance"){
+        width=45
+        height=35
+    }
+    else {
+        width=35
+        height=30
+    }
+
+    i=1
+    plots = list()
+    for (qc_metric in qc_metrics) {
+        plots[[i]]<- QC_boxplots(qc_metric, sample_var)
+        i=i+1
+    }
+    combine_plots(
+        list(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]]),
+        plotgrid.args = list(nrow = 3)
+    )
+    ggsave(paste("plots/04_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
+}
 
 
 
