@@ -44,7 +44,8 @@ colData(rse_gene)$RNA_concentration <- as.numeric(colData(rse_gene)$RNA_concentr
 colData(rse_gene)$Total_Num_Fentanyl_Sessions <- as.character(colData(rse_gene)$Total_Num_Fentanyl_Sessions)
 colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs <- as.character(colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs)
 
-
+## Capitalize brain region info
+colData(rse_gene)$Brain_Region <- capitalize(colData(rse_gene)$Brain_Region)
 
 
 
@@ -65,7 +66,7 @@ sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance",
 QC_boxplots <- function(qc_metric, sample_var){
 
     if (sample_var=="Brain_Region"){
-        colors=c('amygdala'='palegreen3', 'habenula'='orchid1')
+        colors=c('Amygdala'='palegreen3', 'Habenula'='orchid1')
         violin_width=1
         jitter_width=0.1
         x_label="Brain Region"
@@ -130,10 +131,7 @@ for (sample_var in sample_variables){
         plots[[i]]<- QC_boxplots(qc_metric, sample_var)
         i=i+1
     }
-    combine_plots(
-        list(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]]),
-        plotgrid.args = list(nrow = 3)
-    )
+    plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]], nrow = 3)
     ggsave(paste("plots/04_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
 
@@ -246,8 +244,8 @@ corr_plots('Total_RNA_amount')
 ## 1.4 QC sample filetring
 
 ## Find sample outliers based on their QC metrics, separately for habenula and amygdala samples
-rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="habenula")]
-rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="amygdala")]
+rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="Habenula")]
+rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="Amygdala")]
 
 ## Drop samples with lower library sizes, detected number of genes, RNA concentration, total RNA amount, concordMapRate,
 ## overallMapRate and totalAssignedGene
@@ -338,7 +336,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
 
     if (sample_var=="Brain_Region"){
-        shapes=c('amygdala'=3, 'habenula'=2)
+        shapes=c('Amygdala'=3, 'Habenula'=2)
         sample_var_label="Brain Region"
     }
     else if (sample_var=="Substance"){
@@ -370,7 +368,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         geom_jitter(width = 0.2, alpha = 1, size = 2, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
-        scale_shape_manual(values=shapes) +
+        scale_shape_manual(values = shapes) +
         labs(x="", y = y_label, color='Retention after QC filtering', shape=sample_var_label) +
         sm_hgrid() +
         theme_classic() +
@@ -412,14 +410,17 @@ multiple_boxplots <- function(RSE, sample_group){
 ## All samples together
 ## Add new variable to rse_gene with info of samples retained/dropped
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+save(rse_gene, file="processed-data/04_EDA/01_QCA/rse_gene.Rdata")
 multiple_boxplots('rse_gene', 'all')
 
 ## Habenula samples
 rse_gene_habenula$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+save(rse_gene_habenula, file="processed-data/04_EDA/01_QCA/rse_gene_habenula.Rdata")
 multiple_boxplots('rse_gene_habenula', 'habenula')
 
 ## Amygdala samples
 rse_gene_amygdala$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+save(rse_gene_amygdala, file="processed-data/04_EDA/01_QCA/rse_gene_amygdala.Rdata")
 multiple_boxplots('rse_gene_amygdala', 'amygdala')
 
 
