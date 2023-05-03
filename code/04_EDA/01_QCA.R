@@ -414,10 +414,13 @@ multiple_boxplots <- function(RSE, sample_group){
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 multiple_boxplots('rse_gene', 'all')
 
-
 ## Habenula samples
 rse_gene_habenula$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 multiple_boxplots('rse_gene_habenula', 'habenula')
+
+## Amygdala samples
+rse_gene_amygdala$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+multiple_boxplots('rse_gene_amygdala', 'amygdala')
 
 
 
