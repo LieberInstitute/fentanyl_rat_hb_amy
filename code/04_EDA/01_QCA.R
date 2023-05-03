@@ -331,14 +331,10 @@ save(rse_gene_amygdala_qc, file = 'processed-data/04_EDA/01_QCA/rse_gene_amygdal
 
 ## 1.4.1 Boxplots of QC metrics after sample filtering
 
-## All samples together
-
-## Add new variable to rse_gene with info of samples retained/dropped
-rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
-
 ## Boxplots
-boxplots_after_QC_filtering <- function(qc_metric, sample_var){
+boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
 
+    rse_gene<-eval(parse_expr(RSE))
     colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
 
     if (sample_var=="Brain_Region"){
@@ -347,7 +343,7 @@ boxplots_after_QC_filtering <- function(qc_metric, sample_var){
         sample_var_label="Brain Region"
     }
     else if (sample_var=="Substance"){
-        shapes=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
+        shapes=c('Fentanyl'=5, 'Saline'=6)
         sample_var_label="Substance"
     }
     else if (sample_var=="Brain_Region_and_Substance"){
@@ -367,17 +363,18 @@ boxplots_after_QC_filtering <- function(qc_metric, sample_var){
     data <- data.frame(colData(rse_gene))
 
     ## Median of the QC var values
-    median<-median(eval(parse_expr(paste("rse_gene$", qc_var, sep=""))))
-    ## MAD of the QC var values
-    mad<-mad(eval(parse_expr(paste("rse_gene$", qc_var, sep=""))))
+    median<-median(eval(parse_expr(paste("rse_gene$", qc_metric, sep=""))))
+    ## Mean-absolute-deviation of the QC var values
+    mad<-mad(eval(parse_expr(paste("rse_gene$", qc_metric, sep=""))))
 
-    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_var), color = !! rlang::sym('Retention_after_QC_filtering'))) +
+    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric), color = !! rlang::sym('Retention_after_QC_filtering'))) +
         geom_jitter(width = 0.2, alpha = 1, size = 2, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
         scale_shape_manual(labels=labels, values=shapes) +
         labs(x="", y = y_label, color='Retention after QC filtering', shape=sample_var_label) +
         sm_hgrid() +
+        theme_classic() +
         ## Median line
         geom_hline(yintercept = median, size=0.5) +
         ## Line of median + 3 MADs
@@ -386,37 +383,38 @@ boxplots_after_QC_filtering <- function(qc_metric, sample_var){
         geom_hline(yintercept = median-(3*mad), size=0.5, linetype=2) +
         theme(axis.title = element_text(size = (9)),
               axis.text = element_text(size = (8)),
-              legend.position="right")
-
+              legend.position="right",
+              legend.text = element_text(size=8),
+              legend.title = element_text(size=9))
 
     return(plot)
 }
 
 
 ## Multiple plots
-for (sample_var in sample_variables){
+multiple_boxplots <- function(RSE){
+    for (sample_var in sample_variables){
 
-    if (sample_var=="Brain_Region_and_Substance"){
-        width=45
-        height=35
+        i=1
+        plots = list()
+        for (qc_metric in qc_metrics) {
+            plots[[i]]<- boxplots_after_QC_filtering(RSE, qc_metric, sample_var)
+            i=i+1
+        }
+        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]],
+            nrow = 3)
+        ggsave(paste("plots/04_EDA/01_QCA/Boxplots_afterQC_filtering_", sample_var,".pdf", sep=""), width=35, height=30, units = "cm")
     }
-    else {
-        width=35
-        height=30
-    }
-
-    i=1
-    plots = list()
-    for (qc_metric in qc_metrics) {
-        plots[[i]]<- QC_boxplots(qc_metric, sample_var)
-        i=i+1
-    }
-    combine_plots(
-        list(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]]),
-        plotgrid.args = list(nrow = 3)
-    )
-    ggsave(paste("plots/04_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
+
+## Plots
+
+## All samples together
+
+## Add new variable to rse_gene with info of samples retained/dropped
+rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+
+multiple_boxplots('rse_gene')
 
 
 
