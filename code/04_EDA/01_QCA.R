@@ -8,6 +8,7 @@ library(rlang)
 library(smplot2)
 library(Hmisc)
 library(cowplot)
+library(scater)
 library(sessioninfo)
 
 
@@ -245,6 +246,8 @@ corr_plots('Total_RNA_amount')
 ## 1.4 QC sample filetring
 
 ## Find sample outliers based on their QC metrics, separately for habenula and amygdala samples
+rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="habenula")]
+rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="amygdala")]
 
 ## Drop samples with lower library sizes, detected number of genes, RNA concentration, total RNA amount, concordMapRate,
 ## overallMapRate, totalAssignedGene
@@ -252,13 +255,13 @@ corr_plots('Total_RNA_amount')
 
 # Filter habenula samples
 
-outliers_library_size <- isOutlier(rse_gene_brain$sum, nmads = 3, type="lower")
-outliers_detected_num <- isOutlier(rse_gene_brain$detected, nmads = 3, type="lower")
-outliers_RNA_conc <-
-outliers_RNA_amount <-
-outliers_totalAssignedGene <-
-outliers_overallMapRate <-
-outliers_concordMapRate <-
+outliers_library_size <- isOutlier(rse_gene_habenula$library_size, nmads = 3, type="lower")
+outliers_detected_num <- isOutlier(rse_gene_habenula$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_conc <- isOutlier(rse_gene_habenula$RNA_concentration, nmads = 3, type="lower")
+outliers_RNA_amount <- isOutlier(rse_gene_habenula$Total_RNA_amount, nmads = 3, type="lower")
+outliers_totalAssignedGene <- isOutlier(rse_gene_habenula$totalAssignedGene, nmads = 3, type="lower")
+outliers_overallMapRate <- isOutlier(rse_gene_habenula$overallMapRate, nmads = 3, type="lower")
+outliers_concordMapRate <- isOutlier(rse_gene_habenula$concordMapRate, nmads = 3, type="lower")
 
 ## Drop samples with higher mt and ribo percentages
 outliers_mito<-isOutlier(rse_gene_brain$subsets_Mito_percent, nmads = 3, type="higher")
