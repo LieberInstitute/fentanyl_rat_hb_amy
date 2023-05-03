@@ -52,8 +52,9 @@ colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs <- as.character(colData(rse_gene
 ## QC metrics of interest
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
 
-## Create variable of Brain Region + Substance
+## Create variable for Brain Region + Substance
 colData(rse_gene)$Brain_Region_and_Substance <- apply(colData(rse_gene), 1, function(x){ capitalize(paste(x['Brain_Region'], x['Substance'])) })
+save(rse_gene, file = 'processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata')
 ## Sample variables of interest
 sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions')
 
@@ -239,9 +240,37 @@ corr_plots('Total_RNA_amount')
 
 
 
-## 1.3 QC sample filetring
 
 
+## 1.4 QC sample filetring
+
+## Find sample outliers based on their QC metrics, separately for habenula and amygdala samples
+
+## Drop samples with lower library sizes, detected number of genes, RNA concentration, total RNA amount, concordMapRate,
+## overallMapRate, totalAssignedGene
+## Drop samples with high mitoRates and RIN numbers
+
+# Filter habenula samples
+
+outliers_library_size <- isOutlier(rse_gene_brain$sum, nmads = 3, type="lower")
+outliers_detected_num <- isOutlier(rse_gene_brain$detected, nmads = 3, type="lower")
+outliers_RNA_conc <-
+outliers_RNA_amount <-
+outliers_totalAssignedGene <-
+outliers_overallMapRate <-
+outliers_concordMapRate <-
+
+## Drop samples with higher mt and ribo percentages
+outliers_mito<-isOutlier(rse_gene_brain$subsets_Mito_percent, nmads = 3, type="higher")
+outliers_ribo<-isOutlier(rse_gene_brain$subsets_Ribo_percent, nmads = 3, type="higher")
+not_outliers<-which(! (outliers_sum | outliers_det | outliers_mito | outliers_ribo))
+rse_gene_brain_qc<-rse_gene_brain[,not_outliers]
+
+## Number of samples retained
+dim(rse_gene_brain_qc)[2]
+# 135
+## Save data
+save(rse_gene_brain_qc, file = 'processed-data/03_EDA/02_QC/rse_gene_brain_qc.Rdata')
 
 
 
