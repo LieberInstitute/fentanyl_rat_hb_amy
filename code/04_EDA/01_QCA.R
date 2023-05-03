@@ -338,16 +338,15 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
 
     if (sample_var=="Brain_Region"){
-        labels=c("Amygdala","Habenula")
         shapes=c('amygdala'=3, 'habenula'=2)
         sample_var_label="Brain Region"
     }
     else if (sample_var=="Substance"){
-        shapes=c('Fentanyl'=5, 'Saline'=6)
+        shapes=c('Fentanyl'=9, 'Saline'=5)
         sample_var_label="Substance"
     }
     else if (sample_var=="Brain_Region_and_Substance"){
-        shapes=c('Amygdala Fentanyl'=3 , 'Amygdala Saline'=4, 'Habenula Fentanyl'=17, 'Habenula Saline'=18)
+        shapes=c('Amygdala Fentanyl'=15 , 'Amygdala Saline'=0, 'Habenula Fentanyl'=16, 'Habenula Saline'=1)
         sample_var_label="Brain Region & Substance"
     }
     else if (sample_var=='Total_Num_Fentanyl_Sessions'){
@@ -371,7 +370,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         geom_jitter(width = 0.2, alpha = 1, size = 2, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
-        scale_shape_manual(labels=labels, values=shapes) +
+        scale_shape_manual(values=shapes) +
         labs(x="", y = y_label, color='Retention after QC filtering', shape=sample_var_label) +
         sm_hgrid() +
         theme_classic() +
@@ -392,7 +391,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
 
 
 ## Multiple plots
-multiple_boxplots <- function(RSE){
+multiple_boxplots <- function(RSE, sample_group){
     for (sample_var in sample_variables){
 
         i=1
@@ -403,18 +402,25 @@ multiple_boxplots <- function(RSE){
         }
         plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]],
             nrow = 3)
-        ggsave(paste("plots/04_EDA/01_QCA/Boxplots_afterQC_filtering_", sample_var,".pdf", sep=""), width=35, height=30, units = "cm")
+        ggsave(paste("plots/04_EDA/01_QCA/Boxplots_afterQC_filtering_", sample_var, "_", sample_group, ".pdf", sep=""), width=35, height=30, units = "cm")
     }
 }
+
 
 ## Plots
 
 ## All samples together
-
 ## Add new variable to rse_gene with info of samples retained/dropped
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+multiple_boxplots('rse_gene', 'all')
 
-multiple_boxplots('rse_gene')
+
+## Habenula samples
+rse_gene_habenula$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+multiple_boxplots('rse_gene_habenula', 'habenula')
+
+
+
 
 
 
