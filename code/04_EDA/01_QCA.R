@@ -9,6 +9,7 @@ library(smplot2)
 library(Hmisc)
 library(cowplot)
 library(scater)
+library(ggrepel)
 library(sessioninfo)
 
 
@@ -335,6 +336,13 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     rse_gene<-eval(parse_expr(RSE))
     colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
 
+    if (RSE=='rse_gene'){
+        sample_labels = ''
+    }
+    else{
+       sample_labels = rse_gene$Retention_sample_label
+    }
+
     if (sample_var=="Brain_Region"){
         shapes=c('Amygdala'=3, 'Habenula'=2)
         sample_var_label="Brain Region"
@@ -364,8 +372,11 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     ## Mean-absolute-deviation of the QC var values
     mad<-mad(eval(parse_expr(paste("rse_gene$", qc_metric, sep=""))))
 
-    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric), color = !! rlang::sym('Retention_after_QC_filtering'))) +
-        geom_jitter(width = 0.2, alpha = 1, size = 2, aes(shape=eval(parse_expr((sample_var))))) +
+    ## Jitter position
+    pos <- position_jitter(width = 0.2, seed = 2)
+
+    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric), color = !! rlang::sym('Retention_after_QC_filtering'), label=!! rlang::sym('Retention_sample_label'))) +
+        geom_jitter(alpha = 1, size = 2, position = pos, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
         scale_shape_manual(values = shapes) +
@@ -378,6 +389,12 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         geom_hline(yintercept = median+(3*mad), size=0.5, linetype=2) +
         ## Line of median - 3 MADs
         geom_hline(yintercept = median-(3*mad), size=0.5, linetype=2) +
+        ## Labels of removed samples
+        geom_label_repel(color='gray50', size=1.7, max.overlaps = Inf,
+                         box.padding = 0.7,
+                         show.legend=FALSE,
+                         position = pos,
+                         min.segment.length = 0) +
         theme(axis.title = element_text(size = (9)),
               axis.text = element_text(size = (8)),
               legend.position="right",
@@ -410,16 +427,19 @@ multiple_boxplots <- function(RSE, sample_group){
 ## All samples together
 ## Add new variable to rse_gene with info of samples retained/dropped
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+rse_gene$Retention_sample_label <- c(rep(NA, ncol(rse_gene)))
 save(rse_gene, file="processed-data/04_EDA/01_QCA/rse_gene.Rdata")
 multiple_boxplots('rse_gene', 'all')
 
 ## Habenula samples
 rse_gene_habenula$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+rse_gene_habenula$Retention_sample_label <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){NA} else{x}}))
 save(rse_gene_habenula, file="processed-data/04_EDA/01_QCA/rse_gene_habenula.Rdata")
 multiple_boxplots('rse_gene_habenula', 'habenula')
 
 ## Amygdala samples
 rse_gene_amygdala$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
+rse_gene_amygdala$Retention_sample_label <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){NA} else{x}}))
 save(rse_gene_amygdala, file="processed-data/04_EDA/01_QCA/rse_gene_amygdala.Rdata")
 multiple_boxplots('rse_gene_amygdala', 'amygdala')
 
