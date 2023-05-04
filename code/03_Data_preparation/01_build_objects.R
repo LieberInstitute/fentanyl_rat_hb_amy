@@ -96,9 +96,15 @@ assays(rse_jx, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_jx
 ## assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
 
 ## Save rse objects with the assays of normalized counts
-save(rse_exon, file="processed-data/02_build_objects/rse_exon_logcounts.Rdata")
-save(rse_jx, file="processed-data/02_build_objects/rse_jx_logcounts.Rdata")
-save(rse_tx, file="processed-data/02_build_objects/rse_tx_logcounts.Rdata")
+save(rse_gene, file="processed-data/03_Data_preparation/rse_gene_logcounts.Rdata")
+save(rse_exon, file="processed-data/03_Data_preparation/rse_exon_logcounts.Rdata")
+save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
+##save(rse_tx, file="processed-data/03_Data_preparation/rse_tx_logcounts.Rdata")
+
+
+
+## Plots of counts distribution before and after normalization and filtering
+
 
 
 
