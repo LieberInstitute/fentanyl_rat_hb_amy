@@ -3,6 +3,7 @@ library(here)
 library(SummarizedExperiment)
 library(readxl)
 library(stringr)
+library(edgeR)
 library(sessioninfo)
 
 #######################   Data Preparation   #######################
@@ -90,9 +91,9 @@ assays(rse_exon, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_
 ## TMMwsp method for >80% of zeros
 assays(rse_jx, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_jx, method = "TMMwsp"), log = TRUE, prior.count = 0.5)
 
-## Transcripts
+## Transcripts: TODO
 ## Scale TPM (Transcripts per million) to log2(TPM + 0.5)
-assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
+## assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
 
 ## Save rse objects with the assays of normalized counts
 save(rse_exon, file="processed-data/02_build_objects/rse_exon_logcounts.Rdata")
