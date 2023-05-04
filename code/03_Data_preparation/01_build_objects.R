@@ -69,6 +69,38 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_sample_info.Rdata")
 
 
 
+## 2. Data normalization & feature filtering
+
+## Percentage of zeros in each dataset
+length(which(assay(rse_gene)==0))*100/(dim(rse_gene)[1]*dim(rse_gene)[2])
+# 33.91736
+length(which(assay(rse_exon)==0))*100/(dim(rse_exon)[1]*dim(rse_exon)[2])
+# 21.2531
+length(which(assay(rse_jx)==0))*100/(dim(rse_jx)[1]*dim(rse_jx)[2])
+# 89.52425
+
+## Transform read counts to log2(CPM + 0.5) -> Norm distribution
+## Genes
+assays(rse_gene, withDimnames=FALSE)$logcounts <- edgeR::cpm(calcNormFactors(rse_gene, method = "TMM"), log = TRUE, prior.count = 0.5)
+
+## Exons
+assays(rse_exon, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_exon, method = "TMM"), log = TRUE, prior.count = 0.5)
+
+## Junctions
+## TMMwsp method for >80% of zeros
+assays(rse_jx, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_jx, method = "TMMwsp"), log = TRUE, prior.count = 0.5)
+
+## Transcripts
+## Scale TPM (Transcripts per million) to log2(TPM + 0.5)
+assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
+
+## Save rse objects with the assays of normalized counts
+save(rse_exon, file="processed-data/02_build_objects/rse_exon_logcounts.Rdata")
+save(rse_jx, file="processed-data/02_build_objects/rse_jx_logcounts.Rdata")
+save(rse_tx, file="processed-data/02_build_objects/rse_tx_logcounts.Rdata")
+
+
+
 
 
 ## Reproducibility information
