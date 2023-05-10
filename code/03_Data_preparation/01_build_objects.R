@@ -70,7 +70,7 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_sample_info.Rdata")
 
 
 
-## 2. Data normalization & feature filtering
+## 2. Data normalization
 
 ## Percentage of zeros in each dataset
 length(which(assay(rse_gene)==0))*100/(dim(rse_gene)[1]*dim(rse_gene)[2])
@@ -95,6 +95,7 @@ assays(rse_jx, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_jx
 ## Scale TPM (Transcripts per million) to log2(TPM + 0.5)
 ## assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
 
+
 ## Save rse objects with the assays of normalized counts
 save(rse_gene, file="processed-data/03_Data_preparation/rse_gene_logcounts.Rdata")
 save(rse_exon, file="processed-data/03_Data_preparation/rse_exon_logcounts.Rdata")
@@ -103,7 +104,76 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 
 
 
+
+
+## 3. Feature filtering
+
+## Feature filtering based on counts
+
+## Filter genes with k CPM in at least n samples
+## Add design matrix to account for group differences
+rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
+                                           design=with(colData(rse_gene), model.matrix(~ Tissue + Age + Expt + Group)))),]
+dim(rse_gene_filt)
+# 19974   208
+
+## Filter exons
+rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
+                                           design=with(colData(rse_exon), model.matrix(~ Tissue + Age + Expt + Group)))),]
+dim(rse_exon_filt)
+# 290800 208
+
+## Filter junctions
+rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
+                                       design=with(colData(rse_jx), model.matrix(~ Tissue + Age + Expt + Group)))),]
+save(rse_jx_filt, file = 'processed-data/02_build_objects/rse_jx_filt.Rdata')
+dim(rse_jx_filt)
+# 176670 208
+
+## Filter TPM
+## Identify potential cutoffs
+seed <- 20191217
+expression_cutoff(assays(rse_tx)$tpm, seed = seed, k=2)
+# 2022-06-25 16:27:50 the suggested expression cutoff is 0.28
+# percent_features_cut  samples_nonzero_cut
+#                 0.29                 0.27
+cutoff<-0.28
+## Transcripts that pass cutoff
+rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
+save(rse_tx_filt, file = 'processed-data/02_build_objects/rse_tx_filt.Rdata')
+dim(rse_tx_filt)
+# 58693   208
+
+
+
+
+
+
+## 4. Visualization
 ## Plots of counts distribution before and after normalization and filtering
+
+## Raw counts
+counts_data <- data.frame(counts=as.vector(assays(rse_gene)$counts))
+ggplot(counts_data, aes(x=counts)) +
+    geom_histogram(colour="black", fill="lightgray") +
+    theme_classic() +
+    labs(x='read counts', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_counts.pdf', height = 3, width = 4)
+
+## Normalized counts
+logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene)$logcounts))
+ggplot(logcounts_data, aes(x=logcounts)) +
+    geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
+    theme_classic() +
+    geom_density(fill="#69b3a2", alpha=0.3) +
+    labs(x='log(CPM+0.5)', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_logcounts.pdf', height = 3, width = 4)
+
+
+
+ggplot(counts_data, aes(x=counts)) +
+
+    ggtitle("Night price distribution of Airbnb appartements")
 
 
 
