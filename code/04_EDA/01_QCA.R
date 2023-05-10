@@ -50,6 +50,8 @@ colData(rse_gene)$Brain_Region <- capitalize(colData(rse_gene)$Brain_Region)
 
 
 
+
+
 ## 1.2 Evaluate QC metrics for groups of samples
 
 ## QC metrics of interest
@@ -142,8 +144,8 @@ for (sample_var in sample_variables){
 
 ## 1.3 Compare QC metrics of samples
 
-## Correlation betweern RNA concentration/RNA amount and the rest of QC variables
-
+## Correlation between RNA concentration/RNA amount and the rest of QC variables
+data <- data.frame(colData(rse_gene))
 corrs <- as.data.frame(t(round(cor(data[c('mitoRate', 'totalAssignedGene', 'overallMapRate', 'concordMapRate',
                           'detected_num_genes', 'RIN', 'library_size')], data[c('RNA_concentration' ,'Total_RNA_amount')],
                    method = c("pearson")), 3)))
@@ -178,7 +180,7 @@ corr_plots <- function(var1){
         stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='skyblue2') +
         theme_classic() +
         theme(plot.margin = unit(c(1,2,1,2), "cm")) +
-        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='QC metrics') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$detected_num_genes),
                   label = paste0('r=', corrs[var1, 'detected_num_genes']),
@@ -189,7 +191,7 @@ corr_plots <- function(var1){
         stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='rosybrown3') +
         theme_classic() +
         theme(plot.margin = unit(c(1,2,1,2), "cm")) +
-        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$RIN),
                   label = paste0('r=', corrs[var1, 'RIN']),
@@ -200,7 +202,7 @@ corr_plots <- function(var1){
         stat_smooth (geom="line", alpha=0.4, size=1.1, span=0.1, method = lm, color='palegreen3') +
         theme_classic() +
         theme(plot.margin = unit(c(1,2,1,2), "cm")) +
-        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$library_size),
                   label = paste0('r=', corrs[var1, 'library_size']),
@@ -214,7 +216,7 @@ corr_plots <- function(var1){
         theme(plot.margin = unit(c(1,0,1,0), "cm")) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='') +
         scale_color_manual(values = values) +
-        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('amygdala'=3, 'habenula'=2)) +
+        scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(shape="Brain Region", colour="QC variables") +
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$mitoRate)+.03,
                   label = paste0('r=', corrs[var1, 'mitoRate']),
@@ -237,6 +239,185 @@ corr_plots <- function(var1){
 
 corr_plots('RNA_concentration')
 corr_plots('Total_RNA_amount')
+
+
+
+
+## Create correlation plots for samples within each brain region
+
+data <- data.frame(colData(rse_gene))
+
+## Correlation between RNA concentration/amount and the QC variables in habenula and amygdala samples
+brain_regions <- c('Habenula', 'Amygdala')
+RNA_vars <- c('RNA_concentration', 'Total_RNA_amount')
+qc_metrics <- c('mitoRate', 'totalAssignedGene', 'overallMapRate', 'concordMapRate',
+                'detected_num_genes', 'RIN', 'library_size')
+corrs_brain_regions  <- lapply(brain_regions,
+                               function(z){sapply(RNA_vars,
+                                    function(y){sapply(qc_metrics,
+                                         function(x){round(cor(data[which(data$Brain_Region==z),  x], data[which(data$Brain_Region==z), y], method = c("pearson")), 3)}
+                                    )}
+                               )})
+corrs_habeula <- corrs_brain_regions[[1]]
+corrs_amygdala <- corrs_brain_regions[[2]]
+
+
+## Plots
+
+## Function to plot RNA vars vs QC metrics for habenula and amygdala samples separately
+corr_plots_brain_region <- function(qc_metric, var1){
+
+    if (qc_metric=='detected_num_genes'){
+        color1 = 'skyblue3'
+        color2 = 'skyblue'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=130
+            y_dist1=90
+            y_dist2=-260
+        }
+        else {
+            x_dist1=0.24
+            x_dist2=0.1
+            y_dist1=-370
+            y_dist2=-500
+        }
+
+    }
+
+    else if (qc_metric=='mitoRate'){
+        color1 = 'khaki4'
+        color2 = 'khaki2'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=100
+            y_dist1=0.003
+            y_dist2=-0.013
+        }
+        else{
+            x_dist1=0
+            x_dist2=0.1
+            y_dist1=0.0035
+            y_dist2=-0.01
+        }
+    }
+
+    else if (qc_metric=='totalAssignedGene'){
+        color1 = 'plum4'
+        color2 = 'plum1'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=130
+            y_dist1=0.03
+            y_dist2=-0.11
+        }
+        else{
+            x_dist1=0.1
+            x_dist2=0.1
+            y_dist1=-0.11
+            y_dist2=-0.03
+        }
+    }
+
+    else if (qc_metric=='overallMapRate'){
+        color1 = 'turquoise4'
+        color2 = 'turquoise3'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=100
+            y_dist1=-0.029
+            y_dist2=-0.023
+        }
+        else{
+            x_dist1=0
+            x_dist2=0.1
+            y_dist1=-0.029
+            y_dist2=-0.018
+        }
+    }
+
+    else if (qc_metric=='concordMapRate'){
+        color1 = 'lightsalmon3'
+        color2 = 'lightsalmon1'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=100
+            y_dist1=-0.027
+            y_dist2=-0.023
+        }
+        else{
+            x_dist1=0
+            x_dist2=0.1
+            y_dist1=-0.029
+            y_dist2=-0.018
+        }
+    }
+
+    else if (qc_metric=='RIN'){
+        color1 = 'rosybrown4'
+        color2 = 'rosybrown2'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=100
+            y_dist1=-0.1
+            y_dist2=-0.25
+        }
+        else{
+            x_dist1=0
+            x_dist2=0.1
+            y_dist1=-0.1
+            y_dist2=-0.34
+        }
+    }
+
+    else if (qc_metric=='library_size'){
+        color1 = 'palegreen4'
+        color2 = 'palegreen2'
+        if (var1=="RNA_concentration"){
+            x_dist1=0
+            x_dist2=100
+            y_dist1=-5000000
+            y_dist2=-4000000
+        }
+        else{
+            x_dist1=0.1
+            x_dist2=0.1
+            y_dist1=-6000000
+            y_dist2=-6000000
+        }
+    }
+
+    plot <- ggplot(data, aes(x=eval(parse_expr(var1)), y=eval(parse_expr(qc_metric)), color=Brain_Region)) +
+                    geom_point(aes(shape=Brain_Region)) +
+                    stat_smooth (geom="line", alpha=0.7, size=1.1, span=0.1, method = lm, show.legend = FALSE) +
+                    theme_classic() +
+                    scale_color_manual(name='Brain Region', values=c('Amygdala'=color1, 'Habenula'=color2)) +
+                    scale_shape_manual(name='Brain Region', labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
+                    labs(x=str_replace_all(var1, c("_"=" ")), y=str_replace_all(qc_metric, c("_"=" "))) +
+                    geom_text(x = max(data[which(data$Brain_Region=='Habenula'),  var1]) - x_dist1,
+                              y = max(data[which(data$Brain_Region=='Habenula'),  qc_metric]) + y_dist1,
+                              label = paste0('r = ', corrs_habeula[qc_metric, var1]),
+                              color = color2, size=3) +
+                    geom_text(x = max(data[which(data$Brain_Region=='Amygdala'),  var1]) - x_dist2,
+                              y = max(data[which(data$Brain_Region=='Amygdala'),  qc_metric]) + y_dist2,
+                              label = paste0('r = ', corrs_amygdala[qc_metric, var1]),
+                              color = color1, size=3)
+    return(plot)
+}
+
+## Multiple plots
+for (var1 in RNA_vars){
+    i=1
+    plots <- list()
+    for (qc_metric in qc_metrics){
+
+        plots[[i]] <- corr_plots_brain_region(qc_metric, var1)
+        i=i+1
+    }
+
+    plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]])
+    ggsave(here(paste("plots/04_EDA/01_QCA/Corr_BrainRegion_QCmetrics_vs_", var1,".pdf", sep="")), width = 40, height = 30, units = "cm")
+}
 
 
 
