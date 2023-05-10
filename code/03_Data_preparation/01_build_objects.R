@@ -111,16 +111,14 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 ## Feature filtering based on counts
 
 ## Keep genes with at least k CPM in n samples & with a minimum total number of counts across all samples
-
 ## Add design matrix to account for group differences and define n
 rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
                                            design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
 dim(rse_gene_filt)
 # 16708    33
-
 ## Percentage of genes that were kept
 dim(rse_gene_filt)[1]*100/dim(rse_gene)[1]
-
+# 54.86668
 
 
 ## Filter exons
@@ -128,7 +126,7 @@ rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
                                            design=with(colData(rse_exon), model.matrix(~ Brain_Region + Substance)))),]
 dim(rse_exon_filt)
 # 182291     33
-## Percentage of genes that were kept
+## Percentage of exons that were kept
 dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
 #  66.76984
 
@@ -136,23 +134,26 @@ dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
 ## Filter junctions
 rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
                                        design=with(colData(rse_jx), model.matrix(~ Brain_Region + Substance)))),]
-save(rse_jx_filt, file = 'processed-data/02_build_objects/rse_jx_filt.Rdata')
 dim(rse_jx_filt)
-# 176670 208
+# 150593     33
+## Percentage of jxns that were kept
+dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
+# 4.338896
 
-## Filter TPM
+
+
+## Filter TPM TODO
 ## Identify potential cutoffs
-seed <- 20191217
-expression_cutoff(assays(rse_tx)$tpm, seed = seed, k=2)
-# 2022-06-25 16:27:50 the suggested expression cutoff is 0.28
+# seed <- 2
+# expression_cutoff(assays(rse_tx)$tpm, seed = seed, k=2)
+# The suggested expression cutoff is 0.28:
 # percent_features_cut  samples_nonzero_cut
 #                 0.29                 0.27
-cutoff<-0.28
+# cutoff<-0.28
 ## Transcripts that pass cutoff
-rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
-save(rse_tx_filt, file = 'processed-data/02_build_objects/rse_tx_filt.Rdata')
-dim(rse_tx_filt)
-# 58693   208
+# rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
+# dim(rse_tx_filt)
+#
 
 
 
