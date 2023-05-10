@@ -183,7 +183,7 @@ corr_plots <- function(var1){
         scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='QC metrics') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$detected_num_genes),
-                  label = paste0('r=', corrs[var1, 'detected_num_genes']),
+                  label = paste0('r = ', corrs[var1, 'detected_num_genes']),
                   color = 'skyblue2', size=3)
 
     p2 <- ggplot(data, aes(x=eval(parse_expr(var1)), y=RIN)) +
@@ -194,7 +194,7 @@ corr_plots <- function(var1){
         scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$RIN),
-                  label = paste0('r=', corrs[var1, 'RIN']),
+                  label = paste0('r = ', corrs[var1, 'RIN']),
                   color = 'rosybrown3', size=3)
 
     p3 <- ggplot(data, aes(x=eval(parse_expr(var1)), y=library_size)) +
@@ -205,7 +205,7 @@ corr_plots <- function(var1){
         scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(x=str_replace_all(var1, c("_"=" ")), y='') +
         geom_text(x = max(eval(parse_expr(paste0('data$', var1))))-dist, y = max(data$library_size),
-                  label = paste0('r=', corrs[var1, 'library_size']),
+                  label = paste0('r = ', corrs[var1, 'library_size']),
                   color = 'palegreen3', size=3)
 
 
@@ -219,16 +219,16 @@ corr_plots <- function(var1){
         scale_shape_manual(labels=c("Amygdala","Habenula"), values=c('Amygdala'=3, 'Habenula'=2)) +
         labs(shape="Brain Region", colour="QC variables") +
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$mitoRate)+.03,
-                  label = paste0('r=', corrs[var1, 'mitoRate']),
+                  label = paste0('r = ', corrs[var1, 'mitoRate']),
                   color = 'khaki3', size=3) +
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$totalAssignedGene)+.03,
-                  label = paste0('r=', corrs[var1, 'totalAssignedGene']),
+                  label = paste0('r = ', corrs[var1, 'totalAssignedGene']),
                   color = 'plum2', size=3) +
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$overallMapRate)-0.05,
-                  label = paste0('r=', corrs[var1, 'overallMapRate']),
+                  label = paste0('r = ', corrs[var1, 'overallMapRate']),
                   color = 'turquoise', size=3) +
         geom_text(x = max(eval(parse_expr(paste0('QC_data$', var1, '[1:132]'))))-dist, y = max(data$concordMapRate)+dist_corr_coeff,
-                  label = paste0('r=', corrs[var1, 'concordMapRate']),
+                  label = paste0('r = ', corrs[var1, 'concordMapRate']),
                   color = 'lightsalmon', size=3)
 
     plot_grid(p1, p2, p3, p4, nrow=1)
