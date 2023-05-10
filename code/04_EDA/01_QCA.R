@@ -63,6 +63,8 @@ rse_gene_QC_vars <- rse_gene
 
 ## Save original rse with qc variables
 save(rse_gene_QC_vars, file = 'processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata')
+## Return to rse_gene object
+rse_gene <- rse_gene_QC_vars
 
 ## Sample variables of interest
 sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions')
