@@ -114,6 +114,7 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 ## Add design matrix to account for group differences and define n
 rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
                                            design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
+save(rse_gene_filt, file = 'processed-data/03_Data_preparation/rse_gene_filt.Rdata')
 dim(rse_gene_filt)
 # 16708    33
 ## Percentage of genes that were kept
@@ -124,6 +125,7 @@ dim(rse_gene_filt)[1]*100/dim(rse_gene)[1]
 ## Filter exons
 rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
                                            design=with(colData(rse_exon), model.matrix(~ Brain_Region + Substance)))),]
+save(rse_exon_filt, file = 'processed-data/03_Data_preparation/rse_exon_filt.Rdata')
 dim(rse_exon_filt)
 # 182291     33
 ## Percentage of exons that were kept
@@ -134,6 +136,7 @@ dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
 ## Filter junctions
 rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
                                        design=with(colData(rse_jx), model.matrix(~ Brain_Region + Substance)))),]
+save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
 dim(rse_jx_filt)
 # 150593     33
 ## Percentage of jxns that were kept
@@ -152,6 +155,7 @@ dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
 # cutoff<-0.28
 ## Transcripts that pass cutoff
 # rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
+# save(rse_tx_filt, file = 'processed-data/03_Data_preparation/rse_tx_filt.Rdata')
 # dim(rse_tx_filt)
 #
 
@@ -161,7 +165,7 @@ dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
 
 
 ## 4. Visualization
-## Plots of counts distribution before and after normalization and filtering
+## Plots of the distribution of genes' counts before and after normalization and filtering
 
 ## Raw counts
 counts_data <- data.frame(counts=as.vector(assays(rse_gene)$counts))
@@ -180,11 +184,17 @@ ggplot(logcounts_data, aes(x=logcounts)) +
     labs(x='log(CPM+0.5)', y='Frecuency')
 ggsave(filename = 'plots/03_Data_preparation/Hist_logcounts.pdf', height = 3, width = 4)
 
+## Normalized counts and filtered genes
+filt_logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene_filt)$logcounts))
+ggplot(filt_logcounts_data, aes(x=logcounts)) +
+    geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
+    theme_classic() +
+    geom_density(fill="#69b3a2", alpha=0.3) +
+    labs(x='log(CPM+0.5)', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_filt_logcounts.pdf', height = 3, width = 4)
 
 
-ggplot(counts_data, aes(x=counts)) +
 
-    ggtitle("Night price distribution of Airbnb appartements")
 
 
 
