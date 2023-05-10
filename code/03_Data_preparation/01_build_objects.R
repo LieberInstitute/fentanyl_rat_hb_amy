@@ -110,22 +110,32 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 
 ## Feature filtering based on counts
 
-## Filter genes with k CPM in at least n samples
-## Add design matrix to account for group differences
+## Keep genes with at least k CPM in n samples & with a minimum total number of counts across all samples
+
+## Add design matrix to account for group differences and define n
 rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
-                                           design=with(colData(rse_gene), model.matrix(~ Tissue + Age + Expt + Group)))),]
+                                           design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
 dim(rse_gene_filt)
-# 19974   208
+# 16708    33
+
+## Percentage of genes that were kept
+dim(rse_gene_filt)[1]*100/dim(rse_gene)[1]
+
+
 
 ## Filter exons
 rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
-                                           design=with(colData(rse_exon), model.matrix(~ Tissue + Age + Expt + Group)))),]
+                                           design=with(colData(rse_exon), model.matrix(~ Brain_Region + Substance)))),]
 dim(rse_exon_filt)
-# 290800 208
+# 182291     33
+## Percentage of genes that were kept
+dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
+#  66.76984
+
 
 ## Filter junctions
 rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
-                                       design=with(colData(rse_jx), model.matrix(~ Tissue + Age + Expt + Group)))),]
+                                       design=with(colData(rse_jx), model.matrix(~ Brain_Region + Substance)))),]
 save(rse_jx_filt, file = 'processed-data/02_build_objects/rse_jx_filt.Rdata')
 dim(rse_jx_filt)
 # 176670 208
