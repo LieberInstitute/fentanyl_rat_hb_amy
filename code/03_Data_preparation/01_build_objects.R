@@ -114,7 +114,6 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 ## Add design matrix to account for group differences and define n
 rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
                                            design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
-save(rse_gene_filt, file = 'processed-data/03_Data_preparation/rse_gene_filt.Rdata')
 dim(rse_gene_filt)
 # 16708    33
 ## Percentage of genes that were kept
@@ -125,7 +124,6 @@ dim(rse_gene_filt)[1]*100/dim(rse_gene)[1]
 ## Filter exons
 rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
                                            design=with(colData(rse_exon), model.matrix(~ Brain_Region + Substance)))),]
-save(rse_exon_filt, file = 'processed-data/03_Data_preparation/rse_exon_filt.Rdata')
 dim(rse_exon_filt)
 # 182291     33
 ## Percentage of exons that were kept
@@ -136,7 +134,6 @@ dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
 ## Filter junctions
 rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
                                        design=with(colData(rse_jx), model.matrix(~ Brain_Region + Substance)))),]
-save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
 dim(rse_jx_filt)
 # 150593     33
 ## Percentage of jxns that were kept
@@ -155,10 +152,27 @@ dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
 # cutoff<-0.28
 ## Transcripts that pass cutoff
 # rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
-# save(rse_tx_filt, file = 'processed-data/03_Data_preparation/rse_tx_filt.Rdata')
 # dim(rse_tx_filt)
 #
 
+
+## Add complete QC info to rse objects with filtered features and lognorm counts
+
+## Load rse object with correct QC info
+load(here('processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata'), verbose=TRUE)
+# Loading objects:
+#     rse_gene_QC_vars
+
+colData(rse_gene_filt) <- colData(rse_gene_QC_vars)
+colData(rse_exon_filt) <- colData(rse_gene_QC_vars)
+colData(rse_jx_filt) <- colData(rse_gene_QC_vars)
+#colData(rse_tx_filt) <- colData(rse_gene_QC_vars)
+
+## Save
+save(rse_gene_filt, file = 'processed-data/03_Data_preparation/rse_gene_filt.Rdata')
+save(rse_exon_filt, file = 'processed-data/03_Data_preparation/rse_exon_filt.Rdata')
+save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
+# save(rse_tx_filt, file = 'processed-data/03_Data_preparation/rse_tx_filt.Rdata')
 
 
 
