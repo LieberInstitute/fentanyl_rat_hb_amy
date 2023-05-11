@@ -454,6 +454,7 @@ outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                        outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_qc<-rse_gene[,not_outliers]
+save(rse_gene_qc, file='processed-data/04_EDA/01_QCA/rse_gene_qc')
 ## Number of samples retained
 dim(rse_gene_qc)[2]
 # 18
@@ -475,6 +476,7 @@ outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_habenula_qc<-rse_gene_habenula[,not_outliers]
+save(rse_gene_habenula_qc, file='processed-data/04_EDA/01_QCA/rse_gene_habenula_qc')
 ## Number of samples retained
 dim(rse_gene_habenula_qc)[2]
 # 15
@@ -496,6 +498,7 @@ outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_amygdala_qc<-rse_gene_amygdala[,not_outliers]
+save(rse_gene_amygdala_qc, file='processed-data/04_EDA/01_QCA/rse_gene_amygdala_qc')
 ## Number of samples retained
 dim(rse_gene_amygdala_qc)[2]
 # 14
