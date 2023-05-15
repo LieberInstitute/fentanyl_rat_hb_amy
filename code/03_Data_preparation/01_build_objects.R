@@ -158,17 +158,17 @@ dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
 #
 
 
-## Add complete QC info to rse objects with filtered features and lognorm counts
+## Add complete QC and sample filtering info to rse objects with filtered features and lognorm counts
 
 ## Load rse object with correct QC info
-load(here('processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata'), verbose=TRUE)
+load(here('processed-data/04_EDA/01_QCA/rse_gene_complete.Rdata'), verbose=TRUE)
 # Loading objects:
-#     rse_gene_QC_vars
+#     rse_gene
 
-colData(rse_gene_filt) <- colData(rse_gene_QC_vars)
-colData(rse_exon_filt) <- colData(rse_gene_QC_vars)
-colData(rse_jx_filt) <- colData(rse_gene_QC_vars)
-#colData(rse_tx_filt) <- colData(rse_gene_QC_vars)
+colData(rse_gene_filt) <- colData(rse_gene_complete)
+colData(rse_exon_filt) <- colData(rse_gene_complete)
+colData(rse_jx_filt) <- colData(rse_gene_complete)
+#colData(rse_tx_filt) <- colData(rse_gene)
 
 ## Save
 save(rse_gene_filt, file = 'processed-data/03_Data_preparation/rse_gene_filt.Rdata')

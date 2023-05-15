@@ -616,19 +616,22 @@ multiple_boxplots <- function(RSE, sample_group){
 ## Add new variables to rse_gene with info of samples retained/dropped
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 rse_gene$Retention_sample_label <- c(rep(NA, ncol(rse_gene)))
-save(rse_gene, file="processed-data/04_EDA/01_QCA/rse_gene.Rdata")
+rse_gene_complete <- rse_gene
+save(rse_gene_complete, file="processed-data/04_EDA/01_QCA/rse_gene_complete.Rdata")
 multiple_boxplots('rse_gene', 'all')
 
 ## Habenula samples
 rse_gene_habenula$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 rse_gene_habenula$Retention_sample_label <- as.vector(sapply(rse_gene_habenula$SAMPLE_ID, function(x){if (x %in% rse_gene_habenula_qc$SAMPLE_ID){NA} else{x}}))
-save(rse_gene_habenula, file="processed-data/04_EDA/01_QCA/rse_gene_habenula.Rdata")
+rse_gene_habenula_complete <- rse_gene_habenula
+save(rse_gene_habenula_complete, file="processed-data/04_EDA/01_QCA/rse_gene_habenula_complete.Rdata")
 multiple_boxplots('rse_gene_habenula', 'habenula')
 
 ## Amygdala samples
 rse_gene_amygdala$Retention_after_QC_filtering <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 rse_gene_amygdala$Retention_sample_label <- as.vector(sapply(rse_gene_amygdala$SAMPLE_ID, function(x){if (x %in% rse_gene_amygdala_qc$SAMPLE_ID){NA} else{x}}))
-save(rse_gene_amygdala, file="processed-data/04_EDA/01_QCA/rse_gene_amygdala.Rdata")
+rse_gene_amygdala_complete <- rse_gene_amygdala
+save(rse_gene_amygdala_complete, file="processed-data/04_EDA/01_QCA/rse_gene_amygdala_complete.Rdata")
 multiple_boxplots('rse_gene_amygdala', 'amygdala')
 
 
