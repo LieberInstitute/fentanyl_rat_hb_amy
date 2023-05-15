@@ -48,6 +48,16 @@ colData(rse_gene)$Num_Fentanyl_Sessions_six_hrs <- as.character(colData(rse_gene
 ## Capitalize brain region info
 colData(rse_gene)$Brain_Region <- capitalize(colData(rse_gene)$Brain_Region)
 
+## Create variable for Brain Region + Substance
+colData(rse_gene)$Brain_Region_and_Substance <- apply(colData(rse_gene), 1, function(x){ capitalize(paste(x['Brain_Region'], x['Substance'])) })
+
+rse_gene_QC_vars <- rse_gene
+
+## Save original rse with qc variables
+save(rse_gene_QC_vars, file = 'processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata')
+## Return to rse_gene object
+rse_gene <- rse_gene_QC_vars
+
 
 
 
@@ -56,15 +66,6 @@ colData(rse_gene)$Brain_Region <- capitalize(colData(rse_gene)$Brain_Region)
 
 ## QC metrics of interest
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
-
-## Create variable for Brain Region + Substance
-colData(rse_gene)$Brain_Region_and_Substance <- apply(colData(rse_gene), 1, function(x){ capitalize(paste(x['Brain_Region'], x['Substance'])) })
-rse_gene_QC_vars <- rse_gene
-
-## Save original rse with qc variables
-save(rse_gene_QC_vars, file = 'processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata')
-## Return to rse_gene object
-rse_gene <- rse_gene_QC_vars
 
 ## Sample variables of interest
 sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions')
