@@ -47,6 +47,9 @@ sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="
 ## Correct Sample_Num for the extra sample
 sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_Num"]="33.0"
 
+## Add batch information
+sample_data$Batch <- c(rep('1', 8), '2', '3', rep('2', 3), '3', '2', '3', rep('1', 8), rep('2', 4), '3', rep('2', 3), '4')
+
 ## Verify that samples are the same in sample_data and rse
 setdiff(sample_data$SAMPLE_ID, rse_gene$SAMPLE_ID)
 # character(0)
@@ -141,7 +144,6 @@ dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
 # 4.338896
 
 
-
 ## Filter TPM TODO
 ## Identify potential cutoffs
 # seed <- 2
@@ -179,6 +181,7 @@ save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
 
 
 ## 4. Visualization
+
 ## Plots of the distribution of genes' counts before and after normalization and filtering
 
 ## Raw counts
