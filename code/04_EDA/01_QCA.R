@@ -68,7 +68,7 @@ rse_gene <- rse_gene_QC_vars
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
 
 ## Sample variables of interest
-sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions')
+sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions', 'Batch')
 
 
 ## Function to create boxplots of QC metrics for groups of samples
@@ -104,6 +104,12 @@ QC_boxplots <- function(qc_metric, sample_var){
         violin_width=0.7
         jitter_width=0.1
         x_label="Number of 6hrs Fentanyl Sessions"
+    }
+    else if (sample_var=='Batch'){
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2' , '4'= 'navajowhite2')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Sequencing batch"
     }
 
     y_label=str_replace_all(qc_metric, c("_"=" "))
@@ -455,7 +461,7 @@ outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                        outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_qc<-rse_gene[,not_outliers]
-save(rse_gene_qc, file='processed-data/04_EDA/01_QCA/rse_gene_qc')
+save(rse_gene_qc, file='processed-data/04_EDA/01_QCA/rse_gene_qc.Rdata')
 ## Number of samples retained
 dim(rse_gene_qc)[2]
 # 18
@@ -477,7 +483,7 @@ outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_habenula_qc<-rse_gene_habenula[,not_outliers]
-save(rse_gene_habenula_qc, file='processed-data/04_EDA/01_QCA/rse_gene_habenula_qc')
+save(rse_gene_habenula_qc, file='processed-data/04_EDA/01_QCA/rse_gene_habenula_qc.Rdata')
 ## Number of samples retained
 dim(rse_gene_habenula_qc)[2]
 # 15
@@ -499,7 +505,7 @@ outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="higher")
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
 rse_gene_amygdala_qc<-rse_gene_amygdala[,not_outliers]
-save(rse_gene_amygdala_qc, file='processed-data/04_EDA/01_QCA/rse_gene_amygdala_qc')
+save(rse_gene_amygdala_qc, file='processed-data/04_EDA/01_QCA/rse_gene_amygdala_qc.Rdata')
 ## Number of samples retained
 dim(rse_gene_amygdala_qc)[2]
 # 14
@@ -540,6 +546,10 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     else if (sample_var=='Num_Fentanyl_Sessions_six_hrs'){
         shapes=c('18'=8, '16'=1)
         sample_var_label="Number of 6hrs Fentanyl Sessions"
+    }
+    else if (sample_var=='Batch'){
+        shapes=c('1'=1, '2'=4, '3'=6 , '4'=12)
+        sample_var_label="Sequencing batch"
     }
 
     y_label=str_replace_all(qc_metric, c("_"=" "))
@@ -603,7 +613,7 @@ multiple_boxplots <- function(RSE, sample_group){
 ## Plots
 
 ## All samples together
-## Add new variable to rse_gene with info of samples retained/dropped
+## Add new variables to rse_gene with info of samples retained/dropped
 rse_gene$Retention_after_QC_filtering <- as.vector(sapply(rse_gene$SAMPLE_ID, function(x){if (x %in% rse_gene_qc$SAMPLE_ID){'Retained'} else{'Dropped'}}))
 rse_gene$Retention_sample_label <- c(rep(NA, ncol(rse_gene)))
 save(rse_gene, file="processed-data/04_EDA/01_QCA/rse_gene.Rdata")
