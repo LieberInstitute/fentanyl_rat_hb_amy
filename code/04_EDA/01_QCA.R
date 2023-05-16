@@ -442,9 +442,9 @@ for (var1 in RNA_vars){
 rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="Habenula")]
 rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="Amygdala")]
 
-## Drop samples with lower library sizes, detected number of genes, RNA concentration, total RNA amount, concordMapRate,
+## Drop samples with lower library sizes, detected number of genes, RIN numbers, RNA concentration, total RNA amount, concordMapRate,
 ## overallMapRate and totalAssignedGene
-## Drop samples with high mitoRates and RIN numbers
+## Drop samples with high mitoRates
 
 ## Filter all samples together
 
@@ -455,8 +455,8 @@ outliers_RNA_amount <- isOutlier(rse_gene$Total_RNA_amount, nmads = 3, type="low
 outliers_totalAssignedGene <- isOutlier(rse_gene$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene$concordMapRate, nmads = 3, type="lower")
+outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="lower")
 outliers_mito<-isOutlier(rse_gene$mitoRate, nmads = 3, type="higher")
-outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="higher")
 
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                        outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
@@ -477,8 +477,8 @@ outliers_RNA_amount <- isOutlier(rse_gene_habenula$Total_RNA_amount, nmads = 3, 
 outliers_totalAssignedGene <- isOutlier(rse_gene_habenula$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene_habenula$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene_habenula$concordMapRate, nmads = 3, type="lower")
+outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="lower")
 outliers_mito<-isOutlier(rse_gene_habenula$mitoRate, nmads = 3, type="higher")
-outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="higher")
 
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
@@ -499,8 +499,8 @@ outliers_RNA_amount <- isOutlier(rse_gene_amygdala$Total_RNA_amount, nmads = 3, 
 outliers_totalAssignedGene <- isOutlier(rse_gene_amygdala$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene_amygdala$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene_amygdala$concordMapRate, nmads = 3, type="lower")
+outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="lower")
 outliers_mito<-isOutlier(rse_gene_amygdala$mitoRate, nmads = 3, type="higher")
-outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="higher")
 
 not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
                            outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
