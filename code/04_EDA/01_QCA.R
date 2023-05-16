@@ -526,13 +526,6 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     rse_gene<-eval(parse_expr(RSE))
     colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
 
-    if (RSE=='rse_gene'){
-        sample_labels = ''
-    }
-    else{
-       sample_labels = rse_gene$Retention_sample_label
-    }
-
     if (sample_var=="Brain_Region"){
         shapes=c('Amygdala'=3, 'Habenula'=2)
         sample_var_label="Brain Region"
@@ -554,11 +547,11 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         sample_var_label="Number of 6hrs Fentanyl Sessions"
     }
     else if (sample_var=='Batch_RNA_extraction'){
-        shapes=c('1'=1, '2'=4, '3'=6)
+        shapes=c('1'=2, '2'=3, '3'=12)
         sample_var_label="RNA extraction Batch"
     }
     else if (sample_var=="Batch_lib_prep"){
-        shapes=c('1'=1, '2'=4, '3'=6)
+        shapes=c('1'=2, '2'=3, '3'=13)
         sample_var_label="Library preparation Batch"
     }
 
