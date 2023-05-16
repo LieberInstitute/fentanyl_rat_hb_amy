@@ -300,10 +300,64 @@ rse_gene_habenula_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_habenul
                                                                             else if (x %in% rare_hab_samples){'mistyrose3'}
                                                                             else{NA}})
 
-
 ## Create same variables for rse_gene
 rse_gene_filt$outlier_or_rare_samples_labels <- rep(NA, dim(rse_gene_filt)[2])
 rse_gene_filt$outlier_or_rare_samples_colors <- rep(NA, dim(rse_gene_filt)[2])
+
+
+
+
+## 1.3.2 Explore QC metrics of rare samples
+
+#######################
+##  Habenula samples
+#######################
+
+########### Sample "1_F_LHb_01" ###########
+
+## Sample "1_F_LHb_01" has the lowest rate of concordant reads
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$concordMapRate), 'SAMPLE_ID']
+#  "1_F_LHb_01"
+
+########### Sample "3_F_LHb_09" ###########
+
+## Sample "3_F_LHb_09" has the least amount of RNA
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$Total_RNA_amount), 'SAMPLE_ID']
+#  "3_F_LHb_09"
+
+########### Sample "18_S_LHb_20" ###########
+
+## Sample "18_S_LHb_20" has the highest RNA concentration and the largest number of detected genes,
+## also the highest RIN
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RNA_concentration), 'SAMPLE_ID']
+#  "18_S_LHb_20"
+
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
+#   "18_S_LHb_20"
+
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RIN), 'SAMPLE_ID']
+#   "18_S_LHb_20"
+
+
+
+#######################
+##  Amygdala samples
+#######################
+
+rare_amyg_samples <- c("34_S_Amyg_22", "14_S_Amyg_14", "16_S_Amyg_18")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
