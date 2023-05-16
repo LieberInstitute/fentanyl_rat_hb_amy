@@ -105,11 +105,17 @@ QC_boxplots <- function(qc_metric, sample_var){
         jitter_width=0.1
         x_label="Number of 6hrs Fentanyl Sessions"
     }
-    else if (sample_var=='Batch'){
-        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2' , '4'= 'navajowhite2')
+    else if (sample_var=='Batch_RNA_extraction'){
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
         violin_width=0.7
         jitter_width=0.1
-        x_label="Sequencing batch"
+        x_label="RNA extraction Batch"
+    }
+    else if (sample_var=='Batch_lib_prep'){
+        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Library preparation Batch"
     }
 
     y_label=str_replace_all(qc_metric, c("_"=" "))
@@ -547,9 +553,13 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         shapes=c('18'=8, '16'=1)
         sample_var_label="Number of 6hrs Fentanyl Sessions"
     }
-    else if (sample_var=='Batch'){
-        shapes=c('1'=1, '2'=4, '3'=6 , '4'=12)
-        sample_var_label="Sequencing batch"
+    else if (sample_var=='Batch_RNA_extraction'){
+        shapes=c('1'=1, '2'=4, '3'=6)
+        sample_var_label="RNA extraction Batch"
+    }
+    else if (sample_var=="Batch_lib_prep"){
+        shapes=c('1'=1, '2'=4, '3'=6)
+        sample_var_label="Library preparation Batch"
     }
 
     y_label=str_replace_all(qc_metric, c("_"=" "))
