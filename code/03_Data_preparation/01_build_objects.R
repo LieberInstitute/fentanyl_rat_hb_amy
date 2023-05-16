@@ -4,6 +4,7 @@ library(SummarizedExperiment)
 library(readxl)
 library(stringr)
 library(edgeR)
+library(ggplot2)
 library(sessioninfo)
 
 #######################   Data Preparation   #######################
@@ -46,9 +47,18 @@ colnames(sample_data)[9] <- 'Total_RNA_amount'
 sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
 ## Correct Sample_Num for the extra sample
 sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_Num"]="33.0"
+## Numeric data
+sample_data$Sample_Num <- as.numeric(sample_data$Sample_Num)
 
-## Add batch information
-sample_data$Batch <- c(rep('1', 8), '2', '3', rep('2', 3), '3', '2', '3', rep('1', 8), rep('2', 4), '3', rep('2', 3), '4')
+## Add information of batch for RNA extraction
+sample_data$Batch_RNA_extraction <- apply(sample_data, 1, function(x){if(x['Sample_Num'] %in% c(10, 14, 16, 29, 33)){"3"} else if (x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
+## Add information of batch for library preparation
+sample_data$Batch_lib_prep <- apply(sample_data, 1, function(x){if(x['Sample_Num'] %in% c(26, 30, 33)){"3"} else if (x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
+## Add information of batch for sequencing
+sample_data$Batch_seq <- apply(sample_data, 1, function(x){if(x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
 
 ## Verify that samples are the same in sample_data and rse
 setdiff(sample_data$SAMPLE_ID, rse_gene$SAMPLE_ID)

@@ -68,7 +68,7 @@ rse_gene <- rse_gene_QC_vars
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
 
 ## Sample variables of interest
-sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions', 'Batch')
+sample_variables <- c("Brain_Region", "Substance", "Brain_Region_and_Substance", "Num_Fentanyl_Sessions_six_hrs", 'Total_Num_Fentanyl_Sessions', 'Batch_RNA_extraction', 'Batch_lib_prep')
 
 
 ## Function to create boxplots of QC metrics for groups of samples
