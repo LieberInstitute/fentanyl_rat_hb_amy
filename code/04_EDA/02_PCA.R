@@ -135,7 +135,7 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
 
 
 ## All PCA plots
-plot_PCAs<-function(brain_region){
+plot_PCAs<-function(brain_region, filename){
 
     ## PC data
     pca<-PCA(brain_region)
@@ -172,18 +172,26 @@ plot_PCAs<-function(brain_region){
                 i=i+1
             }
             plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], nrow = 2)
+
             ## Save plots
-            ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
-                   width = 42, height = 20, units = "cm")
+            if (is.null(filename)){
+                ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
+                       width = 42, height = 20, units = "cm")
+            }
+            else {
+                ggsave(paste("plots/04_EDA/02_PCA/New_",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
+                       width = 42, height = 20, units = "cm")
+            }
+
         }
     }
 }
 
 
 ## Plots
-plot_PCAs(NULL)
-plot_PCAs('habenula')
-plot_PCAs('amygdala')
+plot_PCAs(NULL, NULL)
+plot_PCAs('habenula', NULL)
+plot_PCAs('amygdala', NULL)
 
 
 
@@ -375,6 +383,20 @@ colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate)
 ########### Sample "16_S_Amyg_18" ###########
 
 ## No special QC information identified
+
+
+
+
+## 1.3.3 Remove rare/outlier samples
+
+amyg_samples_to_remove <- c("34_S_Amyg_22", "14_S_Amyg_14")
+hab_samples_to_remove <- c("5_F_LHb_13")
+rse_gene_amygdala_filt <- rse_gene_amygdala_filt[,-which(rse_gene_amygdala_filt$SAMPLE_ID %in% amyg_samples_to_remove)]
+rse_gene_habenula_filt <- rse_gene_habenula_filt[,-which(rse_gene_habenula_filt$SAMPLE_ID %in% hab_samples_to_remove)]
+
+## New PCA plots
+plot_PCAs('habenula', 'new_plots')
+plot_PCAs('amygdala', 'new_plots')
 
 
 
