@@ -73,59 +73,45 @@ PCA<-function(brain_region){
 
 PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_region) {
 
+    legend_height = 1
+    legend_width = 1
+    legend_text_size = 8
+    legend_title_size = 10
+
     if(sample_var=='Brain_Region'){
         colors=c('Amygdala'='palegreen3', 'Habenula'='orchid1')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
-        margin=1.5
+        margin=1.35
     }
 
     else if(sample_var=='Substance'){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
-        margin=1.5
+        margin=1.4
     }
 
     else if(sample_var=='Brain_Region_and_Substance'){
         colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
-        margin=0.3
+        margin=0.1
     }
 
     else if(sample_var=='Total_Num_Fentanyl_Sessions'){
         colors=c('24'='salmon', '22'='pink2')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
-        margin=0.2
+        margin=0.1
     }
 
     else if(sample_var=='Num_Fentanyl_Sessions_six_hrs'){
         colors=c('18'='dodgerblue', '16'='lightskyblue')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
         margin=0.1
     }
 
-    else if(sample_var=='Batch'){
-        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2' , '4'= 'navajowhite2')
-        legend_height = 1
-        legend_width = 1
-        legend_text_size = 8
-        legend_title_size = 10
-        margin=1.5
+    else if(sample_var=='Batch_RNA_extraction'){
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
+        margin=0.7
     }
+    else if(sample_var=='Batch_lib_prep'){
+        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
+        margin=1.4
+    }
+
 
     plot <- ggplot(data=pca_data,
                 aes(x=eval(parse_expr(PCx)),y=eval(parse_expr(PCy)),
@@ -162,15 +148,16 @@ plot_PCAs<-function(brain_region){
             plots<-list()
             i=1
             for (sample_var in c("Brain_Region", "Substance", "Brain_Region_and_Substance",
-                                 "Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs", "Batch")){
+                                 "Batch_RNA_extraction", "Batch_lib_prep",
+                                 "Num_Fentanyl_Sessions_six_hrs", "Total_Num_Fentanyl_Sessions")){
                 p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region)
                 plots[[i]]=p
                 i=i+1
             }
-            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], nrow = 2)
+            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], nrow = 2)
             ## Save plots
             ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_all_samples.pdf", sep=""),
-                   width = 40, height = 19, units = "cm")
+                   width = 52, height = 19, units = "cm")
         }
     }
     ## For habenula and amygdala separately
@@ -178,15 +165,16 @@ plot_PCAs<-function(brain_region){
         for (PCs in list(c("PC1", "PC2"), c("PC3", "PC4"), c("PC5", "PC6"))){
             plots<-list()
             i=1
-            for (sample_var in c("Substance", "Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs", "Batch")){
+            for (sample_var in c("Substance", "Batch_RNA_extraction", "Batch_lib_prep",
+                                 "Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
                 p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region)
                 plots[[i]]=p
                 i=i+1
             }
-            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], nrow = 2)
+            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], nrow = 2)
             ## Save plots
             ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
-                   width = 28, height = 20, units = "cm")
+                   width = 42, height = 20, units = "cm")
         }
     }
 }
@@ -250,7 +238,6 @@ rse_gene_amygdala_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_amygdal
                                                                     else if (x %in% rare_amyg_samples){'mistyrose3'}
                                                                     else{NA}})
 
-
 #####################
 ## Habenula samples
 #####################
@@ -300,7 +287,7 @@ rse_gene_habenula_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_habenul
                                                                             else if (x %in% rare_hab_samples){'mistyrose3'}
                                                                             else{NA}})
 
-## Create same variables for rse_gene
+## Create same variables for rse_gene_filt
 rse_gene_filt$outlier_or_rare_samples_labels <- rep(NA, dim(rse_gene_filt)[2])
 rse_gene_filt$outlier_or_rare_samples_colors <- rep(NA, dim(rse_gene_filt)[2])
 
@@ -312,6 +299,12 @@ rse_gene_filt$outlier_or_rare_samples_colors <- rep(NA, dim(rse_gene_filt)[2])
 #######################
 ##  Habenula samples
 #######################
+
+########### Sample "5_F_LHb_13" ###########
+
+## Sample "5_F_LHb_13" has the least number of expressed genes
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
+#  "5_F_LHb_13"
 
 ########### Sample "1_F_LHb_01" ###########
 
@@ -327,14 +320,11 @@ colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$Total_RNA_amoun
 
 ########### Sample "18_S_LHb_20" ###########
 
-## Sample "18_S_LHb_20" has the highest RNA concentration and the largest number of detected genes,
-## also the highest RIN
+## Sample "18_S_LHb_20" has the highest RNA concentration and RIN, and the largest number of expressed genes
 colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RNA_concentration), 'SAMPLE_ID']
 #  "18_S_LHb_20"
-
 colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
 #   "18_S_LHb_20"
-
 colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RIN), 'SAMPLE_ID']
 #   "18_S_LHb_20"
 
@@ -344,20 +334,47 @@ colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RIN), 'SAMPLE_I
 ##  Amygdala samples
 #######################
 
-rare_amyg_samples <- c("34_S_Amyg_22", "14_S_Amyg_14", "16_S_Amyg_18")
+########### Sample "34_S_Amyg_22" ###########
 
+## Sample "34_S_Amyg_22" has the biggest library size, the highest proportion of reads assigned to genes and
+## the highest fraction of reads that mapped to the mitochondrial chr
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$library_size), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$totalAssignedGene), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
 
+########### Sample "33_S_Amyg_20" ###########
 
+## Sample "33_S_Amyg_20" has the least number of expressed genes but the highest amount of RNA and the highest
+## fractions of both, concordant reads and reads that mapped to the reference genome
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$detected_num_genes), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$Total_RNA_amount), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
 
+########### Sample "14_S_Amyg_14" ###########
 
+## Sample "14_S_Amyg_14" has the lowest fraction of mitochondrial reads
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
+#  "14_S_Amyg_14
 
+########### Sample "10_S_Amyg_06" ###########
 
+## Sample "10_S_Amyg_06" has the lowest rates for concordant and overall mapping reads
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
+#  "10_S_Amyg_06"
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
+#  "10_S_Amyg_06"
 
+########### Sample "16_S_Amyg_18" ###########
 
-
-
-
-
+## No special QC information identified
 
 
 
