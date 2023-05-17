@@ -11,7 +11,7 @@ library(sessioninfo)
 
 
 
-########################   Dimensionality Reduction   #########################
+########################   Explore sample-level effects   #########################
 
 
 ################################################################################
@@ -42,7 +42,7 @@ save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdal
 ### Explore samples' gene expression variation
 
 
-## 1.1 Generate PCA data
+## 1.1 PCA data obtention
 
 ## Function to obtain PC
 PCA<-function(brain_region){
@@ -67,7 +67,7 @@ PCA<-function(brain_region){
 
 
 
-## 1.2 Generate PCA plots
+## 1.2 PCA visualization
 
 ## PCx vs PCy Plots
 
