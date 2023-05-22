@@ -5,6 +5,7 @@ library(jaffelab)
 library(ggplot2)
 library(ggrepel)
 library(stringr)
+library(smplot2)
 library(cowplot)
 library(rlang)
 library(sessioninfo)
@@ -80,12 +81,17 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
 
     if(sample_var=='Brain_Region'){
         colors=c('Amygdala'='palegreen3', 'Habenula'='orchid1')
-        margin=1.35
+        margin=0.7
     }
 
     else if(sample_var=='Substance'){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
-        margin=1.4
+        if (is.null(brain_region)){
+            margin=0.7
+        }
+        else {
+            margin=0.9
+        }
     }
 
     else if(sample_var=='Brain_Region_and_Substance'){
@@ -105,11 +111,21 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
 
     else if(sample_var=='Batch_RNA_extraction'){
         colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
-        margin=0.7
+        if (is.null(brain_region)){
+            margin=0.7
+        }
+        else {
+            margin=0.9
+        }
     }
     else if(sample_var=='Batch_lib_prep'){
         colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
-        margin=1.4
+        if (is.null(brain_region)){
+            margin=0.7
+        }
+        else {
+            margin=0.9
+        }
     }
 
 
@@ -121,8 +137,9 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
             theme(legend.position="right", plot.margin=unit (c (1,margin,1,margin), 'cm'),
                   legend.text = element_text(size=legend_text_size),
                   legend.title = element_text(size=legend_title_size)) +
-            geom_point(size=2) +
+            geom_point(aes(shape=Batch_RNA_extraction), size=3) +
             scale_color_manual(values = colors) +
+            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=1, '3'=15)) +
             ## Labels of removed samples
             geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=2, max.overlaps = Inf,
                              box.padding = 0.7,
@@ -144,7 +161,7 @@ plot_PCAs<-function(brain_region, filename){
 
     ## Plots for ALL SAMPLES
     if (is.null(brain_region)){
-        for (PCs in list(c("PC1", "PC2"), c("PC3", "PC4"), c("PC5", "PC6"))){
+        for (PCs in list(c("PC1", "PC2"), c("PC1", "PC3"), c("PC2", "PC3"), c("PC3", "PC4"), c("PC5", "PC6"))){
             plots<-list()
             i=1
             for (sample_var in c("Brain_Region", "Substance", "Brain_Region_and_Substance",
@@ -162,7 +179,7 @@ plot_PCAs<-function(brain_region, filename){
     }
     ## For habenula and amygdala separately
     else {
-        for (PCs in list(c("PC1", "PC2"), c("PC3", "PC4"), c("PC5", "PC6"))){
+        for (PCs in list(c("PC1", "PC2"), c("PC1", "PC3"), c("PC2", "PC3"), c("PC3", "PC4"), c("PC5", "PC6"))){
             plots<-list()
             i=1
             for (sample_var in c("Substance", "Batch_RNA_extraction", "Batch_lib_prep",
@@ -243,7 +260,7 @@ rse_gene_amygdala_filt$outlier_or_rare_samples_labels <- sapply(rse_gene_amygdal
 ## Labels' colors
 rse_gene_amygdala_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_amygdala_filt$SAMPLE_ID,
                                                                 function(x){if(x %in% rse_gene_amygdala_filt$Retention_sample_label){'gray30'}
-                                                                    else if (x %in% rare_amyg_samples){'mistyrose3'}
+                                                                    else if (x %in% rare_amyg_samples){'yellow4'}
                                                                     else{NA}})
 
 #####################
@@ -292,7 +309,7 @@ rse_gene_habenula_filt$outlier_or_rare_samples_labels <- sapply(rse_gene_habenul
 ## Labels' colors
 rse_gene_habenula_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_habenula_filt$SAMPLE_ID,
                                                                 function(x){if(x %in% rse_gene_habenula_filt$Retention_sample_label){'gray30'}
-                                                                            else if (x %in% rare_hab_samples){'mistyrose3'}
+                                                                            else if (x %in% rare_hab_samples){'yellow4'}
                                                                             else{NA}})
 
 ## Create same variables for rse_gene_filt
@@ -383,6 +400,162 @@ colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate)
 ########### Sample "16_S_Amyg_18" ###########
 
 ## No special QC information identified
+
+
+
+## 1.3.2.1 Plot QC metrics of rare samples
+
+QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
+
+    data<-as.data.frame(colData(rse_gene_filt))
+    data_brain_region <- as.data.frame(colData(eval(parse_expr(paste('rse_gene', brain_region, 'filt', sep='_')))))
+    ## Add labels and colors for rare/outlier samples from each brain region
+    data$outlier_or_rare_samples_labels <- apply(data, 1, function(x){if(x['SAMPLE_ID'] %in% data_brain_region$SAMPLE_ID)
+                                                                        {data_brain_region[which(data_brain_region$SAMPLE_ID==x['SAMPLE_ID']), 'outlier_or_rare_samples_labels']}
+                                                                     else {NA} })
+    data$outlier_or_rare_samples_colors <- apply(data, 1, function(x){if(x['SAMPLE_ID']==rare_sample_ID){'red'}
+                                                                     else if(x['SAMPLE_ID'] %in% data_brain_region$SAMPLE_ID){'gray55'}
+                                                                     else {NA}})
+
+    if (sample_var=="Brain_Region"){
+        colors=c('Amygdala'='palegreen3', 'Habenula'='orchid1')
+        violin_width=1
+        jitter_width=0.1
+        x_label="Brain Region"
+    }
+    else if (sample_var=="Substance"){
+        colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Substance"
+    }
+    else if (sample_var=="Brain_Region_and_Substance"){
+        colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
+        violin_width=0.7
+        jitter_width=0.09
+        x_label="Brain Region & Substance"
+    }
+    else if (sample_var=='Total_Num_Fentanyl_Sessions'){
+        colors=c('24'='salmon', '22'='pink2')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Total Number of Fentanyl Sessions"
+    }
+    else if (sample_var=='Num_Fentanyl_Sessions_six_hrs'){
+        colors=c('18'='dodgerblue', '16'='lightskyblue')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Number of 6hrs Fentanyl Sessions"
+    }
+    else if (sample_var=='Batch_RNA_extraction'){
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="RNA extraction Batch"
+    }
+    else if (sample_var=='Batch_lib_prep'){
+        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
+        violin_width=0.7
+        jitter_width=0.1
+        x_label="Library preparation Batch"
+    }
+
+    y_label=str_replace_all(qc_metric, c("_"=" "))
+
+    pos <- position_jitter(width = 0.2, seed = 2)
+    plot <- ggplot(data = data, mapping = aes(x = !! rlang::sym(sample_var),
+                                              y = !! rlang::sym(qc_metric),
+                                              color = !! rlang::sym(sample_var),
+                                              label = outlier_or_rare_samples_labels)) +
+        geom_violin(alpha = 0, size = 0.4, color='gray80', width=violin_width)+
+        geom_jitter(alpha = 1, size = 2.4,  position = pos, aes(shape=Batch_RNA_extraction)) +
+        geom_boxplot(alpha = 0, size = 0.4, width=0.08, color='gray80') +
+        sm_hgrid(legends = TRUE) +
+        scale_color_manual(values = colors) +
+        guides(color="none") +
+        ## Shape for RNA extraction batch
+        scale_shape_manual(name='Batch RNA extraction', labels=c("1","2","3"), values=c('1'=8, '2'=1, '3'=15)) +
+        geom_label_repel(color=data$outlier_or_rare_samples_colors, size=2.4, max.overlaps = Inf,
+                         box.padding = 0.7,
+                         position = pos,
+                         min.segment.length = 0) +
+        labs(y= y_label, x = x_label) +
+        theme(axis.title = element_text(size = (9)),
+              axis.text = element_text(size = (8)))
+
+    return(plot)
+}
+
+
+#######################
+##  Habenula samples
+#######################
+
+########### Sample "5_F_LHb_13" ###########
+## Sample "5_F_LHb_13" has the least number of expressed genes
+QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'habenula', "5_F_LHb_13")
+ggsave("plots/04_EDA/02_PCA/5_F_LHb_13_QC_boxplot_habenula.pdf", width = 20, height = 15, units = "cm")
+
+########### Sample "1_F_LHb_01" ###########
+## Sample "1_F_LHb_01" has the lowest rate of concordant reads
+QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'habenula', "1_F_LHb_01")
+ggsave("plots/04_EDA/02_PCA/1_F_LHb_01_QC_boxplot_habenula.pdf", width = 20, height = 15, units = "cm")
+
+########### Sample "3_F_LHb_09" ###########
+
+## Sample "3_F_LHb_09" has the least amount of RNA
+QC_boxplot('Total_RNA_amount', 'Brain_Region_and_Substance', 'habenula', "3_F_LHb_09")
+ggsave("plots/04_EDA/02_PCA/3_F_LHb_09_QC_boxplot_habenula.pdf", width = 20, height = 15, units = "cm")
+
+########### Sample "18_S_LHb_20" ###########
+
+## Sample "18_S_LHb_20" has the highest RNA concentration and RIN, and the largest number of expressed genes
+p1 <- QC_boxplot('RNA_concentration', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
+p2 <- QC_boxplot('RIN', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
+p3 <- QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
+plot_grid(p1, p2, p3, ncol=3)
+ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 60, height = 15, units = "cm")
+
+
+
+#######################
+##  Amygdala samples
+#######################
+
+########### Sample "34_S_Amyg_22" ###########
+
+## Sample "34_S_Amyg_22" has the biggest library size, the highest proportion of reads assigned to genes and
+## the highest fraction of reads that mapped to the mitochondrial chr
+p1 <- QC_boxplot('library_size', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
+p2 <- QC_boxplot('totalAssignedGene', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
+p3 <- QC_boxplot('mitoRate', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
+plot_grid(p1, p2, p3, ncol=3)
+ggsave("plots/04_EDA/02_PCA/34_S_Amyg_22_QC_boxplot_amygdala.pdf", width = 60, height = 15, units = "cm")
+
+########### Sample "33_S_Amyg_20" ###########
+
+## Sample "33_S_Amyg_20" has the least number of expressed genes but the highest amount of RNA and the highest
+## fractions of both, concordant reads and reads that mapped to the reference genome
+p1 <- QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
+p2 <- QC_boxplot('Total_RNA_amount', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
+p3 <- QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
+p4 <- QC_boxplot('overallMapRate', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
+plot_grid(p1, p2, p3, p4, ncol=2)
+ggsave("plots/04_EDA/02_PCA/33_S_Amyg_20_QC_boxplot_amygdala.pdf", width = 40, height = 30, units = "cm")
+
+########### Sample "14_S_Amyg_14" ###########
+
+## Sample "14_S_Amyg_14" has the lowest fraction of mitochondrial reads
+QC_boxplot('mitoRate', 'Brain_Region_and_Substance', 'amygdala', "14_S_Amyg_14")
+ggsave("plots/04_EDA/02_PCA/14_S_Amyg_14_QC_boxplot_amygdala.pdf", width = 20, height = 15, units = "cm")
+
+########### Sample "10_S_Amyg_06" ###########
+
+## Sample "10_S_Amyg_06" has the lowest rates for concordant and overall mapping reads
+p1 <- QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'amygdala', "10_S_Amyg_06")
+p2 <- QC_boxplot('overallMapRate', 'Brain_Region_and_Substance', 'amygdala', "10_S_Amyg_06")
+plot_grid(p1, p2, ncol=2)
+ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 40, height = 15, units = "cm")
 
 
 
