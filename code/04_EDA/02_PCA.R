@@ -139,7 +139,7 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
                   legend.title = element_text(size=legend_title_size)) +
             geom_point(aes(shape=Batch_RNA_extraction), size=3) +
             scale_color_manual(values = colors) +
-            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=1, '3'=15)) +
+            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
             ## Labels of removed samples
             geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=2, max.overlaps = Inf,
                              box.padding = 0.7,
@@ -474,7 +474,7 @@ QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
         scale_color_manual(values = colors) +
         guides(color="none") +
         ## Shape for RNA extraction batch
-        scale_shape_manual(name='Batch RNA extraction', labels=c("1","2","3"), values=c('1'=8, '2'=1, '3'=15)) +
+        scale_shape_manual(name='Batch RNA extraction', labels=c("1","2","3"), values=c('1'=8, '2'=10, '3'=15)) +
         geom_label_repel(color=data$outlier_or_rare_samples_colors, size=2.4, max.overlaps = Inf,
                          box.padding = 0.7,
                          position = pos,
