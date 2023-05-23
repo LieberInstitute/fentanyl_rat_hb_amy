@@ -29,14 +29,12 @@ rse_gene_habenula_filt <- rse_gene_filt[,colData(rse_gene_filt)$Brain_Region=='H
 ## Add info for outlier samples after QC sample filtering of habenula samples
 rse_gene_habenula_filt$Retention_after_QC_filtering <- rse_gene_habenula_complete$Retention_after_QC_filtering
 rse_gene_habenula_filt$Retention_sample_label <- rse_gene_habenula_complete$Retention_sample_label
-save(rse_gene_habenula_filt, file='processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata')
 
 ## Amygdala filtered data
 rse_gene_amygdala_filt <- rse_gene_filt[,colData(rse_gene_filt)$Brain_Region=='Amygdala']
 ## Add info for outlier samples after QC sample filtering of amygdala samples
 rse_gene_amygdala_filt$Retention_after_QC_filtering <- rse_gene_amygdala_complete$Retention_after_QC_filtering
 rse_gene_amygdala_filt$Retention_sample_label <- rse_gene_amygdala_complete$Retention_sample_label
-save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata')
 
 
 
@@ -262,6 +260,8 @@ rse_gene_amygdala_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_amygdal
                                                                 function(x){if(x %in% rse_gene_amygdala_filt$Retention_sample_label){'gray30'}
                                                                     else if (x %in% rare_amyg_samples){'yellow4'}
                                                                     else{NA}})
+save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata')
+
 
 #####################
 ## Habenula samples
@@ -311,6 +311,7 @@ rse_gene_habenula_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_habenul
                                                                 function(x){if(x %in% rse_gene_habenula_filt$Retention_sample_label){'gray30'}
                                                                             else if (x %in% rare_hab_samples){'yellow4'}
                                                                             else{NA}})
+save(rse_gene_habenula_filt, file='processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata')
 
 ## Create same variables for rse_gene_filt
 rse_gene_filt$outlier_or_rare_samples_labels <- rep(NA, dim(rse_gene_filt)[2])
