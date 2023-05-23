@@ -157,7 +157,7 @@ plot_PCAs<-function(brain_region, filename){
     pca_data <- pca[[1]]
     pca_vars_labs<-pca[[2]]
 
-    ## Plots for ALL SAMPLES
+    ## Plots for ALL samples
     if (is.null(brain_region)){
         for (PCs in list(c("PC1", "PC2"), c("PC1", "PC3"), c("PC2", "PC3"), c("PC3", "PC4"), c("PC5", "PC6"))){
             plots<-list()
