@@ -12,12 +12,12 @@ library(sessioninfo)
 
 
 
-########################   Explore sample-level effects   #########################
-
-
 ################################################################################
-##                        1. Principal Component Analysis
+##                        2. Explore sample-level effects
 ################################################################################
+
+#######################   Principal Component Analysis   #######################
+
 ## (Note: genes are filtered and counts normalized in these analyses)
 
 load(here('processed-data/03_Data_preparation/rse_gene_filt.Rdata'), verbose=TRUE)
@@ -43,7 +43,7 @@ save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdal
 ### Explore samples' gene expression variation
 
 
-## 1.1 PCA data obtention
+## 2.1 PCA data obtention
 
 ## Function to obtain PC
 PCA<-function(brain_region){
@@ -68,7 +68,7 @@ PCA<-function(brain_region){
 
 
 
-## 1.2 PCA visualization
+## 2.2 PCA visualization
 
 ## PCx vs PCy Plots
 
@@ -214,9 +214,9 @@ plot_PCAs('amygdala', NULL)
 
 
 
-## 1.3 Manual sample filtering
+## 2.3 Manual sample filtering
 
-## 1.3.1 Identify rare samples in PCA plots
+## 2.3.1 Identify rare samples in PCA plots
 
 #####################
 ##  Amygdala plots
@@ -319,7 +319,7 @@ rse_gene_filt$outlier_or_rare_samples_colors <- rep(NA, dim(rse_gene_filt)[2])
 
 
 
-## 1.3.2 Explore QC metrics of rare samples
+## 2.3.2 Explore QC metrics of rare samples
 
 #######################
 ##  Habenula samples
@@ -403,7 +403,7 @@ colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate)
 
 
 
-## 1.3.2.1 Plot QC metrics of rare samples
+## Plot QC metrics of rare samples
 
 QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
 
@@ -560,16 +560,17 @@ ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 40, h
 
 
 
-## 1.3.3 Remove rare/outlier samples
 
-amyg_samples_to_remove <- c("34_S_Amyg_22", "14_S_Amyg_14")
-hab_samples_to_remove <- c("5_F_LHb_13")
-rse_gene_amygdala_filt <- rse_gene_amygdala_filt[,-which(rse_gene_amygdala_filt$SAMPLE_ID %in% amyg_samples_to_remove)]
-rse_gene_habenula_filt <- rse_gene_habenula_filt[,-which(rse_gene_habenula_filt$SAMPLE_ID %in% hab_samples_to_remove)]
+## 2.3.3 Remove rare/outlier samples
 
-## New PCA plots
-plot_PCAs('habenula', 'new_plots')
-plot_PCAs('amygdala', 'new_plots')
+# amyg_samples_to_remove <- c("34_S_Amyg_22", "14_S_Amyg_14")
+# hab_samples_to_remove <- c("5_F_LHb_13")
+# rse_gene_amygdala_filt <- rse_gene_amygdala_filt[,-which(rse_gene_amygdala_filt$SAMPLE_ID %in% amyg_samples_to_remove)]
+# rse_gene_habenula_filt <- rse_gene_habenula_filt[,-which(rse_gene_habenula_filt$SAMPLE_ID %in% hab_samples_to_remove)]
+#
+# ## New PCA plots
+# plot_PCAs('habenula', 'new_plots')
+# plot_PCAs('amygdala', 'new_plots')
 
 
 
