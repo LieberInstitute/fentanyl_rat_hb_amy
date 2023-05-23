@@ -104,7 +104,7 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
     }
 
     ## Percentage of variance explained by the variable
-    percentage <- signif(exp_vars[gene_id, sample_var], digits=3)
+    percentage <- signif(expl_vars[gene_id, sample_var], digits=3)
 
     ## Boxplots for discrete variables
     if (sample_var=='Substance' | sample_var=='Total_Num_Fentanyl_Sessions' | sample_var=='Batch_RNA_extraction' | sample_var=='Batch_lib_prep') {
@@ -176,5 +176,35 @@ gene_expr_expl_var('habenula', 'Batch_RNA_extraction')
 gene_expr_expl_var('habenula', 'RNA_concentration')
 gene_expr_expl_var('habenula', 'Total_RNA_amount')
 
+gene_expr_expl_var('amygdala', 'Substance')
+gene_expr_expl_var('amygdala', 'library_size')
+gene_expr_expl_var('amygdala', 'totalAssignedGene')
+gene_expr_expl_var('amygdala', 'Batch_RNA_extraction')
+gene_expr_expl_var('amygdala', 'RNA_concentration')
+gene_expr_expl_var('amygdala', 'Total_RNA_amount')
 
 
+
+
+
+
+
+## Reproducibility information
+print('Reproducibility information:')
+Sys.time()
+proc.time()
+options(width = 120)
+session_info()
+
+# setting  value
+# version  R version 4.2.2 (2022-10-31)
+# os       macOS Monterey 12.5.1
+# system   aarch64, darwin20
+# ui       RStudio
+# language (EN)
+# collate  en_US.UTF-8
+# ctype    en_US.UTF-8
+# tz       America/Mexico_City
+# date     2023-05-23
+# rstudio  2022.12.0+353 Elsbeth Geranium (desktop)
+# pandoc   2.19.2 @ /private/var/folders/r6/94s0dsks4m3298b0d1mrp5tw0000gn/T/AppTranslocation/A38DEB34-4EE2-4D7E-B40B-40B091ABE956/d/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
