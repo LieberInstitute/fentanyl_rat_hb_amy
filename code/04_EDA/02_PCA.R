@@ -577,6 +577,103 @@ ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 40, h
 
 
 
+## 2.4 Explore differences within fentanyl and saline samples
+
+## PC boxplots
+PC_boxplot <- function(PC, sample_var, brain_region){
+
+    ## PC data
+    pca<-PCA(brain_region)
+    pca_data <- pca[[1]]
+    pca_vars_labs<-pca[[2]]
+
+    if(sample_var=='Substance'){
+        x_label='Substance'
+    }
+
+    else if(sample_var=='Total_Num_Fentanyl_Sessions'){
+        x_label="Total num of Fentanyl Sessions"
+    }
+
+    else if(sample_var=='Batch_RNA_extraction'){
+        x_label="RNA extraction Batch"
+    }
+
+    else if(sample_var=='Batch_lib_prep'){
+        x_label="Library preparation Batch"
+    }
+
+    pos <- position_jitter(width = 0.2, seed = 2)
+
+    plot <- ggplot(data = pca_data, mapping = aes(x = !! rlang::sym(sample_var),y = !! rlang::sym(PC),
+                                                  color = Substance, label=outlier_or_rare_samples_labels),
+                   label=outlier_or_rare_samples_labels) +
+        geom_boxplot(size = 0.35, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
+        geom_jitter(alpha = 1, size = 2, position = pos) +
+        scale_color_manual(values = c('Fentanyl'='turquoise3', 'Saline'='yellow3')) +
+        labs(y= pca_vars_labs[strtoi(gsub("PC","", PC))], x = x_label, color='Substance') +
+        sm_hgrid(legends = TRUE) +
+        geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=1.9, max.overlaps = Inf,
+                         box.padding = 0.7,
+                         position = pos,
+                         min.segment.length = 0) +
+        theme(axis.title = element_text(size = (8)),
+              axis.text = element_text(size = (7)),
+              legend.text = element_text(size=6),
+              legend.title = element_text(size=7))
+
+    return(plot)
+}
+
+## Multiple plots
+
+multiple_PC_boxplots <- function(brain_region){
+    ## Habenula
+    if (brain_region=='habenula'){
+
+        sample_vars <- c('Substance', 'Total_Num_Fentanyl_Sessions' ,'Batch_RNA_extraction')
+        PCs <- c('PC1', 'PC3', 'PC4')
+
+        i=1
+        plots=list()
+
+        for (PC in PCs){
+            for (sample_var in sample_vars){
+                plots[[i]] <- PC_boxplot(PC, sample_var, 'habenula')
+                i=i+1
+            }
+        }
+        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]], nrow=3)
+        ggsave(here(paste("plots/04_EDA/02_PCA/Boxplots_PCs_", brain_region, ".pdf", sep="")), width = 32, height = 24, units = "cm")
+    }
+
+    ## Amygdala
+    else {
+        sample_vars <- c('Substance', 'Total_Num_Fentanyl_Sessions' ,'Batch_RNA_extraction', 'Batch_lib_prep')
+        PCs <- c('PC1', 'PC2')
+
+        i=1
+        plots=list()
+
+        for (PC in PCs){
+            for (sample_var in sample_vars){
+                plots[[i]] <- PC_boxplot(PC, sample_var, brain_region)
+                i=i+1
+            }
+        }
+        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], nrow=2)
+        ggsave(here(paste("plots/04_EDA/02_PCA/Boxplots_PCs_", brain_region, ".pdf", sep="")), width = 44, height = 16, units = "cm")
+    }
+
+}
+
+multiple_PC_boxplots('habenula')
+multiple_PC_boxplots('amygdala')
+
+
+
+
+
 
 
 ## Reproducibility information
