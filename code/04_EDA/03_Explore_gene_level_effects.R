@@ -109,10 +109,10 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
     ## Boxplots for discrete variables
     if (sample_var=='Substance' | sample_var=='Total_Num_Fentanyl_Sessions' | sample_var=='Batch_RNA_extraction' | sample_var=='Batch_lib_prep') {
         plot <- ggplot(data = as.data.frame(data), mapping = aes(x = !! rlang::sym(sample_var),
-                                                                 y = gene_expr, color = !! rlang::sym(sample_var),
-                                                                 color = !! rlang::sym(sample_var))) +
+                                                                 y = gene_expr, color = !! rlang::sym(sample_var))) +
             geom_boxplot(size = 0.25, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
             geom_jitter( aes(shape=Batch_RNA_extraction), width = 0.15, alpha = 1, size = 1) +
+            stat_smooth (geom="line", alpha=0.6, size=0.4, span=0.3, method = lm, aes(group=1), color='orangered3') +
             scale_color_manual(values = colors) +
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
             theme_bw() +
@@ -136,6 +136,7 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
 
         plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var)), y=gene_expr)) +
             geom_point( aes(shape=Batch_RNA_extraction), color=colors[sample_var], size=2) +
+            stat_smooth (geom="line", alpha=0.4, size=0.4, span=0.25, method = lm, color='orangered3') +
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
             theme_bw() +
             guides(color="none") +
