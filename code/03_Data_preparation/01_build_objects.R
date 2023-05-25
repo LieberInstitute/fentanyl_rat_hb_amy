@@ -3,6 +3,8 @@ library(here)
 library(SummarizedExperiment)
 library(readxl)
 library(stringr)
+library(edgeR)
+library(ggplot2)
 library(sessioninfo)
 
 #######################   Data Preparation   #######################
@@ -45,6 +47,18 @@ colnames(sample_data)[9] <- 'Total_RNA_amount'
 sample_data$SAMPLE_ID <- str_replace_all(sample_data$Tissue_Punch_Label, c(" "="_", "-"="_"))
 ## Correct Sample_Num for the extra sample
 sample_data[which(sample_data$SAMPLE_ID=="33_S_Amyg_20"), "Sample_Num"]="33.0"
+## Numeric data
+sample_data$Sample_Num <- as.numeric(sample_data$Sample_Num)
+
+## Add information of batch for RNA extraction
+sample_data$Batch_RNA_extraction <- apply(sample_data, 1, function(x){if(x['Sample_Num'] %in% c(10, 14, 16, 29, 33)){"3"} else if (x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
+## Add information of batch for library preparation
+sample_data$Batch_lib_prep <- apply(sample_data, 1, function(x){if(x['Sample_Num'] %in% c(26, 30, 33)){"3"} else if (x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
+## Add information of batch for sequencing
+sample_data$Batch_seq <- apply(sample_data, 1, function(x){if(x['Brain_Region']=='habenula'){"1"} else {"2"}})
+
 
 ## Verify that samples are the same in sample_data and rse
 setdiff(sample_data$SAMPLE_ID, rse_gene$SAMPLE_ID)
@@ -64,6 +78,149 @@ colData(rse_jx) <- colData(rse_gene)
 save(rse_gene, file="processed-data/03_Data_preparation/rse_gene_sample_info.Rdata")
 save(rse_exon, file="processed-data/03_Data_preparation/rse_exon_sample_info.Rdata")
 save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_sample_info.Rdata")
+
+
+
+
+
+## 2. Data normalization
+
+## Percentage of zeros in each dataset
+length(which(assay(rse_gene)==0))*100/(dim(rse_gene)[1]*dim(rse_gene)[2])
+# 33.91736
+length(which(assay(rse_exon)==0))*100/(dim(rse_exon)[1]*dim(rse_exon)[2])
+# 21.2531
+length(which(assay(rse_jx)==0))*100/(dim(rse_jx)[1]*dim(rse_jx)[2])
+# 89.52425
+
+## Transform read counts to log2(CPM + 0.5) -> Norm distribution
+## Genes
+assays(rse_gene, withDimnames=FALSE)$logcounts <- edgeR::cpm(calcNormFactors(rse_gene, method = "TMM"), log = TRUE, prior.count = 0.5)
+
+## Exons
+assays(rse_exon, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_exon, method = "TMM"), log = TRUE, prior.count = 0.5)
+
+## Junctions
+## TMMwsp method for >80% of zeros
+assays(rse_jx, withDimnames=FALSE)$logcounts<- edgeR::cpm(calcNormFactors(rse_jx, method = "TMMwsp"), log = TRUE, prior.count = 0.5)
+
+## Transcripts: TODO
+## Scale TPM (Transcripts per million) to log2(TPM + 0.5)
+## assays(rse_tx)$logcounts<-log2(assays(rse_tx)$tpm + 0.5)
+
+
+## Save rse objects with the assays of normalized counts
+save(rse_gene, file="processed-data/03_Data_preparation/rse_gene_logcounts.Rdata")
+save(rse_exon, file="processed-data/03_Data_preparation/rse_exon_logcounts.Rdata")
+save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
+##save(rse_tx, file="processed-data/03_Data_preparation/rse_tx_logcounts.Rdata")
+
+
+
+
+
+## 3. Feature filtering
+
+## Feature filtering based on counts
+
+## Keep genes with at least k CPM in n samples & with a minimum total number of counts across all samples
+## Add design matrix to account for group differences and define n
+rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
+                                           design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
+dim(rse_gene_filt)
+# 16708    33
+## Percentage of genes that were kept
+dim(rse_gene_filt)[1]*100/dim(rse_gene)[1]
+# 54.86668
+
+
+## Filter exons
+rse_exon_filt<-rse_exon[which(filterByExpr(assay(rse_exon),
+                                           design=with(colData(rse_exon), model.matrix(~ Brain_Region + Substance)))),]
+dim(rse_exon_filt)
+# 182291     33
+## Percentage of exons that were kept
+dim(rse_exon_filt)[1]*100/dim(rse_exon)[1]
+#  66.76984
+
+
+## Filter junctions
+rse_jx_filt<-rse_jx[which(filterByExpr(assay(rse_jx),
+                                       design=with(colData(rse_jx), model.matrix(~ Brain_Region + Substance)))),]
+dim(rse_jx_filt)
+# 150593     33
+## Percentage of jxns that were kept
+dim(rse_jx_filt)[1]*100/dim(rse_jx)[1]
+# 4.338896
+
+
+## Filter TPM TODO
+## Identify potential cutoffs
+# seed <- 2
+# expression_cutoff(assays(rse_tx)$tpm, seed = seed, k=2)
+# The suggested expression cutoff is 0.28:
+# percent_features_cut  samples_nonzero_cut
+#                 0.29                 0.27
+# cutoff<-0.28
+## Transcripts that pass cutoff
+# rse_tx_filt<-rse_tx[rowMeans(assays(rse_tx)$tpm) > cutoff,]
+# dim(rse_tx_filt)
+#
+
+
+## Add complete QC and sample filtering info to rse objects with filtered features and lognorm counts
+
+## Load rse object with correct QC info
+load(here('processed-data/04_EDA/01_QCA/rse_gene_complete.Rdata'), verbose=TRUE)
+# Loading objects:
+#     rse_gene
+
+colData(rse_gene_filt) <- colData(rse_gene_complete)
+colData(rse_exon_filt) <- colData(rse_gene_complete)
+colData(rse_jx_filt) <- colData(rse_gene_complete)
+#colData(rse_tx_filt) <- colData(rse_gene)
+
+## Save
+save(rse_gene_filt, file = 'processed-data/03_Data_preparation/rse_gene_filt.Rdata')
+save(rse_exon_filt, file = 'processed-data/03_Data_preparation/rse_exon_filt.Rdata')
+save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
+# save(rse_tx_filt, file = 'processed-data/03_Data_preparation/rse_tx_filt.Rdata')
+
+
+
+
+
+## 4. Visualization
+
+## Plots of the distribution of genes' counts before and after normalization and filtering
+
+## Raw counts
+counts_data <- data.frame(counts=as.vector(assays(rse_gene)$counts))
+ggplot(counts_data, aes(x=counts)) +
+    geom_histogram(colour="black", fill="lightgray") +
+    theme_classic() +
+    labs(x='read counts', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_counts.pdf', height = 3, width = 4)
+
+## Normalized counts
+logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene)$logcounts))
+ggplot(logcounts_data, aes(x=logcounts)) +
+    geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
+    theme_classic() +
+    geom_density(fill="#69b3a2", alpha=0.3) +
+    labs(x='log(CPM+0.5)', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_logcounts.pdf', height = 3, width = 4)
+
+## Normalized counts and filtered genes
+filt_logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene_filt)$logcounts))
+ggplot(filt_logcounts_data, aes(x=logcounts)) +
+    geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
+    theme_classic() +
+    geom_density(fill="#69b3a2", alpha=0.3) +
+    labs(x='log(CPM+0.5)', y='Frecuency')
+ggsave(filename = 'plots/03_Data_preparation/Hist_filt_logcounts.pdf', height = 3, width = 4)
+
+
 
 
 
