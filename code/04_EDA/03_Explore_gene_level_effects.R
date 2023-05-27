@@ -199,6 +199,20 @@ gene_expr_expl_var('amygdala', 'mitoRate')
 
 
 
+
+#######################   3.2 Variance Partition   #######################
+
+
+
+
+
+
+
+
+
+
+
+
 ## Reproducibility information
 print('Reproducibility information:')
 Sys.time()
