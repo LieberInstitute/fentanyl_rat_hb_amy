@@ -184,6 +184,7 @@ gene_expr_expl_var('habenula', 'totalAssignedGene')
 gene_expr_expl_var('habenula', 'Batch_RNA_extraction')
 gene_expr_expl_var('habenula', 'RNA_concentration')
 gene_expr_expl_var('habenula', 'Total_RNA_amount')
+gene_expr_expl_var('habenula', 'mitoRate')
 
 gene_expr_expl_var('amygdala', 'Substance')
 gene_expr_expl_var('amygdala', 'library_size')
@@ -191,7 +192,7 @@ gene_expr_expl_var('amygdala', 'totalAssignedGene')
 gene_expr_expl_var('amygdala', 'Batch_RNA_extraction')
 gene_expr_expl_var('amygdala', 'RNA_concentration')
 gene_expr_expl_var('amygdala', 'Total_RNA_amount')
-
+gene_expr_expl_var('amygdala', 'mitoRate')
 
 
 
