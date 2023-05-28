@@ -241,7 +241,7 @@ plot_CCA<- function(brain_region){
         border_color = "black",
         height = 6,
         width = 6.5,
-        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/CCA_heatmap_", brain_region, ".pdf", sep="")
+        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/CCA_heatmap_", brain_region, ".pdf", sep="")
     )
 }
 
@@ -262,9 +262,11 @@ varPartAnalysis <- function(brain_region){
 
     ## Ignore genes with variance 0
     genes_var_zero<-which(apply(assays(RSE)$logcounts, 1, var)==0)
-    RSE <- RSE[-genes_var_zero, ]
+    if (length(genes_var_zero)>0){
+        RSE <- RSE[-genes_var_zero, ]
+    }
 
-    ## Variables
+    ## Define variables; random effects indicated with (1| )
     if (brain_region=='habenula'){
         formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
                       mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
@@ -282,14 +284,14 @@ varPartAnalysis <- function(brain_region){
     # Sort variables by median fraction of variance explained
     vp <- sortCols(varPart)
     p <- plotVarPart(vp)
-    ggsave(fileName,  p, width = 40, height = 20, units = "cm")
+    ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_", brain_region, ".pdf", sep=""),
+           p, width = 40, height = 20, units = "cm")
 }
 
+## Violin plots
 varPartAnalysis('habenula')
 varPartAnalysis('amygdala')
 
-
-## Violin plots
 
 
 
