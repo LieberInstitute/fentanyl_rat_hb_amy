@@ -9,6 +9,7 @@ library(Hmisc)
 library(lme4)
 library(variancePartition)
 library(reshape2)
+library(pheatmap)
 library(sessioninfo)
 
 
@@ -243,18 +244,21 @@ plot_CCA<- function(brain_region){
         width = 6.5,
         filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/CCA_heatmap_", brain_region, ".pdf", sep="")
     )
+
+    return(C)
 }
 
-plot_CCA('habenula')
-plot_CCA('amygdala')
+CCA_habenula <- plot_CCA('habenula')
+CCA_amygdala <- plot_CCA('amygdala')
 
 
-## Scatterplots for each pair of variables
 
-## Boxplots for discrete variables
+## Scatterplots/boxplots for each pair of variables
+
 corr_plots <- function(brain_region, sample_var1, sample_var2){
 
     rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+    CCA <- eval(parse_expr(paste0('CCA_', brain_region)))
 
     if(sample_var1=='Substance'){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
@@ -278,7 +282,7 @@ corr_plots <- function(brain_region, sample_var1, sample_var2){
 
     data <- colData(rse_gene)
 
-    ## Boxplots
+    ## Boxplots for categorical variable vs continuous variable
     if (sample_var1=='Substance' | sample_var1=='Total_Num_Fentanyl_Sessions' | sample_var1=='Batch_RNA_extraction' | sample_var1=='Batch_lib_prep') {
         plot <- ggplot(data = as.data.frame(data), mapping = aes(x = !! rlang::sym(sample_var1),
                                                                  y = !! rlang::sym(sample_var2),
@@ -290,33 +294,84 @@ corr_plots <- function(brain_region, sample_var1, sample_var2){
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
             theme_bw() +
             guides(color="none") +
-            labs(y = gsub('_', ' ', sample_var2), x = x_label) +
+            labs(subtitle = paste0("Corr: ", signif(CCA[sample_var1, sample_var2], digits=3)), y = gsub('_', ' ', sample_var2), x = x_label) +
             theme(axis.title = element_text(size = (7)),
                   axis.text = element_text(size = (6)),
+                  plot.subtitle = element_text(size = 7, color='gray40'),
                   legend.text = element_text(size=6),
                   legend.title = element_text(size=7))
     }
 
-    ## Scatterplots
+    ## Scatterplots for continuous variable vs continuous variable
     else {
-        colors <- c('mitoRate'='khaki3', 'totalAssignedGene'='plum2', 'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon',
-                    'detected_num_genes'='skyblue2', 'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4',
-                    'RNA_concentration'='blue3')
+        ## Color and shape samples by RNA extraction batch
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
 
-        plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var1)), y=sample_var2)) +
-            geom_point( aes(shape=Batch_RNA_extraction), color=colors[sample_var1], size=2) +
+        plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var1)),
+                                                y=eval(parse_expr(sample_var2)),
+                                                color=Batch_RNA_extraction)) +
+            geom_point( aes(shape=Batch_RNA_extraction), size=2) +
             stat_smooth (geom="line", alpha=0.4, size=0.4, span=0.25, method = lm, color='orangered3') +
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
+            scale_color_manual(name='Batch RNA extraction', values = colors) +
             theme_bw() +
-            guides(color="none") +
-            labs(y= gsub('_', ' ', sample_var2), x = gsub('_', ' ', sample_var1)) +
+            labs(subtitle = paste0("Corr: ", signif(CCA[sample_var1, sample_var2], digits=3)), y= gsub('_', ' ', sample_var2), x = gsub('_', ' ', sample_var1)) +
             theme(plot.margin=unit (c (0.4,0.1,0.4,0.1), 'cm'),
                   axis.title = element_text(size = (7)),
                   axis.text = element_text(size = (6)),
+                  plot.subtitle = element_text(size = 7, color='gray40'),
                   legend.text = element_text(size=6),
                   legend.title = element_text(size=7))
+    }
+
+    return(plot)
 }
 
+## Multiple plots
+multiple_corr_plots <- function(brain_region, sample_vars, name){
+
+    ## Pairs of samples
+    pairs <- list()
+    for (i in 1:length(sample_vars)){
+        pairs[[i]] <- merge(sample_vars[i], sample_vars[-c(1:i)])
+    }
+
+    k=1
+    plots=list()
+    for (i in 1:(length(pairs)-1)){
+        for (j in 1:dim(pairs[[i]])[1]){
+            plots[[k]] = corr_plots(brain_region, pairs[[i]][j, 1], pairs[[i]][j, 2])
+            k=k+1
+        }
+    }
+
+    if (length(sample_vars)>2){
+        width = 45
+        height = 13
+        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
+                  plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]], nrow=2)
+    }
+    else{
+        width = 8.5
+        height = 6
+        plot_grid(plots[[1]])
+    }
+
+    ggsave(here(paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/Corr_", brain_region, "_", name, ".pdf", sep="")),
+           width = width, height = height, units = "cm")
+
+}
+
+
+## Plots of correlated variables identified in the heatmaps
+
+sample_vars <- c('Batch_RNA_extraction', 'library_size', 'totalAssignedGene', 'RNA_concentration', 'Total_RNA_amount')
+multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction')
+
+multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
+
+multiple_corr_plots('amygdala', c('library_size', 'totalAssignedGene'), 'libSize_totalAssig')
+multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
 
 
 
@@ -373,6 +428,7 @@ varPartAnalysis('habenula', formula, '_withoutCorrVars')
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
     mitoRate + overallMapRate + library_size + RIN + detected_num_genes + RNA_concentration + Total_RNA_amount
 varPartAnalysis('amygdala', formula, '_withoutCorrVars')
+
 
 
 
