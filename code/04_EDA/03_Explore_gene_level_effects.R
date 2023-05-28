@@ -6,6 +6,9 @@ library(rlang)
 library(smplot2)
 library(cowplot)
 library(Hmisc)
+library(lme4)
+library(variancePartition)
+library(reshape2)
 library(sessioninfo)
 
 
@@ -19,6 +22,8 @@ load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose 
 
 
 #######################   3.1 Explanatory variables   #######################
+
+## Compute the % of gene expression variance explained by each sample variable
 
 ## Plot density function for % of variance explained
 expl_var<- function(brain_region){
@@ -202,11 +207,89 @@ gene_expr_expl_var('amygdala', 'mitoRate')
 
 #######################   3.2 Variance Partition   #######################
 
+## Fraction of variation attributable to each variable after correcting for all other variables
+
+
+## 3.2.1 Canonical Correlation Analysis (CCA)
+
+## Asses the correlation between each pair of sample variables
+
+## Plot Heatmap of CC
+plot_CCA<- function(brain_region){
+
+    RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    ## Define variables
+    if (brain_region == 'habenula'){
+        formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+    }
+    else {
+        formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+    }
+
+    ## Correlations
+    C=canCorPairs(formula, colData(RSE))
+    ## Heatmap
+    pheatmap(
+        C,
+        color = hcl.colors(50, "YlOrRd", rev = TRUE),
+        fontsize=8,
+        border_color = "black",
+        height = 6,
+        width = 6.5,
+        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/CCA_heatmap_", brain_region, ".pdf", sep="")
+    )
+}
+
+plot_CCA('habenula')
+plot_CCA('amygdala')
 
 
 
 
 
+## 3.2.2 Model fit
+
+## Fit a linear mixed model (LMM) that takes continuous variables as fixed effects and categorical variables as random effects
+
+varPartAnalysis <- function(brain_region){
+
+    RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    ## Ignore genes with variance 0
+    genes_var_zero<-which(apply(assays(RSE)$logcounts, 1, var)==0)
+    RSE <- RSE[-genes_var_zero, ]
+
+    ## Variables
+    if (brain_region=='habenula'){
+        formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
+                      mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                      library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+    }
+    else {
+        formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
+                      mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                      library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+    }
+
+    ## Loop over each gene to fit model and extract variance explained by each variable
+    varPart <- fitExtractVarPartModel(assays(RSE)$logcounts, formula, colData(RSE))
+
+    # Sort variables by median fraction of variance explained
+    vp <- sortCols(varPart)
+    p <- plotVarPart(vp)
+    ggsave(fileName,  p, width = 40, height = 20, units = "cm")
+}
+
+varPartAnalysis('habenula')
+varPartAnalysis('amygdala')
+
+
+## Violin plots
 
 
 
