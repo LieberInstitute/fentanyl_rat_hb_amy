@@ -249,6 +249,76 @@ plot_CCA('habenula')
 plot_CCA('amygdala')
 
 
+## Scatterplots for each pair of variables
+
+## Boxplots for discrete variables
+corr_plots <- function(brain_region, sample_var1, sample_var2){
+
+    rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    if(sample_var1=='Substance'){
+        colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
+        x_label="Substance"
+    }
+
+    else if(sample_var1=='Total_Num_Fentanyl_Sessions'){
+        colors=c('24'='salmon', '22'='pink2')
+        x_label="Total num of Fentanyl Sessions"
+    }
+
+    else if(sample_var1=='Batch_RNA_extraction'){
+        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
+        x_label="RNA extraction Batch"
+    }
+
+    else if(sample_var1=='Batch_lib_prep'){
+        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
+        x_label="Library preparation Batch"
+    }
+
+    data <- colData(rse_gene)
+
+    ## Boxplots
+    if (sample_var1=='Substance' | sample_var1=='Total_Num_Fentanyl_Sessions' | sample_var1=='Batch_RNA_extraction' | sample_var1=='Batch_lib_prep') {
+        plot <- ggplot(data = as.data.frame(data), mapping = aes(x = !! rlang::sym(sample_var1),
+                                                                 y = !! rlang::sym(sample_var2),
+                                                                 color = !! rlang::sym(sample_var1))) +
+            geom_boxplot(size = 0.25, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
+            geom_jitter( aes(shape=Batch_RNA_extraction), width = 0.15, alpha = 1, size = 1) +
+            stat_smooth (geom="line", alpha=0.6, size=0.4, span=0.3, method = lm, aes(group=1), color='orangered3') +
+            scale_color_manual(values = colors) +
+            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
+            theme_bw() +
+            guides(color="none") +
+            labs(y = gsub('_', ' ', sample_var2), x = x_label) +
+            theme(axis.title = element_text(size = (7)),
+                  axis.text = element_text(size = (6)),
+                  legend.text = element_text(size=6),
+                  legend.title = element_text(size=7))
+    }
+
+    ## Scatterplots
+    else {
+        colors <- c('mitoRate'='khaki3', 'totalAssignedGene'='plum2', 'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon',
+                    'detected_num_genes'='skyblue2', 'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4',
+                    'RNA_concentration'='blue3')
+
+        plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var1)), y=sample_var2)) +
+            geom_point( aes(shape=Batch_RNA_extraction), color=colors[sample_var1], size=2) +
+            stat_smooth (geom="line", alpha=0.4, size=0.4, span=0.25, method = lm, color='orangered3') +
+            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
+            theme_bw() +
+            guides(color="none") +
+            labs(y= gsub('_', ' ', sample_var2), x = gsub('_', ' ', sample_var1)) +
+            theme(plot.margin=unit (c (0.4,0.1,0.4,0.1), 'cm'),
+                  axis.title = element_text(size = (7)),
+                  axis.text = element_text(size = (6)),
+                  legend.text = element_text(size=6),
+                  legend.title = element_text(size=7))
+}
+
+
+
 
 
 
@@ -256,7 +326,7 @@ plot_CCA('amygdala')
 
 ## Fit a linear mixed model (LMM) that takes continuous variables as fixed effects and categorical variables as random effects
 
-varPartAnalysis <- function(brain_region){
+varPartAnalysis <- function(brain_region, formula, name){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
 
@@ -266,32 +336,43 @@ varPartAnalysis <- function(brain_region){
         RSE <- RSE[-genes_var_zero, ]
     }
 
-    ## Define variables; random effects indicated with (1| )
-    if (brain_region=='habenula'){
-        formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
-                      mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                      library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
-    }
-    else {
-        formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
-                      mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                      library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
-    }
-
     ## Loop over each gene to fit model and extract variance explained by each variable
     varPart <- fitExtractVarPartModel(assays(RSE)$logcounts, formula, colData(RSE))
 
     # Sort variables by median fraction of variance explained
     vp <- sortCols(varPart)
     p <- plotVarPart(vp)
-    ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_", brain_region, ".pdf", sep=""),
+    ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_", brain_region, name, ".pdf", sep=""),
            p, width = 40, height = 20, units = "cm")
 }
 
 ## Violin plots
-varPartAnalysis('habenula')
-varPartAnalysis('amygdala')
 
+## Habenula plots
+## Define variables; random effects indicated with (1| )
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
+                mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+varPartAnalysis('habenula', formula, '')
+
+## AMygdala plots
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
+                mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+varPartAnalysis('amygdala', formula, '')
+
+
+## Plots without correlated variables
+
+## Habenula plots without concordMapRate, library_size, totalAssignedGene, RNA_concentration and Total_RNA_amount
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
+    mitoRate + overallMapRate + RIN + detected_num_genes
+varPartAnalysis('habenula', formula, '_withoutCorrVars')
+
+## Amygdala plots without concordMapRate and totalAssignedGene
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
+    mitoRate + overallMapRate + library_size + RIN + detected_num_genes + RNA_concentration + Total_RNA_amount
+varPartAnalysis('amygdala', formula, '_withoutCorrVars')
 
 
 
