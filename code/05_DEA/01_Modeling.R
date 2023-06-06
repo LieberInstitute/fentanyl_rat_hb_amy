@@ -185,7 +185,7 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
         geom_point(shape =21) +
         geom_hline(yintercept = -log10(FDR),
                    linetype = "dashed") +
-        geom_vline(xintercept = c(-1,1),
+        geom_vline(xintercept = c(-2,2),
                    linetype = "dashed") +
         geom_label_repel(fill="white", size=2, max.overlaps = Inf,
                          box.padding = 0.2,
