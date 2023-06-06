@@ -83,6 +83,7 @@ formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mit
 name<-"all_variables"
 coef<-"SubstanceSaline"
 results_all_vars_habenula<-DEA('habenula', formula, name, coef)
+save(results_all_vars_habenula, file = 'processed-data/05_DEA/results_all_vars_habenula.Rdata')
 ## Number of DEG (FDR<0.10)
 length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.10))
 #  203
@@ -92,6 +93,7 @@ formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mit
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
 results_uncorr_vars_habenula<-DEA('habenula', formula, name, coef)
+save(results_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_uncorr_vars_habenula.Rdata')
 length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.10))
 #  0
 
@@ -104,6 +106,7 @@ formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentan
 name<-"all_variables"
 coef<-"SubstanceSaline"
 results_all_vars_amygdala<-DEA('amygdala', formula, name, coef)
+save(results_all_vars_amygdala, file = 'processed-data/05_DEA/results_all_vars_amygdala.Rdata')
 ## Number of DEG (FDR<0.10)
 length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
@@ -113,6 +116,7 @@ formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentan
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
 results_uncorr_vars_amygdala<-DEA('amygdala', formula, name, coef)
+save(results_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata')
 length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
