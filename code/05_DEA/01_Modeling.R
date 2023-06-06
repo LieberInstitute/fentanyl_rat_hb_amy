@@ -7,6 +7,7 @@ library(rlang)
 library(ggplot2)
 library(cowplot)
 library(ggrepel)
+library(sessioninfo)
 
 
 ########################   Differential Expression Analysis   #########################
@@ -202,4 +203,25 @@ plots_DEGs(top_genes = results_all_vars_habenula[[1]], vGene = results_all_vars_
 
 
 
+
+
+
+
+## Reproducibility information
+
+options(width = 120)
+session_info()
+
+# setting  value
+# version  R version 4.3.0 (2023-04-21)
+# os       macOS Monterey 12.5.1
+# system   aarch64, darwin20
+# ui       RStudio
+# language (EN)
+# collate  en_US.UTF-8
+# ctype    en_US.UTF-8
+# tz       America/Tijuana
+# date     2023-06-05
+# rstudio  2023.03.1+446 Cherry Blossom (desktop)
+# pandoc   NA
 
