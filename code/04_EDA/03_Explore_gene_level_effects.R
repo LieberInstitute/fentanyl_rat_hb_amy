@@ -410,7 +410,7 @@ formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_S
                 library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
 varPartAnalysis('habenula', formula, '')
 
-## AMygdala plots
+## Amygdala plots
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
                 mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
                 library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
