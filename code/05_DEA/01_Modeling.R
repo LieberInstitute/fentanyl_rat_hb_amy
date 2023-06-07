@@ -7,6 +7,7 @@ library(rlang)
 library(ggplot2)
 library(cowplot)
 library(ggrepel)
+library(smplot2)
 library(sessioninfo)
 
 
@@ -168,6 +169,7 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    fill = DE,
                    size = DE,
                    alpha = DE)) +
+        sm_hgrid(legends = TRUE) +
         geom_point(shape = 21) +
         scale_fill_manual(values = cols) +
         scale_size_manual(values = sizes) +
@@ -182,6 +184,7 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    size = DE,
                    alpha = DE,
                    label= DEG_symbol)) +
+        sm_hgrid(legends = TRUE) +
         geom_point(shape =21) +
         geom_hline(yintercept = -log10(FDR),
                    linetype = "dashed") +
