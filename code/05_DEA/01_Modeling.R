@@ -86,17 +86,17 @@ coef<-"SubstanceSaline"
 results_all_vars_habenula<-DEA('habenula', formula, name, coef)
 save(results_all_vars_habenula, file = 'processed-data/05_DEA/results_all_vars_habenula.Rdata')
 ## Number of DEG (FDR<0.10)
-length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.10))
-#  203
+length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
+#  0
 
 ## Model with uncorrelated variables only
-formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mitoRate + overallMapRate + detected_num_genes + RIN
+formula <-  ~ Substance + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
 results_uncorr_vars_habenula<-DEA('habenula', formula, name, coef)
 save(results_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_uncorr_vars_habenula.Rdata')
-length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.10))
-#  0
+length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
+#  88
 
 
 
@@ -113,13 +113,13 @@ length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
 ## Model with uncorrelated variables only
-formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions + mitoRate + overallMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount + RNA_concentration
+formula<- ~ ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
 results_uncorr_vars_amygdala<-DEA('amygdala', formula, name, coef)
 save(results_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata')
-length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.10))
-#  0
+length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
+#  2728
 
 
 
@@ -127,6 +127,15 @@ length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.10))
 
 ## Plots for DEGs
 plots_DEGs<-function(top_genes, vGene, FDR, name) {
+
+    ## |logFC| for gene labels in volcanoPlot
+    if (length(which(top_genes$adj.P.Val<0.05))<100){
+        logFC_abs = 1
+    }
+    else{
+        logFC_abs = 1.5
+    }
+
 
     ## n.s./Down/Upregulated genes
     DE<-vector()
@@ -145,10 +154,10 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
     }
     top_genes$DE<- DE
 
-    ## Gene symbols for DEG with |logFC|>1
+    ## Gene symbols for DEGs with |logFC|>logFC_abs
     DEG_symbol<-vector()
     for (i in 1:dim(top_genes)[1]) {
-        if (top_genes$DE[i]!="n.s." & abs(top_genes$logFC[i])>2) {
+        if (top_genes$DE[i]!="n.s." & abs(top_genes$logFC[i])>logFC_abs) {
             DEG_symbol<-append(DEG_symbol, top_genes$Symbol[i])
         }
         else {
@@ -170,6 +179,7 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    size = DE,
                    alpha = DE)) +
         sm_hgrid(legends = TRUE) +
+        theme(plot.margin = unit(c(1,1,1,1), "cm")) +
         geom_point(shape = 21) +
         scale_fill_manual(values = cols) +
         scale_size_manual(values = sizes) +
@@ -186,9 +196,10 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    label= DEG_symbol)) +
         sm_hgrid(legends = TRUE) +
         geom_point(shape =21) +
+        theme(plot.margin = unit(c(1,1,1,1), "cm")) +
         geom_hline(yintercept = -log10(FDR),
                    linetype = "dashed") +
-        geom_vline(xintercept = c(-2,2),
+        geom_vline(xintercept = c(-logFC_abs,logFC_abs),
                    linetype = "dashed") +
         geom_label_repel(fill="white", size=2, max.overlaps = Inf,
                          box.padding = 0.2,
@@ -204,10 +215,13 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
 }
 
 
-## Plots for habenula DEGs from the model with all variables
-plots_DEGs(top_genes = results_all_vars_habenula[[1]], vGene = results_all_vars_habenula[[2]], FDR = 0.1,
-            name='habenula_all_variables')
+## Plots for habenula DEGs from the model without correlated variables
+plots_DEGs(top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
+           name='habenula_uncorr_variables')
 
+## Plots for amygdala DEGs from the model without correlated variables
+plots_DEGs(top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
+           name='amygdala_uncorr_variables')
 
 
 
