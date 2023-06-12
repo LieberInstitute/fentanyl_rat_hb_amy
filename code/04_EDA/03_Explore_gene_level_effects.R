@@ -436,8 +436,9 @@ varPartAnalysis('habenula', formula, '_withoutCorrVars')
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) +
              + overallMapRate + totalAssignedGene + RIN + mitoRate
 varPartAnalysis('amygdala', formula, '_withoutCorrVars')
-
-
+## Amygdala plot without totalAssignedGene as well
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + overallMapRate + RIN + mitoRate
+varPartAnalysis('amygdala', formula, '_withoutTotalAssignedGene')
 
 
 
