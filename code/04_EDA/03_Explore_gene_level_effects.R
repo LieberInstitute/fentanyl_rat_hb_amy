@@ -347,9 +347,10 @@ multiple_corr_plots <- function(brain_region, sample_vars, name){
 
     if (length(sample_vars)>2){
         width = 45
-        height = 13
+        height = 20
         plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
-                  plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]], nrow=2)
+                  plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]],
+                  plots[[11]], plots[[12]], plots[[13]], plots[[14]], plots[[15]], nrow=3)
     }
     else{
         width = 8.5
@@ -365,10 +366,12 @@ multiple_corr_plots <- function(brain_region, sample_vars, name){
 
 ## Plots of correlated variables identified in the heatmaps
 
-sample_vars <- c('Batch_RNA_extraction', 'library_size', 'totalAssignedGene', 'RNA_concentration', 'Total_RNA_amount')
+sample_vars <- c('Batch_RNA_extraction', 'library_size', 'totalAssignedGene', 'RNA_concentration', 'Total_RNA_amount', 'mitoRate')
 multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction')
 
 multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
+multiple_corr_plots('habenula', c('Substance', 'detected_num_genes'), 'Substance_detectedNumGenes')
+multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_detectedNumGenes')
 
 multiple_corr_plots('amygdala', c('library_size', 'totalAssignedGene'), 'libSize_totalAssig')
 multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
