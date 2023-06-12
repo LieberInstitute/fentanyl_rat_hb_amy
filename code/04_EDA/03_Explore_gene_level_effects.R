@@ -372,11 +372,16 @@ multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction')
 multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
 multiple_corr_plots('habenula', c('Substance', 'detected_num_genes'), 'Substance_detectedNumGenes')
 multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_detectedNumGenes')
+multiple_corr_plots('habenula', c('Substance', 'mitoRate'), 'Substance_mitoRate')
 
 multiple_corr_plots('amygdala', c('library_size', 'totalAssignedGene'), 'libSize_totalAssig')
 multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
-
-
+multiple_corr_plots('amygdala', c('Substance', 'library_size'), 'Substance_librarySize')
+multiple_corr_plots('amygdala', c('Substance', 'totalAssignedGene'), 'Substance_totalAssignedGene')
+multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'Total_RNA_amount'), 'TotalRNAamount_BatchRNAextraction')
+multiple_corr_plots('amygdala', c('Batch_lib_prep', 'Total_RNA_amount'), 'TotalRNAamount_BatchlibPrep')
+multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'mitoRate'), 'mitoRate_BatchRNAextraction')
+multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'RNA_concentration'), 'TotalNumFenSessions_RNAconcentration')
 
 
 
@@ -422,14 +427,14 @@ varPartAnalysis('amygdala', formula, '')
 
 ## Plots without correlated variables
 
-## Habenula plots without concordMapRate, library_size, totalAssignedGene, RNA_concentration and Total_RNA_amount
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
-    mitoRate + overallMapRate + RIN + detected_num_genes
+## Habenula plots without detected_num_genes, concordMapRate, library_size, totalAssignedGene, RNA_concentration and Total_RNA_amount; remove Total_Num_Fentanyl_Sessions since it doesn't contribute
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + overallMapRate + RIN + mitoRate
 varPartAnalysis('habenula', formula, '_withoutCorrVars')
 
-## Amygdala plots without concordMapRate and totalAssignedGene
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
-    mitoRate + overallMapRate + library_size + RIN + detected_num_genes + RNA_concentration + Total_RNA_amount
+## Amygdala plots without library_size, Total_RNA_amount, RNA_concentration, mitoRate, concordMapRate, detected_num_genes
+## and Total_Num_Fentanyl_Sessions
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) +
+             + overallMapRate + totalAssignedGene + RIN + mitoRate
 varPartAnalysis('amygdala', formula, '_withoutCorrVars')
 
 
