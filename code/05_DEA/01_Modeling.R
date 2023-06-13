@@ -8,6 +8,9 @@ library(ggplot2)
 library(cowplot)
 library(ggrepel)
 library(smplot2)
+library(httr)
+library(jsonlite)
+library(xml2)
 library(sessioninfo)
 
 
@@ -218,10 +221,87 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
 ## Plots for habenula DEGs from the model without correlated variables
 plots_DEGs(top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
            name='habenula_uncorr_variables')
+## Extract DEGs
+de_genes_habenula <- results_uncorr_vars_habenula[[1]][which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
+
 
 ## Plots for amygdala DEGs from the model without correlated variables
 plots_DEGs(top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
            name='amygdala_uncorr_variables')
+de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
+
+
+
+
+
+## Add Ensembl info of DEGs
+
+add_phenotypes <- function(brain_region){
+
+    de_genes <- eval(parse_expr(paste0('de_genes_', brain_region)))
+
+    de_genes$associated_phenotypes <- NA
+
+    for (i in 1:dim(de_genes)[1]){
+
+        ## URL for the gene
+        server <- "https://rest.ensembl.org"
+        ext1 <- paste0("/phenotype/gene/Rattus_norvegicus/", de_genes$ensemblID[i], "?include_associated=1")
+        r1 <- GET(paste(server, ext1, sep = ""), content_type("application/json"))
+
+        ## Search and save associated phenotypes associated with variants reporting this gene
+        associated_phenotypes <- unlist(fromJSON(toJSON(content(r1)))$description)
+        de_genes$associated_phenotypes[i] <- paste(as.list(associated_phenotypes), collapse = '; ')
+    }
+
+    return(de_genes)
+}
+
+add_description <- function(brain_region){
+
+    de_genes <- eval(parse_expr(paste0('de_genes_', brain_region)))
+
+    de_genes$gene_description <- NA
+
+    for (i in 1:dim(de_genes)[1]){
+
+        ## URL for the gene
+        server <- "https://rest.ensembl.org"
+        ext2 <- paste0("/lookup/id/", de_genes$ensemblID[i], "?expand=1;content-type=application/json")
+
+        r2 <- GET(paste(server, ext2, sep = ""), content_type("application/json"))
+
+        ## Search and save gene description
+        description <- fromJSON(toJSON(content(r2)))$description
+        if (length(description)==0){
+            de_genes$gene_description[i] <- NA
+        }
+        else{
+            de_genes$gene_description[i] <- description
+        }
+
+    }
+
+    return(de_genes)
+}
+
+## Habenula
+## Add associated phenotypes
+de_genes_habenula <- add_phenotypes('habenula')
+## Add descriptions
+de_genes_habenula <- add_description('habenula')
+## Save
+de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
+save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_habenula.Rdata')
+write.csv(de_genes_habenula, "generated_data/de_genes_habenula.csv")
+
+## Amygdala
+de_genes_amygdala <- add_phenotypes('amygdala')
+de_genes_amygdala <- add_description('amygdala')
+de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
+save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_amygdala.Rdata')
+write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
+
 
 
 
