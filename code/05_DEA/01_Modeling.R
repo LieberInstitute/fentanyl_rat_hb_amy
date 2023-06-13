@@ -292,6 +292,8 @@ de_genes_habenula <- add_phenotypes('habenula')
 de_genes_habenula <- add_description('habenula')
 ## Save
 de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
+## Order first by increasing FDR and secondly by decreasing |logFC|
+de_genes_habenula <- de_genes_habenula[order(de_genes_habenula$adj.P.Val, -abs(de_genes_habenula$logFC)),]
 save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_habenula.Rdata')
 write.csv(de_genes_habenula, "generated_data/de_genes_habenula.csv")
 
@@ -299,6 +301,7 @@ write.csv(de_genes_habenula, "generated_data/de_genes_habenula.csv")
 de_genes_amygdala <- add_phenotypes('amygdala')
 de_genes_amygdala <- add_description('amygdala')
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
+de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_amygdala.Rdata')
 write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
 
