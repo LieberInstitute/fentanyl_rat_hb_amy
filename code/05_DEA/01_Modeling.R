@@ -129,7 +129,7 @@ length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 
 
 ## Plots for DEGs
-plots_DEGs<-function(top_genes, vGene, FDR, name) {
+plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
     ## n.s./Down/Upregulated genes
     DE<-vector()
@@ -149,8 +149,8 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
     top_genes$DE<- DE
 
     ## Gene symbols for specific DEGs
-    if(top_genes == results_uncorr_vars_habenula[[1]]){
-        DEGs <- c()
+    if(brain_region=='habenula'){
+        DEGs <- c('')
     }
     else{
         DEGs <- c('Cck', 'Inka2')
@@ -172,11 +172,16 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    size = DE,
                    alpha = DE)) +
         sm_hgrid(legends = TRUE) +
-        theme(plot.margin = unit(c(1,1,1,1), "cm")) +
+        theme(plot.margin = unit(c(1,1,1,1), "cm"),
+              legend.position = c(0.82, 0.15),
+              legend.background = element_rect(fill=NA),
+              legend.key.height = unit(0.15,"cm"),
+              axis.title = element_text(size = (10)),
+              legend.text = element_text(size=10, face = "bold")) +
         geom_point(shape = 21) +
-        scale_fill_manual(values = cols) +
-        scale_size_manual(values = sizes) +
-        scale_alpha_manual(values = alphas) +
+        scale_fill_manual(values = cols, name=NULL) +
+        scale_size_manual(values = sizes, name=NULL) +
+        scale_alpha_manual(values = alphas, name=NULL) +
         labs(x="Mean of normalized counts")
 
 
@@ -190,12 +195,11 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
         sm_hgrid(legends = TRUE) +
         geom_point(shape =21) +
         theme(plot.margin = unit(c(1,1,1,1), "cm"),
-              legend.position = c(0.15, 0.17),
+              legend.position = c(0.13, 0.15),
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10, face = "bold"),
-              legend.title = element_text(size=10.5, face = "bold")) +
+              legend.text = element_text(size=10, face = "bold")) +
         geom_hline(yintercept = -log10(FDR),
                    linetype = "dashed", color = 'gray65', linewidth=0.5) +
         geom_vline(xintercept = c(-1,1),
@@ -207,28 +211,28 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                          box.padding = 0.5,
                          show.legend=FALSE) +
         labs(y="-log10(FDR)")+
-        scale_fill_manual(values = cols) +
-        scale_size_manual(values = sizes) +
-        scale_alpha_manual(values = alphas) +
-        ## Caption
-        annotate("text", x=1.65, y=0.1, label= paste0(length(which(top_genes$adj.P.Val<0.05)), ' DEGs'),
-                 color='gray60', size=3, fontface = 'bold')
+        scale_fill_manual(values = cols, name=NULL) +
+        scale_size_manual(values = sizes, name=NULL) +
+        scale_alpha_manual(values = alphas, name=NULL) +
+        ## Caption: number of DEGs
+        annotate("text", x=max(top_genes$logFC)-0.45, y=0.1, label= paste0(length(which(top_genes$adj.P.Val<0.05)), ' DEGs'),
+                 color='gray60', size=2.8, fontface = 'bold')
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", name, ".pdf", sep=""),
-           width = 35, height = 15, units = "cm")
+           width = 22, height = 11, units = "cm")
 }
 
 
 ## Plots for habenula DEGs from the model without correlated variables
-plots_DEGs(top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
+plots_DEGs('habenula', top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
            name='habenula_uncorr_variables')
 ## Extract DEGs
 de_genes_habenula <- results_uncorr_vars_habenula[[1]][which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
 
 
 ## Plots for amygdala DEGs from the model without correlated variables
-plots_DEGs(top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
+plots_DEGs('amygdala', top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
            name='amygdala_uncorr_variables')
 de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
 
