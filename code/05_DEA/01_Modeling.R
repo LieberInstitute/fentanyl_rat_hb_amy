@@ -240,9 +240,7 @@ de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars
 
 ## Add Ensembl info of DEGs
 
-add_phenotypes <- function(brain_region){
-
-    de_genes <- eval(parse_expr(paste0('de_genes_', brain_region)))
+add_phenotypes <- function(de_genes){
 
     de_genes$associated_phenotypes <- NA
 
@@ -261,9 +259,7 @@ add_phenotypes <- function(brain_region){
     return(de_genes)
 }
 
-add_description <- function(brain_region){
-
-    de_genes <- eval(parse_expr(paste0('de_genes_', brain_region)))
+add_description <- function(de_genes){
 
     de_genes$gene_description <- NA
 
@@ -291,9 +287,9 @@ add_description <- function(brain_region){
 
 ## Habenula
 ## Add associated phenotypes
-de_genes_habenula <- add_phenotypes('habenula')
+de_genes_habenula <- add_phenotypes(de_genes_habenula)
 ## Add descriptions
-de_genes_habenula <- add_description('habenula')
+de_genes_habenula <- add_description(de_genes_habenula)
 ## Save
 de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
 ## Order first by increasing FDR and secondly by decreasing |logFC|
@@ -302,8 +298,8 @@ save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_habenula.Rdata')
 write.csv(de_genes_habenula, "generated_data/de_genes_habenula.csv")
 
 ## Amygdala
-de_genes_amygdala <- add_phenotypes('amygdala')
-de_genes_amygdala <- add_description('amygdala')
+de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
+de_genes_amygdala <- add_description(de_genes_amygdala)
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_amygdala.Rdata')
@@ -340,10 +336,18 @@ results_intake_slope_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, 
 ## DEGs (FDR<0.05)
 de_genes_intake_slope_habenula <- results_intake_slope_habenula[[1]][which(results_intake_slope_habenula[[1]]$adj.P.Val<0.05), ]
 save(results_intake_slope_habenula, file = 'processed-data/05_DEA/results_intake_slope_habenula.Rdata')
-save(de_genes_intake_slope_habenula, file = 'processed-data/05_DEA/de_genes_intake_slope_habenula.Rdata')
 ## Number of DEGs
 dim(de_genes_intake_slope_habenula)[1]
 ##  65
+
+## Add associated phenotypes and descriptions of DEGs
+de_genes_intake_slope_habenula <- add_phenotypes(de_genes_intake_slope_habenula)
+de_genes_intake_slope_habenula <- add_description(de_genes_intake_slope_habenula)
+de_genes_intake_slope_habenula$EntrezID <- as.character(de_genes_intake_slope_habenula$EntrezID)
+## Order by FDR and |logFC|
+de_genes_intake_slope_habenula <- de_genes_intake_slope_habenula[order(de_genes_intake_slope_habenula$adj.P.Val, -abs(de_genes_intake_slope_habenula$logFC)),]
+save(de_genes_intake_slope_habenula, file = 'processed-data/05_DEA/de_genes_intake_slope_habenula.Rdata')
+write.csv(de_genes_intake_slope_habenula, "generated_data/de_genes_intake_slope_habenula.csv")
 
 
 
@@ -370,10 +374,18 @@ results_intake_slope_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, 
 ## DEGs (FDR<0.05)
 de_genes_intake_slope_amygdala <- results_intake_slope_amygdala[[1]][which(results_intake_slope_amygdala[[1]]$adj.P.Val<0.05), ]
 save(results_intake_slope_amygdala, file = 'processed-data/05_DEA/results_intake_slope_amygdala.Rdata')
-save(de_genes_intake_slope_amygdala, file = 'processed-data/05_DEA/de_genes_intake_slope_amygdala.Rdata')
 ## Number of DEGs
 dim(de_genes_intake_slope_amygdala)[1]
 ##  2
+
+## Add associated phenotypes and descriptions of DEGs
+de_genes_intake_slope_amygdala <- add_phenotypes(de_genes_intake_slope_amygdala)
+de_genes_intake_slope_amygdala <- add_description(de_genes_intake_slope_amygdala)
+de_genes_intake_slope_amygdala$EntrezID <- as.character(de_genes_intake_slope_amygdala$EntrezID)
+## Order by FDR and |logFC|
+de_genes_intake_slope_amygdala <- de_genes_intake_slope_amygdala[order(de_genes_intake_slope_amygdala$adj.P.Val, -abs(de_genes_intake_slope_amygdala$logFC)),]
+save(de_genes_intake_slope_amygdala, file = 'processed-data/05_DEA/de_genes_intake_slope_amygdala.Rdata')
+write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_amygdala.csv")
 
 
 
