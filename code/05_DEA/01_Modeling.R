@@ -131,15 +131,6 @@ length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 ## Plots for DEGs
 plots_DEGs<-function(top_genes, vGene, FDR, name) {
 
-    ## |logFC| for gene labels in volcanoPlot
-    if (length(which(top_genes$adj.P.Val<0.05))<100){
-        logFC_abs = 1
-    }
-    else{
-        logFC_abs = 1.5
-    }
-
-
     ## n.s./Down/Upregulated genes
     DE<-vector()
     for (i in 1:dim(top_genes)[1]) {
@@ -157,21 +148,20 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
     }
     top_genes$DE<- DE
 
-    ## Gene symbols for DEGs with |logFC|>logFC_abs
-    DEG_symbol<-vector()
-    for (i in 1:dim(top_genes)[1]) {
-        if (top_genes$DE[i]!="n.s." & abs(top_genes$logFC[i])>logFC_abs) {
-            DEG_symbol<-append(DEG_symbol, top_genes$Symbol[i])
-        }
-        else {
-            DEG_symbol<-append(DEG_symbol, NA)
-        }
+    ## Gene symbols for specific DEGs
+    if(top_genes == results_uncorr_vars_habenula[[1]]){
+        DEGs <- c()
     }
-    top_genes$DEG_symbol<- DEG_symbol
+    else{
+        DEGs <- c('Cck', 'Inka2')
+    }
+
+    top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
+
 
     ## Plots
     cols <- c("Up" = "red3", "Down" = "steelblue2", "n.s." = "grey")
-    sizes <- c("Up" = 2, "Down" = 2, "n.s." = 1)
+    sizes <- c("Up" = 2.3, "Down" = 2.3, "n.s." = 1)
     alphas <- c("Up" = 1, "Down" = 1, "n.s." = 0.5)
 
     ## MA plot for DE genes
@@ -199,18 +189,30 @@ plots_DEGs<-function(top_genes, vGene, FDR, name) {
                    label= DEG_symbol)) +
         sm_hgrid(legends = TRUE) +
         geom_point(shape =21) +
-        theme(plot.margin = unit(c(1,1,1,1), "cm")) +
+        theme(plot.margin = unit(c(1,1,1,1), "cm"),
+              legend.position = c(0.15, 0.17),
+              legend.background = element_rect(fill=NA),
+              legend.key.height = unit(0.15,"cm"),
+              axis.title = element_text(size = (10)),
+              legend.text = element_text(size=10, face = "bold"),
+              legend.title = element_text(size=10.5, face = "bold")) +
         geom_hline(yintercept = -log10(FDR),
-                   linetype = "dashed") +
-        geom_vline(xintercept = c(-logFC_abs,logFC_abs),
-                   linetype = "dashed") +
-        geom_label_repel(fill="white", size=2, max.overlaps = Inf,
-                         box.padding = 0.2,
+                   linetype = "dashed", color = 'gray65', linewidth=0.5) +
+        geom_vline(xintercept = c(-1,1),
+                   linetype = "dashed", color = 'gray65', linewidth=0.5) +
+        geom_text_repel(aes(fontface = 'bold'),
+                        size=3.2,
+                        color='gray30',
+                        max.overlaps = Inf,
+                         box.padding = 0.5,
                          show.legend=FALSE) +
         labs(y="-log10(FDR)")+
         scale_fill_manual(values = cols) +
         scale_size_manual(values = sizes) +
-        scale_alpha_manual(values = alphas)
+        scale_alpha_manual(values = alphas) +
+        ## Caption
+        annotate("text", x=1.65, y=0.1, label= paste0(length(which(top_genes$adj.P.Val<0.05)), ' DEGs'),
+                 color='gray60', size=3, fontface = 'bold')
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", name, ".pdf", sep=""),
