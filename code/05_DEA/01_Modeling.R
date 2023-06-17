@@ -32,10 +32,12 @@ samples_factors<-data.frame(SAMPLE_ID=norm_factors$samples$SAMPLE_ID,
                             lib.size=norm_factors$samples$lib.size)
 
 
-## DEA for habenula and amygdala samples
-DEA<- function(brain_region, formula, name, coef){
 
-    RSE <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+###################################################
+##   1.1  DEA for habenula and amygdala samples
+###################################################
+
+DEA<- function(RSE, brain_region, formula, name, coef){
 
     ## Previous lib sizes of each sample
     match_samples <- match(RSE$SAMPLE_ID, samples_factors$SAMPLE_ID)
@@ -86,9 +88,9 @@ DEA<- function(brain_region, formula, name, coef){
 formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mitoRate + totalAssignedGene + overallMapRate + concordMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount + RNA_concentration
 name<-"all_variables"
 coef<-"SubstanceSaline"
-results_all_vars_habenula<-DEA('habenula', formula, name, coef)
+results_all_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_all_vars_habenula, file = 'processed-data/05_DEA/results_all_vars_habenula.Rdata')
-## Number of DEG (FDR<0.10)
+## Number of DEGs (FDR<0.05)
 length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
 #  0
 
@@ -96,7 +98,7 @@ length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
 formula <-  ~ Substance + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
-results_uncorr_vars_habenula<-DEA('habenula', formula, name, coef)
+results_uncorr_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_uncorr_vars_habenula.Rdata')
 length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
 #  88
@@ -109,9 +111,9 @@ length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
 formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions + mitoRate + totalAssignedGene + overallMapRate + concordMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount + RNA_concentration
 name<-"all_variables"
 coef<-"SubstanceSaline"
-results_all_vars_amygdala<-DEA('amygdala', formula, name, coef)
+results_all_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_all_vars_amygdala, file = 'processed-data/05_DEA/results_all_vars_amygdala.Rdata')
-## Number of DEG (FDR<0.10)
+## Number of DEGs (FDR<0.10)
 length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
@@ -119,12 +121,10 @@ length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 formula<- ~ ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
-results_uncorr_vars_amygdala<-DEA('amygdala', formula, name, coef)
+results_uncorr_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata')
 length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 #  2728
-
-
 
 
 
@@ -238,8 +238,6 @@ de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars
 
 
 
-
-
 ## Add Ensembl info of DEGs
 
 add_phenotypes <- function(brain_region){
@@ -310,6 +308,72 @@ de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_amygdala.Rdata')
 write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
+
+
+
+
+
+###########################################################################
+##   1.2  DEA for samples from rats with high/low fentanyl intake slope
+###########################################################################
+
+######################   Habenula fentanyl samples   ######################
+
+rse_gene_habenula_fent <- rse_gene_habenula_filt[,which(rse_gene_habenula_filt$Substance=='Fentanyl')]
+
+## High/low intake samples
+rse_gene_habenula_fent$Intake_slope <- sapply(rse_gene_habenula_fent$Sample_Num, function(x){if(x %in% c(1,4,7)){'High'}
+                                                                                             else if(x %in% c(2,5,6,8)){'Low'}
+                                                                                             else {NA}})
+## Remove sample from the outlier rat (in intake slope)
+rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope))]
+
+
+## DEA
+
+## Same variables for habenula DEA
+## Substance and batches are the same for all these samples
+formula<- ~ Intake_slope + overallMapRate + RIN + mitoRate
+name<-"Intake_slope_Habenula"
+coef<-"Intake_slopeLow"
+results_intake_slope_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+## DEGs (FDR<0.05)
+de_genes_intake_slope_habenula <- results_intake_slope_habenula[[1]][which(results_intake_slope_habenula[[1]]$adj.P.Val<0.05), ]
+save(results_intake_slope_habenula, file = 'processed-data/05_DEA/results_intake_slope_habenula.Rdata')
+save(de_genes_intake_slope_habenula, file = 'processed-data/05_DEA/de_genes_intake_slope_habenula.Rdata')
+## Number of DEGs
+dim(de_genes_intake_slope_habenula)[1]
+##  65
+
+
+
+######################   Amygdala fentanyl samples   ######################
+
+rse_gene_amygdala_fent <- rse_gene_amygdala_filt[,which(rse_gene_amygdala_filt$Substance=='Fentanyl')]
+
+## High/low intake samples
+rse_gene_amygdala_fent$Intake_slope <- sapply(rse_gene_amygdala_fent$Sample_Num, function(x){if(x %in% c(17,20,23)){'High'}
+                                                                                             else if(x %in% c(18,21,22,24)){'Low'}
+                                                                                             else {NA}})
+## Remove sample from the outlier rat (in intake slope)
+rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(is.na(rse_gene_amygdala_fent$Intake_slope))]
+
+
+## DEA
+
+## Same variables for amygdala DEA
+## Substance and batches are the same
+formula<- ~ Intake_slope + overallMapRate + RIN + mitoRate
+name<-"Intake_slope_Amygdala"
+coef<-"Intake_slopeLow"
+results_intake_slope_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+## DEGs (FDR<0.05)
+de_genes_intake_slope_amygdala <- results_intake_slope_amygdala[[1]][which(results_intake_slope_amygdala[[1]]$adj.P.Val<0.05), ]
+save(results_intake_slope_amygdala, file = 'processed-data/05_DEA/results_intake_slope_amygdala.Rdata')
+save(de_genes_intake_slope_amygdala, file = 'processed-data/05_DEA/de_genes_intake_slope_amygdala.Rdata')
+## Number of DEGs
+dim(de_genes_intake_slope_amygdala)[1]
+##  2
 
 
 
