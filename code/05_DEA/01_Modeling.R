@@ -210,7 +210,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
                         max.overlaps = Inf,
                          box.padding = 0.5,
                          show.legend=FALSE) +
-        labs(y="-log10(FDR)")+
+        labs(y="-log10(FDR)", x='logFC(saline vs. fentanyl)')+
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
