@@ -2,4 +2,4 @@
 
 # Internal
 
-* JHPCE location: `/dcs04/lieber/marmaypag/fentanylRat_LIBD4205/fentanyl_rat_hb_amy`
+* JHPCE location: `/dcs04/lieber/marmaypag/fentanylRat_LIBD4270/fentanyl_rat_hb_amy`
