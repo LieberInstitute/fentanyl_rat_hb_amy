@@ -121,7 +121,7 @@ length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
 ## Model with uncorrelated variables only
-formula<- ~ ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
+formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name<-"uncorr_variables"
 coef<-"SubstanceSaline"
 results_uncorr_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
@@ -393,26 +393,82 @@ write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_
 
 
 
+
 ################################################################################
 ##   1.3  DEA for fentanyl consumption with covariate '1st hour intake slope'
 ################################################################################
 
+colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 
 ######################   Habenula samples   ######################
-rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$Sample_Num, function(x){if(x %in% c(17,20,23)){'High'}
-    else if(x %in% c(18,21,22,24)){'Low'}
-    else {NA}})
 
+## Add info of 1st hour intake slope for each sample
+rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$Rat_ID,
+                                                         function(x){covariate_data[which(covariate_data$Rat_ID==x), '1st_Hour_Infusion_Slope']})
+
+## DEA
+
+## Same uncorrelated variables as before
+formula<-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
+name<-"First_hr_infusion_slope_Habenula"
+coef<-"SubstanceSaline"
+results_First_hr_infusion_slope_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
+save(results_First_hr_infusion_slope_habenula, file = 'processed-data/05_DEA/results_First_hr_infusion_slope_habenula.Rdata')
+length(which(results_First_hr_infusion_slope_habenula[[1]]$adj.P.Val<0.05))
+#  0
 
 
 ######################   Amygdala samples   ######################
+rse_gene_amygdala_filt$First_hr_infusion_slope <- sapply(rse_gene_amygdala_filt$Rat_ID,
+                                                         function(x){covariate_data[which(covariate_data$Rat_ID==x), '1st_Hour_Infusion_Slope']})
+
+## Same uncorrelated variables as before
+formula<-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
+name<-"First_hr_infusion_slope_Amygdala"
+coef<-"SubstanceSaline"
+results_First_hr_infusion_slope_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
+save(results_First_hr_infusion_slope_amygdala, file = 'processed-data/05_DEA/results_First_hr_infusion_slope_amygdala.Rdata')
+length(which(results_First_hr_infusion_slope_amygdala[[1]]$adj.P.Val<0.05))
+#  0
+
+
+
+
 
 #######################################################################
 ##   1.4  DEA for fentanyl consumption with covariate 'total intake'
 #######################################################################
 
+######################   Habenula samples   ######################
+
+## Add info of total intake for each sample
+rse_gene_habenula_filt$Total_intake <- sapply(rse_gene_habenula_filt$Rat_ID,
+                                                         function(x){covariate_data[which(covariate_data$Rat_ID==x), 'Total_Intake_(mg)']})
+
+## DEA
+
+## Same uncorrelated variables as before
+formula<-  ~ Substance + Total_intake + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
+name<-"Total_intake"
+coef<-"SubstanceSaline"
+results_Total_intake_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
+save(results_Total_intake_habenula, file = 'processed-data/05_DEA/results_Total_intake_habenula.Rdata')
+length(which(results_Total_intake_habenula[[1]]$adj.P.Val<0.05))
+#  0
 
 
+######################   Amygdala samples   ######################
+
+rse_gene_amygdala_filt$Total_intake <- sapply(rse_gene_amygdala_filt$Rat_ID,
+                                              function(x){covariate_data[which(covariate_data$Rat_ID==x), 'Total_Intake_(mg)']})
+
+formula<-  ~ Substance + Total_intake + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
+name<-"Total_intake"
+coef<-"SubstanceSaline"
+results_Total_intake_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
+save(results_Total_intake_amygdala, file = 'processed-data/05_DEA/results_Total_intake_amygdala.Rdata')
+length(which(results_Total_intake_amygdala[[1]]$adj.P.Val<0.05))
+#  0
 
 
 
@@ -421,6 +477,38 @@ rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$
 ##############################################################################
 ##   1.5  DEA for fentanyl consumption with covariate 'last session intake'
 ##############################################################################
+
+######################   Habenula samples   ######################
+
+## Add info of last session intake for each sample
+rse_gene_habenula_filt$Last_session_intake<- sapply(rse_gene_habenula_filt$Rat_ID,
+                                              function(x){covariate_data[which(covariate_data$Rat_ID==x), 'Last_Session_Intake_(mg)']})
+
+## DEA
+
+## Same uncorrelated variables as before
+formula<-  ~ Substance + Last_session_intake + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
+name<-"Last_session_intake"
+coef<-"SubstanceSaline"
+results_Last_session_intake_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
+save(results_Last_session_intake_habenula, file = 'processed-data/05_DEA/results_Last_session_intake_habenula.Rdata')
+length(which(results_Last_session_intake_habenula[[1]]$adj.P.Val<0.05))
+#  0
+
+
+######################   Amygdala samples   ######################
+
+rse_gene_amygdala_filt$Last_session_intake <- sapply(rse_gene_amygdala_filt$Rat_ID,
+                                              function(x){covariate_data[which(covariate_data$Rat_ID==x), 'Last_Session_Intake_(mg)']})
+
+formula<-  ~ Substance + Last_session_intake + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
+name<-"Last_session_intake"
+coef<-"SubstanceSaline"
+results_Last_session_intake_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
+save(results_Last_session_intake_amygdala, file = 'processed-data/05_DEA/results_Last_session_intake_amygdala.Rdata')
+length(which(results_Last_session_intake_amygdala[[1]]$adj.P.Val<0.05))
+#  0
+
 
 
 
