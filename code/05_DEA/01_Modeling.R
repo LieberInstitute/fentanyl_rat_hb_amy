@@ -410,7 +410,7 @@ rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$
 
 ## Same uncorrelated variables as before
 formula<-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
-name<-"First_hr_infusion_slope_Habenula"
+name<-"First_hr_infusion_slope"
 coef<-"SubstanceSaline"
 results_First_hr_infusion_slope_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_First_hr_infusion_slope_habenula, file = 'processed-data/05_DEA/results_First_hr_infusion_slope_habenula.Rdata')
@@ -424,7 +424,7 @@ rse_gene_amygdala_filt$First_hr_infusion_slope <- sapply(rse_gene_amygdala_filt$
 
 ## Same uncorrelated variables as before
 formula<-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
-name<-"First_hr_infusion_slope_Amygdala"
+name<-"First_hr_infusion_slope"
 coef<-"SubstanceSaline"
 results_First_hr_infusion_slope_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_First_hr_infusion_slope_amygdala, file = 'processed-data/05_DEA/results_First_hr_infusion_slope_amygdala.Rdata')
