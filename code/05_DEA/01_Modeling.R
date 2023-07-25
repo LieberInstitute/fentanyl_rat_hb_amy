@@ -11,6 +11,7 @@ library(smplot2)
 library(httr)
 library(jsonlite)
 library(xml2)
+library(readxl)
 library(sessioninfo)
 
 
@@ -19,6 +20,8 @@ library(sessioninfo)
 load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=TRUE)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
+## Load sample data for additional covariates in the model
+covariate_data <- as.data.frame(read_excel("raw-data/covariate_sample_info.xlsx"))
 
 
 ################################################################################
@@ -33,9 +36,9 @@ samples_factors<-data.frame(SAMPLE_ID=norm_factors$samples$SAMPLE_ID,
 
 
 
-###################################################
-##   1.1  DEA for habenula and amygdala samples
-###################################################
+###########################################################################
+##   1.1  DEA for fentanyl consumption in habenula and amygdala samples
+###########################################################################
 
 DEA<- function(RSE, brain_region, formula, name, coef){
 
@@ -309,9 +312,9 @@ write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
 
 
 
-###########################################################################
-##   1.2  DEA for samples from rats with high/low fentanyl intake slope
-###########################################################################
+########################################################################
+##   1.2  DEA for high/low fentanyl intake slope in fentanyl samples
+########################################################################
 
 ######################   Habenula fentanyl samples   ######################
 
@@ -387,6 +390,37 @@ de_genes_intake_slope_amygdala <- de_genes_intake_slope_amygdala[order(de_genes_
 save(de_genes_intake_slope_amygdala, file = 'processed-data/05_DEA/de_genes_intake_slope_amygdala.Rdata')
 write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_amygdala.csv")
 
+
+
+
+################################################################################
+##   1.3  DEA for fentanyl consumption with covariate '1st hour intake slope'
+################################################################################
+
+
+######################   Habenula samples   ######################
+rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$Sample_Num, function(x){if(x %in% c(17,20,23)){'High'}
+    else if(x %in% c(18,21,22,24)){'Low'}
+    else {NA}})
+
+
+
+######################   Amygdala samples   ######################
+
+#######################################################################
+##   1.4  DEA for fentanyl consumption with covariate 'total intake'
+#######################################################################
+
+
+
+
+
+
+
+
+##############################################################################
+##   1.5  DEA for fentanyl consumption with covariate 'last session intake'
+##############################################################################
 
 
 
