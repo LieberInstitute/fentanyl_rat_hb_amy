@@ -403,45 +403,6 @@ write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_
 
 colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 
-## Plots of correlation between 1st hour intake slope and the rest of the variables
-## Plot Heatmap of correlations for that variable
-covariate_CCA<- function(brain_region, covariate){
-
-    RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
-
-    ## Define variables
-    if (brain_region == 'habenula'){
-        formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
-            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount + eval(parse_expr(covariate))
-    }
-    else {
-        formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
-            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount + eval(parse_expr(covariate))
-    }
-
-    ## Correlations
-    C=canCorPairs(formula, colData(RSE))
-
-    ## Heatmap
-    pheatmap(
-        C[covariate],
-        color = hcl.colors(50, "YlOrRd", rev = TRUE),
-        fontsize=8,
-        border_color = "black",
-        height = 6,
-        width = 6.5,
-        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/", covariate, '_corr_plots_', brain_region, ".pdf", sep="")
-    )
-
-    return(C)
-}
-
-First_hr_infusion_slope_corr_habenula <- covariate_CCA('habenula', 'First_hr_infusion_slope')
-First_hr_infusion_slope_corr_amygdala <- covariate_CCA('amygdala', 'First_hr_infusion_slope')
-
-
 
 ######################   Habenula samples   ######################
 
@@ -462,6 +423,7 @@ length(which(results_First_hr_infusion_slope_habenula[[1]]$adj.P.Val<0.05))
 
 
 ######################   Amygdala samples   ######################
+
 rse_gene_amygdala_filt$First_hr_infusion_slope <- sapply(rse_gene_amygdala_filt$Rat_ID,
                                                          function(x){covariate_data[which(covariate_data$Rat_ID==x), '1st_Hour_Infusion_Slope']})
 
@@ -551,6 +513,52 @@ results_Last_session_intake_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', fo
 save(results_Last_session_intake_amygdala, file = 'processed-data/05_DEA/results_Last_session_intake_amygdala.Rdata')
 length(which(results_Last_session_intake_amygdala[[1]]$adj.P.Val<0.05))
 #  0
+
+
+
+
+
+## Plots of correlation between the additional covariates and the rest of the sample variables
+covariates_CCA<- function(brain_region){
+
+    RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    ## Define variables
+    if (brain_region == 'habenula'){
+        formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
+            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+            First_hr_infusion_slope + Total_intake + Last_session_intake
+
+    }
+    else {
+        formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+            First_hr_infusion_slope + Total_intake + Last_session_intake
+    }
+
+    ## Correlations
+    C=canCorPairs(formula, colData(RSE))
+
+    ## Heatmap
+    pheatmap(
+        C,
+        color = hcl.colors(50, "YlOrRd", rev = TRUE),
+        fontsize=8,
+        border_color = "black",
+        height = 6,
+        width = 6.5,
+        cluster_rows=TRUE,
+        cluster_cols=TRUE,
+        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/Covariates_corr_plot_", brain_region, ".pdf", sep="")
+    )
+
+    return(C)
+}
+
+Covariates_corr_habenula<- covariates_CCA('habenula')
+Covariates_corr_amygdala <- covariates_CCA('amygdala')
 
 
 
