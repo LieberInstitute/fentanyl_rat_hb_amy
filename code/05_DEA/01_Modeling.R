@@ -5,6 +5,7 @@ library(edgeR)
 library(limma)
 library(rlang)
 library(ggplot2)
+library(pheatmap)
 library(cowplot)
 library(ggrepel)
 library(smplot2)
@@ -47,7 +48,7 @@ DEA<- function(RSE, brain_region, formula, name, coef){
     factors<-samples_factors[match_samples, ]
 
     pdf(file = paste("plots/05_DEA/01_Modeling/DEA_plots_", brain_region, "_", name, ".pdf", sep="" ))
-    par(mfrow=c(2,2))
+    par(mfrow=c(2,3), mar = c(8,3,8,3))
 
     ## Model matrix
     model=model.matrix(formula, data=colData(RSE))
@@ -75,8 +76,10 @@ DEA<- function(RSE, brain_region, formula, name, coef){
 
     ## Top-ranked genes for Substance (cases vs ctrls)
     top_genes = topTable(eBGene, coef=coef, p.value = 1, number=nrow(RSE), sort.by="none")
-    ## Histogram of adjusted p values
+    ## Histogram of adjusted p-values
     hist(top_genes$adj.P.Val, xlab="FDR", main="")
+    ## Histogram of p-values
+    hist(top_genes$P.Value, xlab="p-value", main="")
 
     dev.off()
 
@@ -399,6 +402,46 @@ write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_
 ################################################################################
 
 colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
+
+## Plots of correlation between 1st hour intake slope and the rest of the variables
+## Plot Heatmap of correlations for that variable
+covariate_CCA<- function(brain_region, covariate){
+
+    RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    ## Define variables
+    if (brain_region == 'habenula'){
+        formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
+            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount + eval(parse_expr(covariate))
+    }
+    else {
+        formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+            mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+            library_size + detected_num_genes + RNA_concentration + Total_RNA_amount + eval(parse_expr(covariate))
+    }
+
+    ## Correlations
+    C=canCorPairs(formula, colData(RSE))
+
+    ## Heatmap
+    pheatmap(
+        C[covariate],
+        color = hcl.colors(50, "YlOrRd", rev = TRUE),
+        fontsize=8,
+        border_color = "black",
+        height = 6,
+        width = 6.5,
+        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/", covariate, '_corr_plots_', brain_region, ".pdf", sep="")
+    )
+
+    return(C)
+}
+
+First_hr_infusion_slope_corr_habenula <- covariate_CCA('habenula', 'First_hr_infusion_slope')
+First_hr_infusion_slope_corr_amygdala <- covariate_CCA('amygdala', 'First_hr_infusion_slope')
+
+
 
 ######################   Habenula samples   ######################
 
