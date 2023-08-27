@@ -140,6 +140,9 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     if(name=='habenula_for_First_hr_infusion_slope' | name=='amygdala_for_First_hr_infusion_slope'){
         FClab = 'log2FC(1st hour infusion slope)'
     }
+    else if (name=='amygdala_for_Total_intake'){
+        FClab = 'log2FC(Total drug intake)'
+    }
     else{
         FClab='log2FC(saline vs. fentanyl)'
     }
@@ -161,20 +164,34 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     }
     top_genes$DE<- DE
 
-    ## Gene symbols for specific DEGs
-    if(brain_region=='habenula'){
-        DEGs <- c('')
-    }
-    else{
+
+    ## Gene symbols for specific DEGs and position of caption in plot
+    DEGs <- c('')
+    caption_x_units <- 0.55
+    caption_y_units1 <- 0.15
+    caption_y_units2 <- 0.08
+
+    if (brain_region=='amygdala' & !name=='amygdala_for_Total_intake'){
         DEGs <- c('Cck', 'Inka2')
+        caption_x_units <- 0.55
+        caption_y_units1 <- 0.1
+        caption_y_units2 <- -0.09
+    }
+
+    ## Gene symbols for all 6 DEGs in habenula DEA for 1st hr infusion slope
+    else if(name=='habenula_for_First_hr_infusion_slope'){
+        DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
+        caption_x_units <- 1.2
+        caption_y_units1 <- 0.4
+        caption_y_units2 <- 0.31
+    }
+
+    else if(name=='amygdala_for_Total_intake'){
+        caption_x_units <- 1.7
+        caption_y_units1 <- 0.13
+        caption_y_units2 <- 0.08
     }
     top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
-
-    ## Gene symbols for all DEGs in habenula DEA for 1st hr infusion slope
-    if(name=='habenula_for_First_hr_infusion_slope'){
-        DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
-        top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
-    }
 
 
 
@@ -191,17 +208,17 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
                    size = DE,
                    alpha = DE)) +
         sm_hgrid(legends = TRUE) +
+        geom_point(shape = 21) +
+        scale_fill_manual(values = cols, name=NULL) +
+        scale_size_manual(values = sizes, name=NULL) +
+        scale_alpha_manual(values = alphas, name=NULL) +
+        labs(x="Mean of normalized counts", y=FClab) +
         theme(plot.margin = unit(c(1,1,1,1), "cm"),
               legend.position = c(0.82, 0.15),
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10, face = "bold")) +
-        geom_point(shape = 21) +
-        scale_fill_manual(values = cols, name=NULL) +
-        scale_size_manual(values = sizes, name=NULL) +
-        scale_alpha_manual(values = alphas, name=NULL) +
-        labs(x="Mean of normalized counts", y=FClab)
+              legend.text = element_text(size=10, face = "bold"))
 
 
     ## Volcano plot for DE genes
@@ -213,12 +230,6 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
                    label= DEG_symbol)) +
         sm_hgrid(legends = TRUE) +
         geom_point(shape =21) +
-        theme(plot.margin = unit(c(1,1,1,1), "cm"),
-              legend.position = c(0.13, 0.15),
-              legend.background = element_rect(fill=NA),
-              legend.key.height = unit(0.15,"cm"),
-              axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10, face = "bold")) +
         geom_hline(yintercept = -log10(FDR),
                    linetype = "dashed", color = 'gray65', linewidth=0.5) +
         geom_vline(xintercept = c(-1,1),
@@ -233,9 +244,18 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
+        theme(plot.margin = unit(c(1,1,1,1), "cm"),
+              legend.position = c(0.13, 0.15),
+              legend.background = element_rect(fill=NA),
+              legend.key.height = unit(0.15,"cm"),
+              axis.title = element_text(size = (10)),
+              legend.text = element_text(size=10, face = "bold")) +
         ## Caption: number of DEGs
-        annotate("text", x=max(top_genes$logFC)-0.45, y=0.1, label= paste0(length(which(top_genes$adj.P.Val<0.05)), ' DEGs'),
-                 color='gray60', size=2.8, fontface = 'bold')
+        annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units1, label= paste0(length(which(top_genes$adj.P.Val<FDR)), ' DEGs'),
+                 color='gray60', size=2.8, fontface = 'bold') +
+        ## Caption: FDR threshold
+        annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units2, label= paste0("(FDR<", FDR, ")"),
+                 color='gray60', size=2.5)
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", name, ".pdf", sep=""),
@@ -703,6 +723,20 @@ length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
 #  26
 length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.05))
 #  0
+
+## DEGs (FDR<0.1)
+de_genes_TotalIntakeDEA_amygdala<- results_TotalIntakeDEA_amygdala[[1]][which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1), ]
+## Add associated phenotypes and descriptions of DEGs
+de_genes_TotalIntakeDEA_amygdala<- add_phenotypes(de_genes_TotalIntakeDEA_amygdala)
+de_genes_TotalIntakeDEA_amygdala <- add_description(de_genes_TotalIntakeDEA_amygdala)
+de_genes_TotalIntakeDEA_amygdala$EntrezID <- as.character(de_genes_TotalIntakeDEA_amygdala$EntrezID)
+de_genes_TotalIntakeDEA_amygdala<- de_genes_TotalIntakeDEA_amygdala[order(de_genes_TotalIntakeDEA_amygdala$adj.P.Val, -abs(de_genes_TotalIntakeDEA_amygdala$logFC)),]
+save(de_genes_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/de_genes_TotalIntakeDEA_amygdala.Rdata')
+write.csv(de_genes_TotalIntakeDEA_amygdala, "generated_data/de_genes_TotalIntakeDEA_amygdala.csv")
+
+## Plots for DEGs
+plots_DEGs('amygdala', top_genes = results_TotalIntakeDEA_amygdala[[1]], vGene = results_TotalIntakeDEA_amygdala[[2]], FDR = 0.1,
+           name='amygdala_for_Total_intake')
 
 
 # ______________________________________________________________________________
