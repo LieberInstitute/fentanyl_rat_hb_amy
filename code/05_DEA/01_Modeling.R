@@ -337,6 +337,9 @@ rse_gene_habenula_fent$Intake_slope <- sapply(rse_gene_habenula_fent$Sample_Num,
                                                                                              else if(x %in% c(2,5,6,8)){'Low'}
                                                                                              else {NA}})
 ## Remove sample from the outlier rat (in intake slope)
+## Identify it
+colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope)), 'Rat_ID']
+# [1] "LgA 09"
 rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope))]
 
 
