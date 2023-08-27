@@ -137,11 +137,11 @@ length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 ## Plots for DEGs
 plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
-    if(name=='for_First_hr_infusion_slope'){
-        ylab = 'log2FC(1st hour infusion slope)'
+    if(name=='habenula_for_First_hr_infusion_slope' | name=='amygdala_for_First_hr_infusion_slope'){
+        FClab = 'log2FC(1st hour infusion slope)'
     }
     else{
-        ylab='log2FC(saline vs. fentanyl)'
+        FClab='log2FC(saline vs. fentanyl)'
     }
 
     ## n.s./Down/Upregulated genes
@@ -195,7 +195,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
-        labs(x="Mean of normalized counts", y=ylab)
+        labs(x="Mean of normalized counts", y=FClab)
 
 
     ## Volcano plot for DE genes
@@ -223,7 +223,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
                         max.overlaps = Inf,
                          box.padding = 0.5,
                          show.legend=FALSE) +
-        labs(y="-log10(FDR)", x='log2FC(saline vs. fentanyl)')+
+        labs(y="-log10(FDR)", x=FClab)+
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
@@ -609,7 +609,7 @@ write.csv(de_genes_FirstHrIntakeSlopeDEA_habenula, "generated_data/de_genes_Firs
 
 ## Plots for DEGs
 plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], vGene = results_FirstHrIntakeSlopeDEA_habenula[[2]], FDR = 0.05,
-           name=name)
+           name='habenula_for_First_hr_infusion_slope')
 
 ##############################
 ## Amygdala fentanyl samples
@@ -625,6 +625,11 @@ results_FirstHrIntakeSlopeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', 
 save(results_FirstHrIntakeSlopeDEA_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala.Rdata')
 length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.05))
 #  0
+
+
+# ______________________________________________________________________________
+## 1.4.1 Analysis without outlier fentanyl sample
+# ______________________________________________________________________________
 
 
 
