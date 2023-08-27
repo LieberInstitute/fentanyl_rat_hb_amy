@@ -168,8 +168,14 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     else{
         DEGs <- c('Cck', 'Inka2')
     }
-
     top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
+
+    ## Gene symbols for all DEGs in habenula DEA for 1st hr infusion slope
+    if(name=='habenula_for_First_hr_infusion_slope'){
+        DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
+        top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
+    }
+
 
 
     ## Plots
@@ -338,7 +344,7 @@ rse_gene_habenula_fent$Intake_slope <- sapply(rse_gene_habenula_fent$Sample_Num,
                                                                                              else {NA}})
 ## Remove sample from the outlier rat (in intake slope)
 ## Identify it
-colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope)), 'Rat_ID']
+outlier_fent_sample <- colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope)), 'Rat_ID']
 # [1] "LgA 09"
 rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope))]
 
@@ -623,13 +629,57 @@ name <-"for_First_hr_infusion_slope"
 coef <-"First_hr_infusion_slope"
 results_FirstHrIntakeSlopeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala.Rdata')
-length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.05))
+length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
 #  0
 
 
 # ______________________________________________________________________________
-## 1.4.1 Analysis without outlier fentanyl sample
+## 1.4.1 Analysis without negative outlier fentanyl rat
 # ______________________________________________________________________________
+
+##############################
+## Habenula fentanyl samples
+##############################
+
+## Remove outlier rat sample in habenula
+rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(rse_gene_habenula_fent$Rat_ID==outlier_fent_sample)]
+
+## DEA
+formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+name <-"for_First_hr_infusion_slope_withoutOutlier"
+coef <-"First_hr_infusion_slope"
+results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+save(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier.Rdata')
+
+## DEGs (FDR<0.05)
+length(which(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.05))
+#  0
+
+##############################
+## Amygdala fentanyl samples
+##############################
+
+## Remove outlier rat sample in amygdala
+rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(rse_gene_amygdala_fent$Rat_ID==outlier_fent_sample)]
+
+## DEA
+formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+name <-"for_First_hr_infusion_slope_withoutOutlier"
+coef <-"First_hr_infusion_slope"
+results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+save(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier.Rdata')
+
+## DEGs (FDR<0.05)
+length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.05))
+#  0
+
+
+
+
+
+
+
+
 
 
 
