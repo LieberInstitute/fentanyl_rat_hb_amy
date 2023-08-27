@@ -798,6 +798,108 @@ length(which(results_LastSessionIntakeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val
 
 
 
+## Plot gene expression vs total/last/slope of drug intake
+
+plot_gene_expr_vs_intake <- function(brain_region, sample_var, gene_id){
+
+    rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'fent', sep="_")))
+
+    if(sample_var=='First_hr_infusion_slope'){
+        x_label="First hr infusion slope"
+    }
+
+    else if(sample_var=='Total_intake'){
+        x_label="Total drug intake"
+    }
+
+    else if(sample_var=='Last_session_intake'){
+        x_label="Last session drug intake"
+    }
+
+    ## Lognorm counts of the gene across samples
+    data <- colData(rse_gene)
+    data$gene_expr <- assays(rse_gene)$logcounts[gene_id,]
+
+    ## Gene symbol
+    gene_symbol <- rowData(rse_gene)[which(rowData(rse_gene)$ensemblID==gene_id), 'Symbol']
+    if (is.na(gene_symbol)){
+        gene_ids <- gene_id
+    }
+    else{
+        gene_ids <- paste(gene_symbol, gene_id, sep='-')
+    }
+
+    ## Color for the outlier sample and the rest
+    data$is_outlier <- sapply(data$Rat_ID, function(x){if(x==outlier_fent_sample){'coral2'} else {'gray50'}})
+
+    plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var)), y=gene_expr)) +
+        geom_point(aes(color=is_outlier)) +
+        stat_smooth (geom="line", alpha=0.4, size=0.6, span=0.3, method = lm, color='orangered4') +
+        theme_bw() +
+        guides(color="none") +
+        labs(title = gene_ids,
+             y= 'lognorm counts', x = x_label) +
+        theme(plot.margin=unit (c (1,1,1,1), 'cm'),
+              axis.title = element_text(size = (7)),
+              axis.text = element_text(size = (6)),
+              plot.title = element_text(hjust=0.5, size=7.5, face="bold"),
+              legend.text = element_text(size=6),
+              legend.title = element_text(size=7))
+
+
+    return(plot)
+}
+
+
+##############################
+## Habenula fentanyl samples
+##############################
+
+## Top most significant gene from DEA for 1st hr infusion slope
+dea_results <- results_FirstHrIntakeSlopeDEA_habenula[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p1 <- plot_gene_expr_vs_intake('habenula', 'First_hr_infusion_slope', gene_id)
+
+## Top most significant gene from DEA for total intake
+dea_results <- results_TotalIntakeDEA_habenula[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p2 <- plot_gene_expr_vs_intake('habenula', 'Total_intake', gene_id)
+
+## Top most significant gene from DEA for last intake
+dea_results <- results_LastSessionIntakeDEA_habenula[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p3 <- plot_gene_expr_vs_intake('habenula', 'Last_session_intake', gene_id)
+
+plot_grid(p1, p2, p3, nrow=1)
+ggsave('plots/05_DEA/01_Modeling/geneExpr_VS_drugIntake_habenula_withOutlier.pdf', width = 20, height = 7, units = "cm")
+
+
+
+##############################
+## Amygdala fentanyl samples
+##############################
+
+## Top most significant gene from DEA for 1st hr infusion slope
+dea_results <- results_FirstHrIntakeSlopeDEA_amygdala[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p1 <- plot_gene_expr_vs_intake('amygdala', 'First_hr_infusion_slope', gene_id)
+
+## Top most significant gene from DEA for total intake
+dea_results <- results_TotalIntakeDEA_amygdala[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p2 <- plot_gene_expr_vs_intake('amygdala', 'Total_intake', gene_id)
+
+## Top most significant gene from DEA for last intake
+dea_results <- results_LastSessionIntakeDEA_amygdala[[1]]
+gene_id <- rownames(dea_results[order(dea_results$adj.P.Val, decreasing = FALSE), ][1,])
+p3 <- plot_gene_expr_vs_intake('amygdala', 'Last_session_intake', gene_id)
+
+plot_grid(p1, p2, p3, nrow=1)
+ggsave('plots/05_DEA/01_Modeling/geneExpr_VS_drugIntake_amygdala_withOutlier.pdf', width = 20, height = 7, units = "cm")
+
+
+
+
 
 
 
