@@ -634,7 +634,7 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
 
 
 # ______________________________________________________________________________
-## 1.4.1 Analysis without negative outlier fentanyl rat
+## 1.4.1 Analysis without samples from negative outlier fentanyl rat
 # ______________________________________________________________________________
 
 ##############################
@@ -642,44 +642,32 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
 ##############################
 
 ## Remove outlier rat sample in habenula
-rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(rse_gene_habenula_fent$Rat_ID==outlier_fent_sample)]
+rse_gene_habenula_fent_withoutOutlier <- rse_gene_habenula_fent[,-which(rse_gene_habenula_fent$Rat_ID==outlier_fent_sample)]
 
 ## DEA
 formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
 name <-"for_First_hr_infusion_slope_withoutOutlier"
 coef <-"First_hr_infusion_slope"
-results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent_withoutOutlier, 'habenula', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier.Rdata')
 
-## DEGs (FDR<0.05)
-length(which(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.05))
+## DEGs (FDR<0.1)
+length(which(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
 
 ##############################
 ## Amygdala fentanyl samples
 ##############################
 
-## Remove outlier rat sample in amygdala
-rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(rse_gene_amygdala_fent$Rat_ID==outlier_fent_sample)]
+rse_gene_amygdala_fent_withoutOutlier <- rse_gene_amygdala_fent[,-which(rse_gene_amygdala_fent$Rat_ID==outlier_fent_sample)]
 
-## DEA
 formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
 name <-"for_First_hr_infusion_slope_withoutOutlier"
 coef <-"First_hr_infusion_slope"
-results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent_withoutOutlier, 'amygdala', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier.Rdata')
-
-## DEGs (FDR<0.05)
-length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.05))
+length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
-
-
-
-
-
-
-
-
 
 
 
@@ -688,6 +676,7 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Va
 ####################################################################################
 ##    1.5  DEA for 'Total intake' in habenula and amygdala fentanyl samples
 ####################################################################################
+
 
 #####################
 ## Habenula samples
@@ -698,7 +687,7 @@ name <-"for_Total_intake"
 coef <-"Total_intake"
 results_TotalIntakeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 save(results_TotalIntakeDEA_habenula, file = 'processed-data/05_DEA/results_TotalIntakeDEA_habenula.Rdata')
-length(which(results_TotalIntakeDEA_habenula[[1]]$adj.P.Val<0.05))
+length(which(results_TotalIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
 #  0
 
 #####################
@@ -710,7 +699,39 @@ name <-"for_Total_intake"
 coef <-"Total_intake"
 results_TotalIntakeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/results_TotalIntakeDEA_amygdala.Rdata')
+length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
+#  26
 length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.05))
+#  0
+
+
+# ______________________________________________________________________________
+## 1.5.1 Analysis without samples from negative outlier fentanyl rat
+# ______________________________________________________________________________
+
+##############################
+## Habenula fentanyl samples
+##############################
+
+formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+name <-"for_Total_intake_withoutOutlier"
+coef <-"Total_intake"
+results_TotalIntakeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent_withoutOutlier, 'habenula', formula, name, coef)
+save(results_TotalIntakeDEA_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_TotalIntakeDEA_habenula_withoutOutlier.Rdata')
+length(which(results_TotalIntakeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.1))
+#  0
+
+
+##############################
+## Amygdala fentanyl samples
+##############################
+
+formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+name <-"for_Total_intake_withoutOutlier"
+coef <-"Total_intake"
+results_TotalIntakeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent_withoutOutlier, 'amygdala', formula, name, coef)
+save(results_TotalIntakeDEA_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_TotalIntakeDEA_amygdala_withoutOutlier.Rdata')
+length(which(results_TotalIntakeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
 
 
@@ -730,7 +751,7 @@ name <-"for_Last_session_intake"
 coef <-"Last_session_intake"
 results_LastSessionIntakeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 save(results_LastSessionIntakeDEA_habenula, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_habenula.Rdata')
-length(which(results_LastSessionIntakeDEA_habenula[[1]]$adj.P.Val<0.05))
+length(which(results_LastSessionIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
 #  0
 
 #####################
@@ -742,7 +763,36 @@ name <-"for_Last_session_intake"
 coef <-"Last_session_intake"
 results_LastSessionIntakeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_LastSessionIntakeDEA_amygdala, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_amygdala.Rdata')
-length(which(results_LastSessionIntakeDEA_amygdala[[1]]$adj.P.Val<0.05))
+length(which(results_LastSessionIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
+#  0
+
+
+# ______________________________________________________________________________
+## 1.6.1 Analysis without samples from negative outlier fentanyl rat
+# ______________________________________________________________________________
+
+##############################
+## Habenula fentanyl samples
+##############################
+
+formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate
+name <-"for_Last_session_intake_withoutOutlier"
+coef <-"Last_session_intake"
+results_LastSessionIntakeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent_withoutOutlier, 'habenula', formula, name, coef)
+save(results_LastSessionIntakeDEA_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_habenula_withoutOutlier.Rdata')
+length(which(results_LastSessionIntakeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.1))
+#  0
+
+#####################
+## Amygdala samples
+#####################
+
+formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate
+name <-"for_Last_session_intake_withoutOutlier"
+coef <-"Last_session_intake"
+results_LastSessionIntakeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent_withoutOutlier, 'amygdala', formula, name, coef)
+save(results_LastSessionIntakeDEA_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_amygdala_withoutOutlier.Rdata')
+length(which(results_LastSessionIntakeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
 
 
