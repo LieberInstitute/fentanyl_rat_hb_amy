@@ -48,7 +48,7 @@ DEA<- function(RSE, brain_region, formula, name, coef){
     factors<-samples_factors[match_samples, ]
 
     pdf(file = paste("plots/05_DEA/01_Modeling/DEA_plots_", brain_region, "_", name, ".pdf", sep="" ))
-    par(mfrow=c(2,3), mar = c(8,3,8,3))
+    par(mfrow=c(2,3), mar = c(8,3.9,8,3.9))
 
     ## Model matrix
     model=model.matrix(formula, data=colData(RSE))
@@ -137,6 +137,13 @@ length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 ## Plots for DEGs
 plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
+    if(name=='for_First_hr_infusion_slope'){
+        ylab = 'log2FC(1st hour infusion slope)'
+    }
+    else{
+        ylab='log2FC(saline vs. fentanyl)'
+    }
+
     ## n.s./Down/Upregulated genes
     DE<-vector()
     for (i in 1:dim(top_genes)[1]) {
@@ -188,7 +195,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
-        labs(x="Mean of normalized counts", y='log2FC(saline vs. fentanyl)')
+        labs(x="Mean of normalized counts", y=ylab)
 
 
     ## Volcano plot for DE genes
