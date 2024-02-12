@@ -11,7 +11,7 @@
 
 ## 03. Data processing
 
-* [01_build_objects.R]('03_Data_preparation/01_build_objects.R'): 
+* [01_build_objects.R](03_Data_preparation/01_build_objects.R): 
 
 
 ## 04. Exploratory Data Analysis (EDA)
