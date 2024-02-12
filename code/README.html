@@ -363,8 +363,29 @@ display: none;
 <div id="data-processing" class="section level2">
 <h2>03. Data processing</h2>
 <ul>
-<li><a href="03_Data_preparation/01_build_objects.R">01_build_objects.R</a>:</li>
+<li><a href="03_Data_preparation/01_build_objects.R">01_build_objects.R</a>:
+<ul>
+<li><ol style="list-style-type: decimal">
+<li>Sample metadata were added to <code>colData()</code> of the RSE
+objects in the correct format.</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: decimal">
+<li>Raw gene expression counts were log-normalized to log(CPM+0.5).</li>
+</ol></li>
+<li><ol start="3" style="list-style-type: decimal">
+<li>Lowly-expressed genes were filtered out. Additional QC metrics and
+sample filtering info from <a href="04_EDA/01_QCA.R">04_EDA/01_QCA.R</a>
+analysis were included in these original datasets.</li>
+</ol></li>
+<li><ol start="4" style="list-style-type: decimal">
+<li>Count distributions were visualized before and after normalization
+and feature filtering steps.</li>
+</ol></li>
+</ul></li>
 </ul>
+<p>Note that exon, exon-exon junction, and transcript RSE objects were
+also processed but only gene-level data were used for downstream
+analyses.</p>
 </div>
 <div id="exploratory-data-analysis-eda" class="section level2">
 <h2>04. Exploratory Data Analysis (EDA)</h2>
