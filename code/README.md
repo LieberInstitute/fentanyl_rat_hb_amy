@@ -7,7 +7,9 @@
 
 ## 02. SPEAQeasy pipeline
 
-TODO Nick
+* SPEAQeasy pipeline was run to obtain the `RangedSummarizedExperiment` (RSE) objects.
+
+    See more details in [02_SPEAQeasy](02_SPEAQeasy/). 
 
 
 ## 03. Data processing
