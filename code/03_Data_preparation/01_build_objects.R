@@ -5,6 +5,7 @@ library(readxl)
 library(stringr)
 library(edgeR)
 library(ggplot2)
+library(cowplot)
 library(sessioninfo)
 
 #######################   Data Preparation   #######################
@@ -196,7 +197,7 @@ save(rse_jx_filt, file = 'processed-data/03_Data_preparation/rse_jx_filt.Rdata')
 
 ## Raw counts
 counts_data <- data.frame(counts=as.vector(assays(rse_gene)$counts))
-ggplot(counts_data, aes(x=counts)) +
+p1 <- ggplot(counts_data, aes(x=counts)) +
     geom_histogram(colour="black", fill="lightgray") +
     theme_classic() +
     labs(x='read counts', y='Frecuency')
@@ -204,7 +205,7 @@ ggsave(filename = 'plots/03_Data_preparation/Hist_counts.pdf', height = 3, width
 
 ## Normalized counts
 logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene)$logcounts))
-ggplot(logcounts_data, aes(x=logcounts)) +
+p2 <- ggplot(logcounts_data, aes(x=logcounts)) +
     geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
     theme_classic() +
     geom_density(fill="#69b3a2", alpha=0.3) +
@@ -213,14 +214,15 @@ ggsave(filename = 'plots/03_Data_preparation/Hist_logcounts.pdf', height = 3, wi
 
 ## Normalized counts and filtered genes
 filt_logcounts_data <- data.frame(logcounts=as.vector(assays(rse_gene_filt)$logcounts))
-ggplot(filt_logcounts_data, aes(x=logcounts)) +
+p3 <- ggplot(filt_logcounts_data, aes(x=logcounts)) +
     geom_histogram(aes(y=..density..), colour="darkgray", fill="lightgray") +
     theme_classic() +
     geom_density(fill="#69b3a2", alpha=0.3) +
     labs(x='log(CPM+0.5)', y='Frecuency')
 ggsave(filename = 'plots/03_Data_preparation/Hist_filt_logcounts.pdf', height = 3, width = 4)
 
-
+plot_grid(p1, p2, p3, ncol=3)
+ggsave(filename = 'plots/03_Data_preparation/Hist_count_dist.pdf', height = 3, width = 9)
 
 
 
