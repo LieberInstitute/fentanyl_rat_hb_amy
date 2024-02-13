@@ -55,6 +55,19 @@ rse_gene_QC_vars <- rse_gene
 
 ## Save original rse with qc variables
 save(rse_gene_QC_vars, file = 'processed-data/04_EDA/01_QCA/rse_gene_with_QCvars.Rdata')
+## Write csv with complete sample metadata and QC metrics (Supp Table)
+sample_metadata_and_QCmetrics <- colData(rse_gene)[,c('Sample_Num', 'Rat_ID', 'Brain_Region', 'Substance', 'Sex', 'SAMPLE_ID',
+                                        'Num_Fentanyl_Sessions_six_hrs', 'Total_Num_Fentanyl_Sessions', 'Batch_RNA_extraction',
+                                        'Batch_lib_prep', 'Batch_seq', 'RNA_concentration',
+                                        'Total_RNA_amount', 'RIN_LIBD', 'Psomagen_RIN', 'RIN',
+                                        'library_size', 'detected_num_genes', 'mitoRate',
+                                        'totalAssignedGene', 'overallMapRate', 'concordMapRate')]
+## "error" in Psomagen_RIN as 'NA'
+sample_metadata_and_QCmetrics$Psomagen_RIN <- replace(sample_metadata_and_QCmetrics$Psomagen_RIN, which(sample_metadata_and_QCmetrics$Psomagen_RIN=='error'), NA)
+## Order by sample number
+sample_metadata_and_QCmetrics <- sample_metadata_and_QCmetrics[order(sample_metadata_and_QCmetrics$Sample_Num),]
+write.csv(sample_metadata_and_QCmetrics, file="raw-data/sample_metadata_and_QCmetrics.csv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
 ## Return to rse_gene object
 rse_gene <- rse_gene_QC_vars
 
