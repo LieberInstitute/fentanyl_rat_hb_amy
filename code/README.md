@@ -1,9 +1,9 @@
 # Script summary
 
 ## 01. Transfer data
-
-TODO Nick
-
+* FASTQ files were transferred from their original locations to [raw-data](../raw-data). 
+    
+    See more details in [01_transfer_data](01_transfer_data/).
 
 ## 02. SPEAQeasy pipeline
 
