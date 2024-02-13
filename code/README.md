@@ -14,7 +14,7 @@ See more details in [02_SPEAQeasy](02_SPEAQeasy/).
 
 ## 03. Data processing
 
-Correct and clean sample metadata and add them to RSE objects. Count normalization and gene filtering steps were carried out here. 
+Sample metadata was cleaned and correctly formatted and added to RSE objects. Count normalization and gene filtering steps were carried out here. 
 
 See more details in [03_Data_preparation](03_Data_preparation/).
 
