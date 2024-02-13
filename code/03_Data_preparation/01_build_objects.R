@@ -124,7 +124,7 @@ save(rse_jx, file="processed-data/03_Data_preparation/rse_jx_logcounts.Rdata")
 ## Feature filtering based on counts
 
 ## Keep genes with at least k CPM in n samples & with a minimum total number of counts across all samples
-## Add design matrix to account for group differences and define n
+## Add design matrix to define n
 rse_gene_filt<-rse_gene[which(filterByExpr(assay(rse_gene),
                                            design=with(colData(rse_gene), model.matrix(~ Brain_Region + Substance)))),]
 dim(rse_gene_filt)
@@ -235,8 +235,9 @@ proc.time()
 options(width = 120)
 session_info()
 
+# ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 # setting  value
-# version  R version 4.2.2 (2022-10-31)
+# version  R version 4.3.2 (2023-10-31)
 # os       macOS Monterey 12.5.1
 # system   aarch64, darwin20
 # ui       RStudio
@@ -244,6 +245,77 @@ session_info()
 # collate  en_US.UTF-8
 # ctype    en_US.UTF-8
 # tz       America/Mexico_City
-# date     2023-04-24
-# rstudio  2022.12.0+353 Elsbeth Geranium (desktop)
-# pandoc   NA
+# date     2024-02-13
+# rstudio  2023.12.1+402 Ocean Storm (desktop)
+# pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
+#
+# ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+# package              * version   date (UTC) lib source
+# Biobase              * 2.61.0    2023-06-02 [1] Bioconductor
+# BiocGenerics         * 0.48.1    2023-11-02 [1] Bioconductor
+# bitops                 1.0-7     2021-04-24 [1] CRAN (R 4.3.0)
+# cellranger             1.1.0     2016-07-27 [1] CRAN (R 4.3.0)
+# cli                    3.6.2     2023-12-11 [1] CRAN (R 4.3.1)
+# colorspace             2.1-0     2023-01-23 [1] CRAN (R 4.3.0)
+# crayon                 1.5.2     2022-09-29 [1] CRAN (R 4.3.0)
+# DelayedArray           0.26.6    2023-07-02 [1] Bioconductor
+# digest                 0.6.34    2024-01-11 [1] CRAN (R 4.3.1)
+# dplyr                  1.1.4     2023-11-17 [1] CRAN (R 4.3.1)
+# edgeR                * 3.43.7    2023-06-21 [1] Bioconductor
+# evaluate               0.23      2023-11-01 [1] CRAN (R 4.3.1)
+# fansi                  1.0.6     2023-12-08 [1] CRAN (R 4.3.1)
+# farver                 2.1.1     2022-07-06 [1] CRAN (R 4.3.0)
+# fastmap                1.1.1     2023-02-24 [1] CRAN (R 4.3.0)
+# generics               0.1.3     2022-07-05 [1] CRAN (R 4.3.0)
+# GenomeInfoDb         * 1.37.2    2023-06-21 [1] Bioconductor
+# GenomeInfoDbData       1.2.10    2023-05-28 [1] Bioconductor
+# GenomicRanges        * 1.54.1    2023-10-30 [1] Bioconductor
+# ggplot2              * 3.4.4     2023-10-12 [1] CRAN (R 4.3.1)
+# glue                   1.7.0     2024-01-09 [1] CRAN (R 4.3.1)
+# gtable                 0.3.4     2023-08-21 [1] CRAN (R 4.3.0)
+# here                 * 1.0.1     2020-12-13 [1] CRAN (R 4.3.0)
+# htmltools              0.5.7     2023-11-03 [1] CRAN (R 4.3.1)
+# IRanges              * 2.36.0    2023-10-26 [1] Bioconductor
+# knitr                  1.45      2023-10-30 [1] CRAN (R 4.3.1)
+# labeling               0.4.3     2023-08-29 [1] CRAN (R 4.3.0)
+# lattice                0.21-9    2023-10-01 [1] CRAN (R 4.3.2)
+# lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.3.1)
+# limma                * 3.57.6    2023-06-21 [1] Bioconductor
+# locfit                 1.5-9.8   2023-06-11 [1] CRAN (R 4.3.0)
+# magrittr               2.0.3     2022-03-30 [1] CRAN (R 4.3.0)
+# Matrix                 1.6-1.1   2023-09-18 [1] CRAN (R 4.3.2)
+# MatrixGenerics       * 1.13.0    2023-05-20 [1] Bioconductor
+# matrixStats          * 1.2.0     2023-12-11 [1] CRAN (R 4.3.1)
+# munsell                0.5.0     2018-06-12 [1] CRAN (R 4.3.0)
+# pillar                 1.9.0     2023-03-22 [1] CRAN (R 4.3.0)
+# pkgconfig              2.0.3     2019-09-22 [1] CRAN (R 4.3.0)
+# R6                     2.5.1     2021-08-19 [1] CRAN (R 4.3.0)
+# ragg                   1.2.7     2023-12-11 [1] CRAN (R 4.3.1)
+# Rcpp                   1.0.12    2024-01-09 [1] CRAN (R 4.3.1)
+# RCurl                  1.98-1.14 2024-01-09 [1] CRAN (R 4.3.1)
+# readxl               * 1.4.3     2023-07-06 [1] CRAN (R 4.3.0)
+# rlang                  1.1.3     2024-01-10 [1] CRAN (R 4.3.1)
+# rmarkdown              2.25      2023-09-18 [1] CRAN (R 4.3.1)
+# rprojroot              2.0.4     2023-11-05 [1] CRAN (R 4.3.1)
+# rstudioapi             0.15.0    2023-07-07 [1] CRAN (R 4.3.0)
+# S4Arrays               1.1.4     2023-06-02 [1] Bioconductor
+# S4Vectors            * 0.40.2    2023-11-25 [1] Bioconductor 3.18 (R 4.3.2)
+# scales                 1.3.0     2023-11-28 [1] CRAN (R 4.3.1)
+# sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.3.0)
+# stringi                1.8.3     2023-12-11 [1] CRAN (R 4.3.1)
+# stringr              * 1.5.1     2023-11-14 [1] CRAN (R 4.3.1)
+# SummarizedExperiment * 1.30.2    2023-06-06 [1] Bioconductor
+# systemfonts            1.0.5     2023-10-09 [1] CRAN (R 4.3.1)
+# textshaping            0.3.7     2023-10-09 [1] CRAN (R 4.3.1)
+# tibble                 3.2.1     2023-03-20 [1] CRAN (R 4.3.0)
+# tidyselect             1.2.0     2022-10-10 [1] CRAN (R 4.3.0)
+# utf8                   1.2.4     2023-10-22 [1] CRAN (R 4.3.1)
+# vctrs                  0.6.5     2023-12-01 [1] CRAN (R 4.3.1)
+# withr                  3.0.0     2024-01-16 [1] CRAN (R 4.3.1)
+# xfun                   0.41      2023-11-01 [1] CRAN (R 4.3.1)
+# XVector                0.41.1    2023-06-02 [1] Bioconductor
+# zlibbioc               1.47.0    2023-05-20 [1] Bioconductor
+#
+# [1] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library
+#
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
