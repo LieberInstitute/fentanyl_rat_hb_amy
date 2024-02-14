@@ -21,6 +21,9 @@ See more details in [03_Data_preparation](03_Data_preparation/).
 
 ## 04. Exploratory Data Analysis (EDA)
 
+Quality control analysis (QCA) was performed, as well as the exploration of sample-level and gene-level effects through dimensionality reduction  (Principal Component Analysis) and variance partition analyses, respectively. 
+
+See more details in [04_EDA](04_EDA/).
 
 
 ## 05. Differential Expression Analysis (DEA)
