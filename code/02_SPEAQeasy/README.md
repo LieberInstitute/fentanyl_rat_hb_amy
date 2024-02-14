@@ -1,3 +1,6 @@
+
+# SPEAQeasy 
+
 This directory contains code used to run SPEAQeasy on the raw FASTQ sequences to obtain RSE objects for downstream analyses.
 
 SPEAQeasy was run with default settings as of commit `87ba0b4`, with the exception of using ENSEMBL release 109 as annotation (i.e. `ensembl_version_rat = "109"`).
