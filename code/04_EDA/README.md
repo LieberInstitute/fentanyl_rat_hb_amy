@@ -1,6 +1,6 @@
 # Exploratory Data Analysis (EDA)
 
-This directory contains the following scripts with code for Exploratory Data Analyses prior to differential expression assessment. 
+This directory contains the following scripts with code for exploratory analyses prior to differential expression assessment. 
 
 ## 1. Quality Control Analysis (QCA)
 
