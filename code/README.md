@@ -5,9 +5,9 @@ FASTQ files were transferred from their original locations to [raw-data](../raw-
     
 See more details in [01_transfer_data](01_transfer_data/).
 
-## 02. SPEAQeasy pipeline
+## 02. *SPEAQeasy* pipeline
 
-SPEAQeasy pipeline was run to obtain the `RangedSummarizedExperiment` (RSE) objects.
+*SPEAQeasy* pipeline was run to obtain the `RangedSummarizedExperiment` (RSE) objects.
 
 See more details in [02_SPEAQeasy](02_SPEAQeasy/). 
 

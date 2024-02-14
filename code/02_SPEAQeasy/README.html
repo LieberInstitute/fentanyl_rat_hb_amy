@@ -352,22 +352,24 @@ display: none;
 </div>
 
 
-<div id="speaqeasy" class="section level1">
-<h1>SPEAQeasy</h1>
-<p>This directory contains code used to run SPEAQeasy on the raw FASTQ
-sequences to obtain RSE objects for downstream analyses.</p>
-<p>SPEAQeasy was run with default settings as of commit
+<div id="speaqeasy-pipeline" class="section level1">
+<h1><em>SPEAQeasy</em> pipeline</h1>
+<p>This directory contains code used to run <em>SPEAQeasy</em> on the
+raw FASTQ sequences to obtain RSE objects for downstream analyses.</p>
+<p><em>SPEAQeasy</em> was run with default settings as of commit
 <code>87ba0b4</code>, with the exception of using ENSEMBL release 109 as
 annotation (i.e. <code>ensembl_version_rat = &quot;109&quot;</code>).</p>
 <ul>
 <li><code>01-write_manifest.*</code>: Produce the
-<code>samples.manifest</code> file, a required input to SPEAQeasy.</li>
-<li><code>02-run_pipeline.sh</code>: The shell script invoking SPEAQeasy
-itself.</li>
+<code>samples.manifest</code> file, a required input to
+<em>SPEAQeasy</em>.</li>
+<li><code>02-run_pipeline.sh</code>: The shell script invoking
+<em>SPEAQeasy</em> itself.</li>
 <li><code>03-create_rse_tx.*</code>: A script to manually run the
-<code>CountObjects</code> process of SPEAQeasy, required because a bug
-at the time used “primary” instead of “main” annotation, and didn’t
-initially produce the important <code>rse_tx</code> object.</li>
+<code>CountObjects</code> process of <em>SPEAQeasy</em>, required
+because a bug at the time used “primary” instead of “main” annotation,
+and didn’t initially produce the important <code>rse_tx</code>
+object.</li>
 </ul>
 </div>
 
