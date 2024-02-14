@@ -8,7 +8,7 @@ library(ggplot2)
 library(cowplot)
 library(sessioninfo)
 
-#######################   Data Preparation   #######################
+#######################   Data Processing   #######################
 
 ## Load RSE objects
 load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=TRUE)

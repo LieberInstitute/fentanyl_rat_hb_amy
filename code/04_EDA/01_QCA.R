@@ -455,7 +455,7 @@ for (var1 in RNA_vars){
 
 
 
-## 1.4 QC sample filetring
+## 1.4 QC-based sample filtering
 
 ## Find sample outliers based on their QC metrics, separately for habenula and amygdala samples
 rse_gene_habenula <- rse_gene[,which(rse_gene$Brain_Region=="Habenula")]
