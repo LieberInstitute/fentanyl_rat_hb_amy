@@ -16,7 +16,7 @@ See more details in [02_SPEAQeasy](02_SPEAQeasy/).
 
 Sample metadata was cleaned and correctly formatted and added to RSE objects. Count normalization and gene filtering steps were carried out here. 
 
-See more details in [03_Data_preparation](03_Data_preparation/).
+See more details in [03_Data_processing](03_Data_preparation/).
 
 
 ## 04. Exploratory Data Analysis (EDA)
