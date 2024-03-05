@@ -101,10 +101,11 @@ QC_boxplots <- function(qc_metric, sample_var){
         x_label="Substance"
     }
     else if (sample_var=="Brain_Region_and_Substance"){
-        colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
+        colors=c('Amygdala\nFentanyl'='springgreen3' , 'Amygdala\nSaline'='yellowgreen', 'Habenula\nFentanyl'='hotpink1', 'Habenula\nSaline'='violet')
         violin_width=0.7
         jitter_width=0.09
         x_label="Brain Region & Substance"
+        sample_var='Brain_Region_and_Substance_lab'
     }
     else if (sample_var=='Total_Num_Fentanyl_Sessions'){
         colors=c('24'='salmon', '22'='pink2')
@@ -134,6 +135,9 @@ QC_boxplots <- function(qc_metric, sample_var){
     y_label=str_replace_all(qc_metric, c("_"=" "))
 
     data <- data.frame(colData(rse_gene))
+    data$Brain_Region_and_Substance_lab <- paste(as.data.frame(strsplit(data$Brain_Region_and_Substance, ' '))[1,],
+                                                 as.data.frame(strsplit(data$Brain_Region_and_Substance, ' '))[2,], sep='\n')
+
     plot <- ggplot(data = data, mapping = aes(x = !! rlang::sym(sample_var), y = !! rlang::sym(qc_metric), color = !! rlang::sym(sample_var))) +
                 geom_violin(alpha = 0, size = 0.4, color='black', width=violin_width)+
                 geom_jitter(width = jitter_width, alpha = 0.7, size = 2) +
@@ -141,8 +145,9 @@ QC_boxplots <- function(qc_metric, sample_var){
                 scale_color_manual(values = colors) +
                 sm_hgrid() +
                 labs(y= y_label, x = x_label) +
-                theme(axis.title = element_text(size = (9)),
-                      axis.text = element_text(size = (8)))
+                theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+                      axis.title = element_text(size = (12)),
+                      axis.text = element_text(size = (11)))
 
     return(plot)
 }
@@ -152,12 +157,16 @@ QC_boxplots <- function(qc_metric, sample_var){
 for (sample_var in sample_variables){
 
     if (sample_var=="Brain_Region_and_Substance"){
-        width=45
-        height=35
+        width=35.5
+        height=32
+    }
+    else if(sample_var %in% c("Num_Fentanyl_Sessions_six_hrs", "Total_Num_Fentanyl_Sessions")){
+        width=29
+        height=25.5
     }
     else {
-        width=35
-        height=30
+        width=27
+        height=25.5
     }
 
     i=1
