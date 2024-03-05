@@ -603,12 +603,12 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         ## Line of median - 3 MADs
         geom_hline(yintercept = median-(3*mad), size=0.5, linetype=2) +
         ## Labels of removed samples
-        geom_label_repel(color='gray50', size=1.7, max.overlaps = Inf,
+        geom_label_repel(color='gray30', size=3.2, max.overlaps = Inf,
                          box.padding = 0.7,
                          show.legend=FALSE,
                          position = pos,
                          min.segment.length = 0) +
-        theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"),
+        theme(plot.margin = unit(c(0.2, 0.1, 0.2, 0.1), "cm"),
               axis.title = element_text(size = (12)),
               axis.text = element_text(size = (11)),
               legend.position="right",
@@ -624,16 +624,16 @@ multiple_boxplots <- function(RSE, sample_group){
     for (sample_var in sample_variables){
 
         if(sample_var %in% c("Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
-            height=20
-            width=39
+            height=23
+            width=40
         }
         else if(sample_var=="Brain_Region_and_Substance"){
-            height=22
-            width=37
+            height=23
+            width=38
         }
         else{
-            height=20
-            width=34
+            height=23
+            width=37
         }
 
         i=1
