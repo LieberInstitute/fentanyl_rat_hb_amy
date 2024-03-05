@@ -608,7 +608,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
                          show.legend=FALSE,
                          position = pos,
                          min.segment.length = 0) +
-        theme(plot.margin = unit(c(0.2, 0.1, 0.2, 0.1), "cm"),
+        theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"),
               axis.title = element_text(size = (12)),
               axis.text = element_text(size = (11)),
               legend.position="right",
@@ -626,6 +626,10 @@ multiple_boxplots <- function(RSE, sample_group){
         if(sample_var %in% c("Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
             height=20
             width=39
+        }
+        else if(sample_var=="Brain_Region_and_Substance"){
+            height=22
+            width=37
         }
         else{
             height=20
