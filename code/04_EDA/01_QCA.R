@@ -161,7 +161,7 @@ for (sample_var in sample_variables){
         height=32
     }
     else if(sample_var %in% c("Num_Fentanyl_Sessions_six_hrs", "Total_Num_Fentanyl_Sessions")){
-        width=29
+        width=32
         height=25.5
     }
     else {
@@ -175,7 +175,7 @@ for (sample_var in sample_variables){
         plots[[i]]<- QC_boxplots(qc_metric, sample_var)
         i=i+1
     }
-    plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]], nrow = 3)
+    plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]], nrow = 3, align = 'vh')
     ggsave(paste("plots/04_EDA/01_QCA/QC_boxplots_", sample_var,".pdf", sep=""), width=width, height=height, units = "cm")
 }
 
@@ -589,7 +589,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     pos <- position_jitter(width = 0.2, seed = 2)
 
     plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric), color = !! rlang::sym('Retention_after_QC_filtering'), label=!! rlang::sym('Retention_sample_label'))) +
-        geom_jitter(alpha = 1, size = 2, position = pos, aes(shape=eval(parse_expr((sample_var))))) +
+        geom_jitter(alpha = 1, size = 2.5, position = pos, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
         scale_shape_manual(values = shapes) +
@@ -608,11 +608,12 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
                          show.legend=FALSE,
                          position = pos,
                          min.segment.length = 0) +
-        theme(axis.title = element_text(size = (9)),
-              axis.text = element_text(size = (8)),
+        theme(plot.margin = unit(c(0.2, 0.1, 0.2, 0.1), "cm"),
+              axis.title = element_text(size = (12)),
+              axis.text = element_text(size = (11)),
               legend.position="right",
-              legend.text = element_text(size=8),
-              legend.title = element_text(size=9))
+              legend.text = element_text(size=11),
+              legend.title = element_text(size=12))
 
     return(plot)
 }
@@ -622,15 +623,26 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
 multiple_boxplots <- function(RSE, sample_group){
     for (sample_var in sample_variables){
 
+        if(sample_var %in% c("Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
+            height=20
+            width=39
+        }
+        else{
+            height=20
+            width=34
+        }
+
         i=1
         plots = list()
         for (qc_metric in qc_metrics) {
             plots[[i]]<- boxplots_after_QC_filtering(RSE, qc_metric, sample_var)
             i=i+1
         }
-        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], plots[[8]], plots[[9]],
-            nrow = 3)
-        ggsave(paste("plots/04_EDA/01_QCA/Boxplots_afterQC_filtering_", sample_var, "_", sample_group, ".pdf", sep=""), width=35, height=30, units = "cm")
+        plot_grid(plots[[1]], plots[[2]], plots[[3]],
+                  plots[[4]], plots[[5]], plots[[6]],
+                  plots[[7]], plots[[8]], plots[[9]],
+            ncol = 3, align = 'vh')
+        ggsave(paste("plots/04_EDA/01_QCA/Boxplots_afterQC_filtering_", sample_var, "_", sample_group, ".pdf", sep=""), width=width, height=height, units = "cm")
     }
 }
 
