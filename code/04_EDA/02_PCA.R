@@ -1,13 +1,16 @@
 
 library(here)
 library(SummarizedExperiment)
-library(jaffelab)
 library(ggplot2)
+library(ggnewscale)
 library(ggrepel)
-library(stringr)
-library(smplot2)
+library(jaffelab)
 library(cowplot)
 library(rlang)
+
+library(stringr)
+library(smplot2)
+
 library(sessioninfo)
 
 
@@ -15,10 +18,7 @@ library(sessioninfo)
 ################################################################################
 ##                        2. Explore sample-level effects
 ################################################################################
-
-#######################   Principal Component Analysis   #######################
-
-## (Note: genes are filtered and counts normalized in these analyses)
+## (Note: genes are filtered and counts normalized in this analysis)
 
 load(here('processed-data/03_Data_preparation/rse_gene_filt.Rdata'), verbose=TRUE)
 load(here('processed-data/04_EDA/01_QCA/rse_gene_habenula_complete.Rdata'), verbose = TRUE)
@@ -38,13 +38,13 @@ rse_gene_amygdala_filt$Retention_sample_label <- rse_gene_amygdala_complete$Rete
 
 
 
-### Explore samples' gene expression variation
-
+## Principal Component Analysis: explore samples' gene expression variation
 
 ## 2.1 PCA data obtention
 
-## Function to obtain PC
-PCA<-function(brain_region){
+## Function to obtain PCs
+
+PCA <- function(brain_region){
     if (is.null(brain_region)){
         RSE <- rse_gene_filt
     }
@@ -66,85 +66,105 @@ PCA<-function(brain_region){
 
 
 
+
+
 ## 2.2 PCA visualization
 
-## PCx vs PCy Plots
+## Define colors per sample variable
+colors <- list('Brain_Region'=c('Amygdala'='palegreen3', 'Habenula'='orchid1'),
+               'Substance'=c('Fentanyl'='turquoise3', 'Saline'='yellow3'),
+               'Brain_Region_and_Substance'=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen',
+                                              'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet'),
+               'Total_Num_Fentanyl_Sessions'=c('24'='salmon', '22'='pink2'),
+               'Num_Fentanyl_Sessions_six_hrs'=c('18'='dodgerblue', '16'='lightskyblue'),
+               'Batch_RNA_extraction'= c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2'),
+               'Batch_lib_prep'=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta'))
 
-PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_region) {
 
-    legend_height = 1
-    legend_width = 1
-    legend_text_size = 8
-    legend_title_size = 10
+## Colors to highlight outlier and segregated samples
+rare_and_poorQC_samples_colors_hab <- c("5_F_LHb_13"="lightsteelblue3", "3_F_LHb_09"='plum1',
+                                        "1_F_LHb_01"='greenyellow',  "18_S_LHb_20"='deepskyblue1')
+rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange2", "34_S_Amyg_22"="cyan",
+                                         "14_S_Amyg_14"='orchid1', "16_S_Amyg_18"='yellow2')
 
-    if(sample_var=='Brain_Region'){
-        colors=c('Amygdala'='palegreen3', 'Habenula'='orchid1')
-        margin=0.7
+## PCx vs PCy plots
+
+PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_region, sample_labels) {
+
+    ## Colors of squares around samples to highlight
+    if (is.null(brain_region)){
+        sample_square_colors <- c(NA, NA, NA, NA)
+    }
+    else if(brain_region=='habenula'){
+        sample_square_colors <- rare_and_poorQC_samples_colors_hab
+    }
+    else if(brain_region=='amygdala'){
+        sample_square_colors <- rare_and_poorQC_samples_colors_amyg
     }
 
+    ## Sample labels and colors (outliers only or + rare ones)
+    if (is.null(sample_labels)){
+        pca_data$sample_labels <- pca_data$Retention_sample_label
+        ## Red labels for outliers, gray for segregated ones
+        pca_data$sample_label_colors <- sapply(pca_data$Retention_sample_label, function(x){if(!is.na(x)){'red'}
+                                                                                            else {NA}})
+    }
+    else{
+        pca_data$sample_labels <- pca_data$outlier_or_rare_samples_labels
+        pca_data$sample_label_colors <- sapply(pca_data$outlier_or_rare_samples_labels,
+                                               function(x){if(!is.na(x) & x %in% pca_data$Retention_sample_label){'red'}
+                                                           else if (!is.na(x)) {'gray35'}
+                                                           else {NA}})
+    }
+
+    ## Plot margin
+    if(sample_var=='Brain_Region'){margin=0.7}
     else if(sample_var=='Substance'){
-        colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
-        if (is.null(brain_region)){
-            margin=0.7
-        }
-        else {
-            margin=0.9
-        }
+        if (is.null(brain_region)){margin=0.7}
+        else {margin=0.9}
     }
-
-    else if(sample_var=='Brain_Region_and_Substance'){
-        colors=c('Amygdala Fentanyl'='springgreen3' , 'Amygdala Saline'='yellowgreen', 'Habenula Fentanyl'='hotpink1', 'Habenula Saline'='violet')
-        margin=0.1
-    }
-
-    else if(sample_var=='Total_Num_Fentanyl_Sessions'){
-        colors=c('24'='salmon', '22'='pink2')
-        margin=0.1
-    }
-
-    else if(sample_var=='Num_Fentanyl_Sessions_six_hrs'){
-        colors=c('18'='dodgerblue', '16'='lightskyblue')
-        margin=0.1
-    }
-
+    else if(sample_var=='Brain_Region_and_Substance'){margin=0.1}
+    else if(sample_var=='Total_Num_Fentanyl_Sessions'){margin=0.1}
+    else if(sample_var=='Num_Fentanyl_Sessions_six_hrs'){margin=0.1}
     else if(sample_var=='Batch_RNA_extraction'){
-        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
-        if (is.null(brain_region)){
-            margin=0.7
-        }
-        else {
-            margin=0.9
-        }
+        if (is.null(brain_region)){margin=0.7}
+        else {margin=0.9}
     }
     else if(sample_var=='Batch_lib_prep'){
-        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
-        if (is.null(brain_region)){
-            margin=0.7
-        }
-        else {
-            margin=0.9
-        }
+        if (is.null(brain_region)){margin=0.7}
+        else {margin=0.9}
     }
 
-
     plot <- ggplot(data=pca_data,
-                aes(x=eval(parse_expr(PCx)),y=eval(parse_expr(PCy)),
-                color=eval(parse_expr(sample_var)),
-                label=outlier_or_rare_samples_labels) ) +
+                  aes(x=eval(parse_expr(PCx)),y=eval(parse_expr(PCy)),
+                  color=eval(parse_expr(sample_var)),
+                  label=sample_labels)) +
             theme_classic() +
-            theme(legend.position="right", plot.margin=unit (c (1,margin,1,margin), 'cm'),
-                  legend.text = element_text(size=legend_text_size),
-                  legend.title = element_text(size=legend_title_size)) +
-            geom_point(aes(shape=Batch_RNA_extraction), size=3) +
-            scale_color_manual(values = colors) +
+            # Add red square around outlier samples
+            geom_point(data=subset(pca_data, !is.na(sample_labels)), aes(color=sample_labels),
+                       pch = 0, size=5.6, stroke = 1) +
+            scale_color_manual(values = sample_square_colors) +
+            guides(color='none') +
+            new_scale_color() +
+            geom_point(aes(color=eval(parse_expr(sample_var)), shape=Batch_RNA_extraction), size=3.5) +
+            scale_color_manual(values = colors[[sample_var]]) +
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
-            ## Labels of removed samples
-            geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=2, max.overlaps = Inf,
+            ## Labels of outlier samples
+            geom_label_repel(label=pca_data$sample_labels, color=pca_data$sample_label_colors,
+                             size=3.2,
+                             max.overlaps = Inf,
                              box.padding = 0.7,
                              show.legend=FALSE,
                              min.segment.length = 0) +
             labs(x= pca_vars_labs[strtoi(gsub("PC","", PCx))], y = pca_vars_labs[strtoi(gsub("PC","", PCy))],
-                 color=str_replace_all(sample_var, c("_"=" ")))
+                 color=str_replace_all(sample_var, c("_"=" "))) +
+            theme(legend.position="right",
+                  plot.margin=unit (c (1,margin,1,margin), 'cm'),
+                  axis.title = element_text(size = (12)),
+                  axis.text = element_text(size = (11)),
+                  legend.text = element_text(size=11),
+                  legend.title = element_text(size=12))
+
     return(plot)
 }
 
@@ -165,14 +185,14 @@ plot_PCAs<-function(brain_region, filename){
             for (sample_var in c("Brain_Region", "Substance", "Brain_Region_and_Substance",
                                  "Batch_RNA_extraction", "Batch_lib_prep",
                                  "Num_Fentanyl_Sessions_six_hrs", "Total_Num_Fentanyl_Sessions")){
-                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region)
+                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, NULL)
                 plots[[i]]=p
                 i=i+1
             }
-            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], nrow = 2)
+            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], nrow = 2, align = 'vh')
             ## Save plots
             ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_all_samples.pdf", sep=""),
-                   width = 52, height = 19, units = "cm")
+                   width = 60, height = 19, units = "cm")
         }
     }
     ## For habenula and amygdala separately
@@ -182,11 +202,11 @@ plot_PCAs<-function(brain_region, filename){
             i=1
             for (sample_var in c("Substance", "Batch_RNA_extraction", "Batch_lib_prep",
                                  "Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
-                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region)
+                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, 'with_rare_samples')
                 plots[[i]]=p
                 i=i+1
             }
-            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], nrow = 2)
+            plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], nrow = 2, align = 'vh')
 
             ## Save plots
             if (is.null(filename)){
@@ -221,7 +241,7 @@ plot_PCAs('amygdala', NULL)
 #####################
 amyg_pca_data <- PCA('amygdala')[[1]]
 
-######## 1. Saline samples within fentanyl samples' group:  ########
+########  A) Saline samples within fentanyl samples' group:  ########
 
 amyg_sal_pca_data <- amyg_pca_data[which(amyg_pca_data$Substance=='Saline'),]
 
@@ -234,17 +254,17 @@ amyg_sal_pca_data[order(amyg_sal_pca_data$PC2), 'SAMPLE_ID'][1]
 #  "14_S_Amyg_14"
 
 
-######## 2. Sample with the highest value in PC4:  ########
+########  B) Sample with the highest value in PC4:  ########
 
 ## -> It is the "16_S_Amyg_18" saline sample
 amyg_pca_data[which.max(amyg_pca_data$PC4), 'SAMPLE_ID']
 #  "16_S_Amyg_18"
 
 
-######## 3. Sample with the lowest value in PC6:  ########
+########  C) Sample with the highest value in PC6:  ########
 
 ## -> It is the "34_S_Amyg_22" outlier sample
-amyg_pca_data[which.min(amyg_pca_data$PC6), 'SAMPLE_ID']
+amyg_pca_data[which.max(amyg_pca_data$PC6), 'SAMPLE_ID']
 #  "34_S_Amyg_22"
 
 
@@ -258,7 +278,7 @@ rse_gene_amygdala_filt$outlier_or_rare_samples_labels <- sapply(rse_gene_amygdal
 ## Labels' colors
 rse_gene_amygdala_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_amygdala_filt$SAMPLE_ID,
                                                                 function(x){if(x %in% rse_gene_amygdala_filt$Retention_sample_label){'gray30'}
-                                                                    else if (x %in% rare_amyg_samples){'yellow4'}
+                                                                    else if (x %in% rare_amyg_samples){'gray50'}
                                                                     else{NA}})
 save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata')
 
@@ -268,7 +288,7 @@ save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdal
 #####################
 hab_pca_data <- PCA('habenula')[[1]]
 
-######## 1. Samples that have the lowest PC2 values:  ########
+######## A) Samples that have the lowest PC2 values:  ########
 
 ## -> One is the "5_F_LHb_13" outlier sample
 hab_pca_data[order(hab_pca_data$PC2), 'SAMPLE_ID'][1]
@@ -279,23 +299,23 @@ hab_pca_data[order(hab_pca_data$PC2), 'SAMPLE_ID'][2]
 #  "3_F_LHb_09"
 
 
-######## 2. Fentanyl samples that appear within saline samples' group:  ########
+######## B) Fentanyl samples that appear within saline samples' group:  ########
 
-## -> One is the "5_F_LHb_13" outlier sample: sample with the highest PC4 value
-hab_pca_data[which.max(hab_pca_data$PC4), 'SAMPLE_ID']
+## -> One is the "5_F_LHb_13" outlier sample: sample with the lowest PC4 value
+hab_pca_data[which.min(hab_pca_data$PC4), 'SAMPLE_ID']
 #  "5_F_LHb_13"
 
 hab_fenta_pca_data <- hab_pca_data[which(hab_pca_data$Substance=='Fentanyl'),]
-## -> Another is the "1_F_LHb_01" sample: fentanyl sample with the third lowest PC3 value
-hab_fenta_pca_data[order(hab_fenta_pca_data$PC3), 'SAMPLE_ID'][3]
+## -> Another is the "1_F_LHb_01" sample: fentanyl sample with the third highest PC3 value
+hab_fenta_pca_data[order(hab_fenta_pca_data$PC3, decreasing = TRUE), 'SAMPLE_ID'][3]
 #  "1_F_LHb_01"
 
 
-######## 3. Saline samples within fentanyl group:  ########
+######## C) Saline samples within fentanyl group:  ########
 
 hab_sal_pca_data <- hab_pca_data[which(hab_pca_data$Substance=="Saline"),]
-## -> It is the "18_S_LHb_20" sample: the saline sample with the lowest PC4 value
-hab_sal_pca_data[which.min(hab_sal_pca_data$PC4), 'SAMPLE_ID']
+## -> It is the "18_S_LHb_20" sample: the saline sample with the highest PC4 value
+hab_sal_pca_data[which.max(hab_sal_pca_data$PC4), 'SAMPLE_ID']
 #  "18_S_LHb_20"
 
 
@@ -309,7 +329,7 @@ rse_gene_habenula_filt$outlier_or_rare_samples_labels <- sapply(rse_gene_habenul
 ## Labels' colors
 rse_gene_habenula_filt$outlier_or_rare_samples_colors <- sapply(rse_gene_habenula_filt$SAMPLE_ID,
                                                                 function(x){if(x %in% rse_gene_habenula_filt$Retention_sample_label){'gray30'}
-                                                                            else if (x %in% rare_hab_samples){'yellow4'}
+                                                                            else if (x %in% rare_hab_samples){'gray50'}
                                                                             else{NA}})
 save(rse_gene_habenula_filt, file='processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata')
 
