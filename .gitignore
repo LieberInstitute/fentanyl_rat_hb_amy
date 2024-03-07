@@ -5,3 +5,5 @@
 raw-data/count_objects/*
 raw-data/FASTQ/*
 processed-data/*
+
+!processed-data/Supplementary_Tables/
