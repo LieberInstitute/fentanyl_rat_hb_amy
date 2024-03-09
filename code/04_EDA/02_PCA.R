@@ -420,15 +420,9 @@ rare_and_poorQC_samples_colors <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum3'
 
 QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
 
-    data<-as.data.frame(colData(rse_gene_filt))
-    data_brain_region <- as.data.frame(colData(eval(parse_expr(paste('rse_gene', brain_region, 'filt', sep='_')))))
-
-    ## Add labels and colors for rare/outlier samples from each brain region
-    data$outlier_or_rare_samples_labels <- apply(data, 1,
-                                                 function(x){if(x['SAMPLE_ID'] %in% data_brain_region$SAMPLE_ID)
-                                                                {data_brain_region[which(data_brain_region$SAMPLE_ID==x['SAMPLE_ID']),
-                                                                 'outlier_or_rare_samples_labels']}
-                                                                     else {NA}})
+    ## Brain region data
+    data <- as.data.frame(colData(eval(parse_expr(paste('rse_gene', brain_region, 'filt', sep='_')))))
+    ## Add colors for rare/outlier samples from each brain region
     data$outlier_or_rare_samples_colors <- sapply(as.vector(data$outlier_or_rare_samples_labels),
                                                  function(x){if(!is.na(x) && x==rare_sample_ID){rare_and_poorQC_samples_colors[rare_sample_ID]}
                                                              else if(!is.na(x)){'gray35'}
@@ -510,28 +504,28 @@ QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
 
 ########### Sample "5_F_LHb_13" ###########
 ## Sample "5_F_LHb_13" has the least number of expressed genes
-QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'habenula', "5_F_LHb_13")
-ggsave("plots/04_EDA/02_PCA/5_F_LHb_13_QC_boxplot_habenula.pdf", width = 16, height = 11, units = "cm")
+QC_boxplot('detected_num_genes', 'Substance', 'habenula', "5_F_LHb_13")
+ggsave("plots/04_EDA/02_PCA/5_F_LHb_13_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
 
 ########### Sample "1_F_LHb_01" ###########
 ## Sample "1_F_LHb_01" has the lowest rate of concordant reads
-QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'habenula', "1_F_LHb_01")
-ggsave("plots/04_EDA/02_PCA/1_F_LHb_01_QC_boxplot_habenula.pdf", width = 16, height = 11, units = "cm")
+QC_boxplot('concordMapRate', 'Substance', 'habenula', "1_F_LHb_01")
+ggsave("plots/04_EDA/02_PCA/1_F_LHb_01_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
 
 ########### Sample "3_F_LHb_09" ###########
 
 ## Sample "3_F_LHb_09" has the least amount of RNA
-QC_boxplot('Total_RNA_amount', 'Brain_Region_and_Substance', 'habenula', "3_F_LHb_09")
-ggsave("plots/04_EDA/02_PCA/3_F_LHb_09_QC_boxplot_habenula.pdf", width = 16, height = 11, units = "cm")
+QC_boxplot('Total_RNA_amount', 'Substance', 'habenula', "3_F_LHb_09")
+ggsave("plots/04_EDA/02_PCA/3_F_LHb_09_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
 
 ########### Sample "18_S_LHb_20" ###########
 
 ## Sample "18_S_LHb_20" has the highest RNA concentration and RIN, and the largest number of expressed genes
-p1 <- QC_boxplot('RNA_concentration', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
-p2 <- QC_boxplot('RIN', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
-p3 <- QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'habenula', "18_S_LHb_20")
+p1 <- QC_boxplot('RNA_concentration', 'Substance', 'habenula', "18_S_LHb_20")
+p2 <- QC_boxplot('RIN', 'Substance', 'habenula', "18_S_LHb_20")
+p3 <- QC_boxplot('detected_num_genes', 'Substance', 'habenula', "18_S_LHb_20")
 plot_grid(p1, p2, p3, ncol=3, align = 'h')
-ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 48, height = 11, units = "cm")
+ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 39, height = 11, units = "cm")
 
 
 
@@ -543,37 +537,40 @@ ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 48, he
 
 ## Sample "34_S_Amyg_22" has the biggest library size, the highest proportion of reads assigned to genes and
 ## the highest fraction of reads that mapped to the mitochondrial chr
-p1 <- QC_boxplot('library_size', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
-p2 <- QC_boxplot('totalAssignedGene', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
-p3 <- QC_boxplot('mitoRate', 'Brain_Region_and_Substance', 'amygdala', "34_S_Amyg_22")
+p1 <- QC_boxplot('library_size', 'Substance', 'amygdala', "34_S_Amyg_22")
+p2 <- QC_boxplot('totalAssignedGene', 'Substance', 'amygdala', "34_S_Amyg_22")
+p3 <- QC_boxplot('mitoRate', 'Substance', 'amygdala', "34_S_Amyg_22")
 plot_grid(p1, p2, p3, ncol=3, align = 'h')
-ggsave("plots/04_EDA/02_PCA/34_S_Amyg_22_QC_boxplot_amygdala.pdf", width = 48, height = 11, units = "cm")
+ggsave("plots/04_EDA/02_PCA/34_S_Amyg_22_QC_boxplot_amygdala.pdf", width = 39, height = 11, units = "cm")
 
 ########### Sample "33_S_Amyg_20" ###########
 
 ## Sample "33_S_Amyg_20" has the least number of expressed genes but the highest amount of RNA and the highest
 ## fractions of both, concordant reads and reads that mapped to the reference genome
-p1 <- QC_boxplot('detected_num_genes', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
-p2 <- QC_boxplot('Total_RNA_amount', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
-p3 <- QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
-p4 <- QC_boxplot('overallMapRate', 'Brain_Region_and_Substance', 'amygdala', "33_S_Amyg_20")
+p1 <- QC_boxplot('detected_num_genes', 'Substance', 'amygdala', "33_S_Amyg_20")
+p2 <- QC_boxplot('Total_RNA_amount', 'Substance', 'amygdala', "33_S_Amyg_20")
+p3 <- QC_boxplot('concordMapRate', 'Substance', 'amygdala', "33_S_Amyg_20")
+p4 <- QC_boxplot('overallMapRate', 'Substance', 'amygdala', "33_S_Amyg_20")
 plot_grid(p1, p2, p3, p4, ncol=2, align = 'vh')
-ggsave("plots/04_EDA/02_PCA/33_S_Amyg_20_QC_boxplot_amygdala.pdf", width = 32, height = 22, units = "cm")
+ggsave("plots/04_EDA/02_PCA/33_S_Amyg_20_QC_boxplot_amygdala.pdf", width = 26, height = 22, units = "cm")
 
 ########### Sample "14_S_Amyg_14" ###########
 
 ## Sample "14_S_Amyg_14" has the lowest fraction of mitochondrial reads
-QC_boxplot('mitoRate', 'Brain_Region_and_Substance', 'amygdala', "14_S_Amyg_14")
-ggsave("plots/04_EDA/02_PCA/14_S_Amyg_14_QC_boxplot_amygdala.pdf", width = 16, height = 11, units = "cm")
+QC_boxplot('mitoRate', 'Substance', 'amygdala', "14_S_Amyg_14")
+ggsave("plots/04_EDA/02_PCA/14_S_Amyg_14_QC_boxplot_amygdala.pdf", width = 13, height = 11, units = "cm")
 
 ########### Sample "10_S_Amyg_06" ###########
 
 ## Sample "10_S_Amyg_06" has the lowest rates for concordant and overall mapping reads
-p1 <- QC_boxplot('concordMapRate', 'Brain_Region_and_Substance', 'amygdala', "10_S_Amyg_06")
-p2 <- QC_boxplot('overallMapRate', 'Brain_Region_and_Substance', 'amygdala', "10_S_Amyg_06")
+p1 <- QC_boxplot('concordMapRate', 'Substance', 'amygdala', "10_S_Amyg_06")
+p2 <- QC_boxplot('overallMapRate', 'Substance', 'amygdala', "10_S_Amyg_06")
 plot_grid(p1, p2, ncol=2, align = 'h')
-ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 32, height = 11, units = "cm")
+ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 26, height = 11, units = "cm")
 
+########### Sample "16_S_Amyg_18" ###########
+QC_boxplot('Total_RNA_amount', 'Substance', 'amygdala', "16_S_Amyg_18")
+ggsave("plots/04_EDA/02_PCA/16_S_Amyg_18_QC_boxplot_amygdala.pdf", width = 13, height = 11, units = "cm")
 
 
 
