@@ -383,11 +383,40 @@ metrics of these samples were examined to further support their removal
 as poor-quality.</li>
 </ul></li>
 </ul>
-<p>See <a href="../../processed-data/Supplementary_Tables/TableSX_sample_metadata_and_QCmetrics.tsv">TableSX</a>
+<p>See <a href="../../processed-data/Supplementary_Tables/TableSX_sample_metadata_and_QCmetrics.tsv">TableSA</a>
 for sample variable meaning.</p>
 </div>
 <div id="explore-sample-level-effects-pca" class="section level2">
 <h2>2. Explore sample-level effects (PCA)</h2>
+<ul>
+<li><a href="02_PCA.R"><code>02_PCA.R</code></a>:
+<ul>
+<li><strong>2.1 PCA data obtention</strong>: PCA was performed using the
+following datasets with filtered genes and log-normalized counts:
+<ul>
+<li><code>RSE</code> with all samples</li>
+<li><code>RSE</code> with habenula samples only</li>
+<li><code>RSE</code> with amygdala samples only</li>
+</ul></li>
+<li><strong>2.2 PCA visualization</strong>: the top 6 PCs were plotted
+to see how variable are the samples between them based on their gene
+expression.</li>
+<li><strong>2.3 Manual sample filtering</strong>:
+<ul>
+<li><em>2.3.1 Identify rare samples in PCA plots</em>: rare (segregated)
+samples were identified in PCx vs PCy plots.</li>
+<li><em>2.3.2 Explore QC metrics of rare samples</em>: QC metrics of the
+identified rare samples and outlier samples from <code>01_QCA.R</code>
+were re-evaluated.</li>
+<li><em>2.3.3 Remove rare/outlier samples</em>: (not performed; all
+samples were kept).</li>
+</ul></li>
+<li><strong>2.4 Explore differences within fentanyl and saline sample
+groups</strong>: boxplots for PCs that separated the samples were
+created, coloring samples by substance to observe the differences within
+the groups of saline and fentanyl samples.</li>
+</ul></li>
+</ul>
 </div>
 <div id="explore-gene-level-effects-variance-partition" class="section level2">
 <h2>3. Explore gene-level effects (Variance Partition)</h2>

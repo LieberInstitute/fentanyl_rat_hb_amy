@@ -168,6 +168,7 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
 
 
 ## All PCA plots
+
 plot_PCAs<-function(brain_region, filename){
 
     ## PC data
@@ -574,6 +575,7 @@ ggsave("plots/04_EDA/02_PCA/16_S_Amyg_18_QC_boxplot_amygdala.pdf", width = 13, h
 
 
 
+
 ## 2.3.3 Remove rare/outlier samples
 
 # amyg_samples_to_remove <- c("34_S_Amyg_22", "14_S_Amyg_14")
@@ -589,15 +591,25 @@ ggsave("plots/04_EDA/02_PCA/16_S_Amyg_18_QC_boxplot_amygdala.pdf", width = 13, h
 
 
 
-## 2.4 Explore differences within fentanyl and saline samples
+## 2.4 Explore differences within fentanyl and saline sample groups
 
 ## PC boxplots
+
 PC_boxplot <- function(PC, sample_var, brain_region){
 
     ## PC data
     pca<-PCA(brain_region)
     pca_data <- pca[[1]]
     pca_vars_labs<-pca[[2]]
+
+    ## Add rare samples' labels and colors
+    pca_data$outlier_or_rare_samples_labels <- sapply(pca_data$SAMPLE_ID,
+                                                      function(x){if(x %in% names(rare_and_poorQC_samples_colors)){x}
+                                                                  else{NA}})
+    pca_data$outlier_or_rare_samples_colors <- sapply(pca_data$outlier_or_rare_samples_labels,
+                                                      function(x){if(!is.na(x) && x %in% names(table(pca_data$Retention_sample_label))){'red'}
+                                                                  else if(!is.na(x)){'gray35'}
+                                                                  else{NA}})
 
     if(sample_var=='Substance'){
         x_label='Substance'
@@ -618,22 +630,21 @@ PC_boxplot <- function(PC, sample_var, brain_region){
     pos <- position_jitter(width = 0.2, seed = 2)
 
     plot <- ggplot(data = pca_data, mapping = aes(x = !! rlang::sym(sample_var),y = !! rlang::sym(PC),
-                                                  color = Substance, label=outlier_or_rare_samples_labels),
-                   label=outlier_or_rare_samples_labels) +
+                                                  color = Substance, label=outlier_or_rare_samples_labels)) +
         geom_boxplot(size = 0.35, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
-        geom_jitter(alpha = 1, size = 2, position = pos) +
+        geom_jitter(alpha = 1, size = 1.4, position = pos) +
         scale_color_manual(values = c('Fentanyl'='turquoise3', 'Saline'='yellow3')) +
         labs(y= pca_vars_labs[strtoi(gsub("PC","", PC))], x = x_label, color='Substance') +
         sm_hgrid(legends = TRUE) +
-        geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=1.9, max.overlaps = Inf,
+        geom_label_repel(color=pca_data$outlier_or_rare_samples_colors, size=2.5, max.overlaps = Inf,
                          box.padding = 0.7,
                          position = pos,
                          min.segment.length = 0) +
         theme(plot.margin=unit (c (0.5, 0.5, 0.5, 0.5), 'cm'),
-              axis.title = element_text(size = (8)),
-              axis.text = element_text(size = (7)),
-              legend.text = element_text(size=6),
-              legend.title = element_text(size=7))
+              axis.title = element_text(size = (12)),
+              axis.text = element_text(size = (11)),
+              legend.text = element_text(size=11),
+              legend.title = element_text(size=12))
 
     return(plot)
 }
