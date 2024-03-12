@@ -4,14 +4,16 @@ library(SummarizedExperiment)
 library(ggplot2)
 library(rlang)
 library(scater)
-
-library(smplot2)
 library(cowplot)
 library(Hmisc)
 library(lme4)
 library(variancePartition)
-library(reshape2)
 library(pheatmap)
+library(smplot2)
+
+
+library(reshape2)
+
 library(sessioninfo)
 
 
@@ -215,7 +217,7 @@ gene_expr_expl_var('amygdala', 'mitoRate')
 
 ## 3.2.1 Canonical Correlation Analysis (CCA)
 
-## Asses the correlation between each pair of sample variables
+## Assess the correlation between each pair of sample variables
 
 ## Plot Heatmap of CC
 plot_CCA<- function(brain_region){
@@ -240,10 +242,10 @@ plot_CCA<- function(brain_region){
     pheatmap(
         C,
         color = hcl.colors(50, "YlOrRd", rev = TRUE),
-        fontsize=8,
+        fontsize=11,
         border_color = "black",
-        height = 6,
-        width = 6.5,
+        height = 5.5,
+        width = 6,
         filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/CCA_heatmap_", brain_region, ".pdf", sep="")
     )
 
