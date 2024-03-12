@@ -1,8 +1,10 @@
+
 library(here)
 library(SummarizedExperiment)
 library(ggplot2)
-library(scater)
 library(rlang)
+library(scater)
+
 library(smplot2)
 library(cowplot)
 library(Hmisc)
@@ -22,11 +24,13 @@ load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose 
 load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
 
 
-#######################   3.1 Explanatory variables   #######################
+## 3.1 Analysis of explanatory variables
 
+## 3.1.1 Computation of gene-wise expression variance percentages:
 ## Compute the % of gene expression variance explained by each sample variable
 
 ## Plot density function for % of variance explained
+
 expl_var<- function(brain_region){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
@@ -54,10 +58,10 @@ expl_var<- function(brain_region){
              'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4', 'RNA_concentration'='blue3')
 
     ## Plot density graph for each variable
-    p<-plotExplanatoryVariables(exp_vars, theme_size = 12, nvars_to_plot = Inf)
+    p<-plotExplanatoryVariables(exp_vars, theme_size = 16, nvars_to_plot = Inf)
     p + scale_colour_manual(values = colors[c(variables)]) + labs(color="Variables")
     ## Save plot
-    ggsave(filename = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_', brain_region, '.pdf'), width = 35, height = 25, units = "cm")
+    ggsave(filename = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_', brain_region, '.pdf'), width = 25, height = 20, units = "cm")
     return(exp_vars)
 
 }
@@ -68,7 +72,8 @@ expl_vars_amygdala <- as.data.frame(expl_var("amygdala"))
 
 
 
-## Examine expression of most affected genes by each sample variable
+
+## 3.1.2 Examine expression of most affected genes by each sample variable
 
 ## Plots of gene expression lognorm counts
 plot_gene_expr <- function(brain_region, sample_var, gene_id){
@@ -162,7 +167,6 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
 }
 
 
-
 gene_expr_expl_var <- function(brain_region, sample_var){
 
     expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region)))
@@ -204,9 +208,7 @@ gene_expr_expl_var('amygdala', 'mitoRate')
 
 
 
-
-
-#######################   3.2 Variance Partition   #######################
+## 3.2 Variance Partition Analysis
 
 ## Fraction of variation attributable to each variable after correcting for all other variables
 
