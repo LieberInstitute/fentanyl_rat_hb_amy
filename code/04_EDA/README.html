@@ -420,6 +420,31 @@ the groups of saline and fentanyl samples.</li>
 </div>
 <div id="explore-gene-level-effects-variance-partition" class="section level2">
 <h2>3. Explore gene-level effects (Variance Partition)</h2>
+<ul>
+<li><a href="03_Explore_gene_level_effects.R"><code>03_Explore_gene_level_effects.R</code></a>:
+<ul>
+<li><strong>3.1 Analysis of explanatory variables</strong>:
+<ul>
+<li><em>3.1.1 Computation of gene-wise expression variance
+percentages</em>: the percentages of variance in the expression of each
+gene explained by each sample variable were computed.</li>
+<li><em>3.1.2 Expression exploration of most affected genes</em>:
+explore the expression levels of most affected genes by each sample
+variable.</li>
+</ul></li>
+<li><strong>3.2 Variance Partition Analysis</strong>: compute fraction
+of gene expression variation attributable to each variable after
+correcting for all other variables.
+<ul>
+<li><em>3.2.1 Canonical Correlation Analysis (CCA)</em>: the pairwise
+correlations between sample variables were assessed and visualized.</li>
+<li><em>3.2.2 Model fit</em>: a linear mixed model (LMM) was fitted to
+the lognorm expression data of each gene to estimate the contribution in
+variance of each sample variable, taking all variables and subsetting to
+uncorrelated variables only.</li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
 </div>
 
