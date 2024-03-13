@@ -449,7 +449,7 @@ colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 ## Habenula samples
 #####################
 
-## Add info of 1st hour intake slope for each sample
+## Add info of 1st hour intake slope for each sample (CAPITALIZE behav variables)
 rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$Rat_ID,
                                                          function(x){covariate_data[which(covariate_data$Rat_ID==x), '1st_Hour_Infusion_Slope']})
 

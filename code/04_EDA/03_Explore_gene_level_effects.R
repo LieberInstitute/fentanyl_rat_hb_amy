@@ -12,7 +12,6 @@ library(variancePartition)
 library(pheatmap)
 library(smplot2)
 
-
 library(reshape2)
 
 library(sessioninfo)
@@ -25,16 +24,23 @@ library(sessioninfo)
 
 load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
+sample_metadata_and_QCmetrics <- read.csv('raw-data/sample_metadata_and_QCmetrics.csv')
 
 ## Load additional rat behavioral data
 covariate_data <- as.data.frame(read_excel("raw-data/covariate_sample_info.xlsx"))
 colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 colnames(covariate_data) <- gsub('1st', 'First',  gsub("_\\((mg|#)\\)", '', colnames(covariate_data)))
 
-
 ## Append behavioral covariates to sample data
 colData(rse_gene_habenula_filt) <- merge(colData(rse_gene_habenula_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
 colData(rse_gene_amygdala_filt) <- merge(colData(rse_gene_amygdala_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
+## Add to supp table with sample metadata and QC metrics
+order_samples <- sample_metadata_and_QCmetrics$SAMPLE_ID
+sample_metadata_and_QCmetrics <- merge(sample_metadata_and_QCmetrics,
+                                       covariate_data[,c("Rat_ID", "Total_Intake", "Last_Session_Intake" ,"First_Hour_Infusion_Slope")],
+                                       by='Rat_ID', sort=FALSE)
+sample_metadata_and_QCmetrics <- sample_metadata_and_QCmetrics[match(order_samples, sample_metadata_and_QCmetrics$SAMPLE_ID), c(2,1, 3:25)]
+write.csv(sample_metadata_and_QCmetrics, file="raw-data/sample_metadata_and_QCmetrics.csv", row.names = FALSE)
 
 
 
@@ -242,12 +248,14 @@ plot_CCA<- function(brain_region){
     if (brain_region == 'habenula'){
         formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
                     mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                    Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
     }
     else {
         formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
                     mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                    Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
     }
 
     ## Correlations
