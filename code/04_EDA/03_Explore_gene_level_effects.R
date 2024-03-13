@@ -1,5 +1,6 @@
 
 library(here)
+library(readxl)
 library(SummarizedExperiment)
 library(ggplot2)
 library(rlang)
@@ -25,11 +26,34 @@ library(sessioninfo)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
 
+## Load additional rat behavioral data
+covariate_data <- as.data.frame(read_excel("raw-data/covariate_sample_info.xlsx"))
+colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
+colnames(covariate_data) <- gsub('1st', 'First',  gsub("_\\((mg|#)\\)", '', colnames(covariate_data)))
+
+
+## Append behavioral covariates to sample data
+colData(rse_gene_habenula_filt) <- merge(colData(rse_gene_habenula_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
+colData(rse_gene_amygdala_filt) <- merge(colData(rse_gene_amygdala_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
+
+
 
 ## 3.1 Analysis of explanatory variables
 
 ## 3.1.1 Computation of gene-wise expression variance percentages:
 ## Compute the % of gene expression variance explained by each sample variable
+
+variables <- c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
+               "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
+               "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake", "Last_Session_Intake",
+               "First_Hour_Infusion_Slope")
+
+## Variables' colors
+colors=c("Substance"= 'turquoise4', "Batch_RNA_extraction"='bisque2', "Batch_lib_prep"='blueviolet',
+         "Total_Num_Fentanyl_Sessions"='indianred1', 'mitoRate'='khaki3', 'totalAssignedGene'='plum2',
+         'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon','detected_num_genes'='skyblue2',
+         'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4', 'RNA_concentration'='blue3',
+         'Total_Intake'='yellow2', 'Last_Session_Intake'='pink','First_Hour_Infusion_Slope'='lightblue2')
 
 ## Plot density function for % of variance explained
 
@@ -40,24 +64,10 @@ expl_var<- function(brain_region){
     ## % of variance in gene expression explained by each variable
 
     if (brain_region=='habenula'){
-        variables=c("Substance", "Batch_RNA_extraction", "Total_Num_Fentanyl_Sessions", "mitoRate", "concordMapRate",
-                    "overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes", "library_size", "Total_RNA_amount",
-                    "RNA_concentration")
-    }
-    else{
-        variables=c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
-                    "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
-                    "library_size", "Total_RNA_amount", "RNA_concentration")
+        variables=variables[-3]
     }
 
     exp_vars<-getVarianceExplained(RSE, variables=variables, exprs_values = "logcounts")
-
-    ## Plot of explanatory variables
-    ## Variables' colors
-    colors=c("Substance"= 'turquoise4', "Batch_RNA_extraction"='bisque2', "Batch_lib_prep"='blueviolet',
-             "Total_Num_Fentanyl_Sessions"='indianred1', 'mitoRate'='khaki3', 'totalAssignedGene'='plum2',
-             'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon','detected_num_genes'='skyblue2',
-             'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4', 'RNA_concentration'='blue3')
 
     ## Plot density graph for each variable
     p<-plotExplanatoryVariables(exp_vars, theme_size = 16, nvars_to_plot = Inf)
@@ -84,22 +94,22 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
    expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region)))
 
    if(sample_var=='Substance'){
-        colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
+        sample_colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
         x_label="Substance"
    }
 
     else if(sample_var=='Total_Num_Fentanyl_Sessions'){
-        colors=c('24'='salmon', '22'='pink2')
+        sample_colors=c('24'='salmon', '22'='pink2')
         x_label="Total num of Fentanyl Sessions"
     }
 
     else if(sample_var=='Batch_RNA_extraction'){
-        colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
+        sample_colors=c('1'='darksalmon', '2'='darkseagreen3', '3'= 'lightsteelblue2')
         x_label="RNA extraction Batch"
     }
 
     else if(sample_var=='Batch_lib_prep'){
-        colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
+        sample_colors=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta')
         x_label="Library preparation Batch"
     }
 
@@ -126,7 +136,7 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
             geom_boxplot(size = 0.25, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
             geom_jitter( aes(shape=Batch_RNA_extraction), width = 0.15, alpha = 1, size = 1) +
             stat_smooth (geom="line", alpha=0.6, size=0.4, span=0.3, method = lm, aes(group=1), color='orangered3') +
-            scale_color_manual(values = colors) +
+            scale_color_manual(values = sample_colors) +
             scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
             theme_bw() +
             guides(color="none") +
@@ -143,9 +153,7 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
 
     ## Scatterplots for continuous variables
     else {
-        colors <- c('mitoRate'='khaki3', 'totalAssignedGene'='plum2', 'overallMapRate'='turquoise', 'concordMapRate'='lightsalmon',
-                    'detected_num_genes'='skyblue2', 'library_size'='palegreen3', 'RIN'='rosybrown3', 'Total_RNA_amount'='brown4',
-                    'RNA_concentration'='blue3')
+        colors <- colors
 
         plot <- ggplot(as.data.frame(data), aes(x=eval(parse_expr(sample_var)), y=gene_expr)) +
             geom_point( aes(shape=Batch_RNA_extraction), color=colors[sample_var], size=2) +
@@ -197,14 +205,20 @@ gene_expr_expl_var('habenula', 'Batch_RNA_extraction')
 gene_expr_expl_var('habenula', 'RNA_concentration')
 gene_expr_expl_var('habenula', 'Total_RNA_amount')
 gene_expr_expl_var('habenula', 'mitoRate')
+gene_expr_expl_var('habenula', 'Total_Intake')
+gene_expr_expl_var('habenula', 'Last_Session_Intake')
+gene_expr_expl_var('habenula', 'First_Hour_Infusion_Slope')
 
 gene_expr_expl_var('amygdala', 'Substance')
-gene_expr_expl_var('amygdala', 'library_size')
 gene_expr_expl_var('amygdala', 'totalAssignedGene')
+gene_expr_expl_var('amygdala', 'library_size')
 gene_expr_expl_var('amygdala', 'Batch_RNA_extraction')
-gene_expr_expl_var('amygdala', 'RNA_concentration')
+gene_expr_expl_var('amygdala', 'First_Hour_Infusion_Slope')
 gene_expr_expl_var('amygdala', 'Total_RNA_amount')
+gene_expr_expl_var('amygdala', 'Last_Session_Intake')
+gene_expr_expl_var('amygdala', 'Total_Intake')
 gene_expr_expl_var('amygdala', 'mitoRate')
+gene_expr_expl_var('amygdala', 'RNA_concentration')
 
 
 
@@ -257,7 +271,7 @@ CCA_amygdala <- plot_CCA('amygdala')
 
 
 
-## Scatterplots/boxplots for each pair of variables
+## Scatterplots/boxplots for each pair of correlated variables
 
 corr_plots <- function(brain_region, sample_var1, sample_var2){
 
@@ -386,6 +400,7 @@ multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'Total_RNA_amount'), '
 multiple_corr_plots('amygdala', c('Batch_lib_prep', 'Total_RNA_amount'), 'TotalRNAamount_BatchlibPrep')
 multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'mitoRate'), 'mitoRate_BatchRNAextraction')
 multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'RNA_concentration'), 'TotalNumFenSessions_RNAconcentration')
+
 
 
 
