@@ -82,8 +82,8 @@ colors <- list('Brain_Region'=c('Amygdala'='palegreen3', 'Habenula'='orchid1'),
 ## Colors to highlight outlier and segregated (standout) samples
 rare_and_poorQC_samples_colors_hab <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum1',
                                         "1_F_LHb_01"='greenyellow',  "18_S_LHb_20"='deepskyblue1')
-rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange2", "34_S_Amyg_22"="cyan",
-                                         "14_S_Amyg_14"='orchid1')
+rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange2",
+                                         "34_S_Amyg_22"="cyan", "14_S_Amyg_14"='orchid1')
 
 ## PCx vs PCy plots
 
@@ -257,7 +257,7 @@ plot_PCAs('amygdala', 'outliers_plus_rare', 'no_shape')
 #####################
 amyg_pca_data <- PCA('amygdala')[[1]]
 
-########  A) Saline samples within fentanyl samples' group:  ########
+#############  A) Saline samples within fentanyl samples' group:  ##############
 
 amyg_sal_pca_data <- amyg_pca_data[which(amyg_pca_data$Substance=='Saline'),]
 
@@ -270,7 +270,7 @@ amyg_sal_pca_data[order(amyg_sal_pca_data$PC2), 'SAMPLE_ID'][1]
 #  "14_S_Amyg_14"
 
 
-########  B) Sample with the highest value in PC6:  ########
+##################  B) Sample with the highest value in PC6:  ##################
 
 ## -> It is the "34_S_Amyg_22" outlier sample
 amyg_pca_data[which.max(amyg_pca_data$PC6), 'SAMPLE_ID']
@@ -292,7 +292,7 @@ save(rse_gene_amygdala_filt, file='processed-data/04_EDA/02_PCA/rse_gene_amygdal
 #####################
 hab_pca_data <- PCA('habenula')[[1]]
 
-########  A) Samples that have the lowest PC2 values:  ########
+################  A) Samples that have the lowest PC2 values:  #################
 
 ## -> One is the "5_F_LHb_13" outlier sample
 hab_pca_data[order(hab_pca_data$PC2), 'SAMPLE_ID'][1]
@@ -315,7 +315,7 @@ hab_fenta_pca_data[order(hab_fenta_pca_data$PC3, decreasing = TRUE), 'SAMPLE_ID'
 #  "1_F_LHb_01"
 
 
-########  C) Saline samples within fentanyl group:  ########
+##################  C) Saline samples within fentanyl group:  ##################
 
 hab_sal_pca_data <- hab_pca_data[which(hab_pca_data$Substance=="Saline"),]
 ## -> It is the "18_S_LHb_20" sample: the saline sample with the highest PC4 value
@@ -340,104 +340,37 @@ rse_gene_filt$outlier_or_rare_samples_labels <- rep(NA, dim(rse_gene_filt)[2])
 
 ## 2.3.2 Explore QC metrics of rare samples
 
-#######################
-##  Habenula samples
-#######################
+## Plot all QC metrics for a rare/outlier sample
 
-########### Sample "5_F_LHb_13" ###########
-
-## Sample "5_F_LHb_13" has the least number of expressed genes
-colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
-#  "5_F_LHb_13"
-
-########### Sample "1_F_LHb_01" ###########
-
-## Sample "1_F_LHb_01" has the lowest rate of concordant reads
-colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$concordMapRate), 'SAMPLE_ID']
-#  "1_F_LHb_01"
-
-########### Sample "3_F_LHb_09" ###########
-
-## Sample "3_F_LHb_09" has the least amount of RNA
-colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$Total_RNA_amount), 'SAMPLE_ID']
-#  "3_F_LHb_09"
-
-########### Sample "18_S_LHb_20" ###########
-
-## Sample "18_S_LHb_20" has the highest RNA concentration and RIN, and the largest number of expressed genes
-colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RNA_concentration), 'SAMPLE_ID']
-#  "18_S_LHb_20"
-colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
-#   "18_S_LHb_20"
-colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RIN), 'SAMPLE_ID']
-#   "18_S_LHb_20"
-
-
-
-#######################
-##  Amygdala samples
-#######################
-
-########### Sample "34_S_Amyg_22" ###########
-
-## Sample "34_S_Amyg_22" has the biggest library size, the highest proportion of reads assigned to genes and
-## the highest fraction of reads that mapped to the mitochondrial chr
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$library_size), 'SAMPLE_ID']
-#  "34_S_Amyg_22"
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$totalAssignedGene), 'SAMPLE_ID']
-#  "34_S_Amyg_22"
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
-#  "34_S_Amyg_22"
-
-########### Sample "33_S_Amyg_20" ###########
-
-## Sample "33_S_Amyg_20" has the least number of expressed genes but the highest amount of RNA and the highest
-## fractions of both, concordant reads and reads that mapped to the reference genome
-colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$detected_num_genes), 'SAMPLE_ID']
-#  "33_S_Amyg_20"
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$Total_RNA_amount), 'SAMPLE_ID']
-#  "33_S_Amyg_20"
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
-#  "33_S_Amyg_20"
-colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
-#  "33_S_Amyg_20"
-
-########### Sample "14_S_Amyg_14" ###########
-
-## Sample "14_S_Amyg_14" has the lowest fraction of mitochondrial reads
-colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
-#  "14_S_Amyg_14
-
-########### Sample "10_S_Amyg_06" ###########
-
-## Sample "10_S_Amyg_06" has the lowest rates for concordant and overall mapping reads
-colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
-#  "10_S_Amyg_06"
-colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
-#  "10_S_Amyg_06"
-
-########### Sample "16_S_Amyg_18" ###########
-
-## No special QC information identified
-
-
-
-## Plot QC metrics for a rare/outlier sample
+qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
 
 rare_and_poorQC_samples_colors <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum3',
                                     "1_F_LHb_01"='green3',  "18_S_LHb_20"='deepskyblue1',
                                     "33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange3",
-                                    "34_S_Amyg_22"="cyan3","14_S_Amyg_14"='orchid2', "16_S_Amyg_18"='yellow3')
+                                    "34_S_Amyg_22"="cyan3","14_S_Amyg_14"='orchid2')
 
-QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
+QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID, sample_shape){
 
     ## Brain region data
     data <- as.data.frame(colData(eval(parse_expr(paste('rse_gene', brain_region, 'filt', sep='_')))))
+
+    ## Sample shapes
+    if(sample_shape=='RNAbatch'){
+        shape_name = 'Batch RNA extraction'
+        shapes <- c('1'=8, '2'=10, '3'=15)
+        shape='Batch_RNA_extraction'
+    }
+    else{
+        shape_name = NA
+        shapes <- 1
+        shape='NULL'
+    }
+
     ## Add colors for rare/outlier samples from each brain region
     data$outlier_or_rare_samples_colors <- sapply(as.vector(data$outlier_or_rare_samples_labels),
-                                                 function(x){if(!is.na(x) && x==rare_sample_ID){rare_and_poorQC_samples_colors[rare_sample_ID]}
-                                                             else if(!is.na(x)){'gray35'}
-                                                             else {NA}})
+                                                  function(x){if(!is.na(x) && x==rare_sample_ID){rare_and_poorQC_samples_colors[rare_sample_ID]}
+                                                      else if(!is.na(x)){'gray35'}
+                                                      else {NA}})
 
     if (sample_var=="Brain_Region"){
         violin_width=1
@@ -485,13 +418,12 @@ QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
                                               color = !! rlang::sym(sample_var),
                                               label = outlier_or_rare_samples_labels)) +
         geom_violin(alpha = 0, size = 0.4, color='gray50', width=violin_width)+
-        geom_jitter(alpha = 2, size = 2.4,  position = pos, aes(shape=Batch_RNA_extraction)) +
+        geom_jitter(alpha = 2, size = 2.4,  position = pos, aes(shape=eval(parse_expr(shape)))) +
         geom_boxplot(alpha = 0, size = 0.4, width=0.08, color='gray50') +
         sm_hgrid(legends = TRUE) +
         scale_color_manual(values = colors[[sample_var]]) +
         guides(color="none") +
-        ## Shape for RNA extraction batch
-        scale_shape_manual(name='Batch RNA extraction', labels=c("1","2","3"), values=c('1'=8, '2'=10, '3'=15)) +
+        scale_shape_manual(name = shape_name, values=shapes) +
         geom_label_repel(label=data$outlier_or_rare_samples_labels,
                          color=data$outlier_or_rare_samples_colors,
                          size=3.2, max.overlaps = Inf,
@@ -509,35 +441,53 @@ QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID){
     return(plot)
 }
 
+## Plot multiple QC metrics per sample
+multiple_QC_boxplots <- function(brain_region, rare_sample_ID){
+
+    plots <- list()
+    for(i in 1:length(qc_metrics)){
+
+        ## For substance and without shape
+        p <- QC_boxplot(qc_metrics[i], 'Substance', brain_region, rare_sample_ID, 'no_shape')
+        plots[[i]] <- p
+    }
+
+    plot_grid(plotlist = plots, ncol=3, align = 'vh')
+    ggsave(paste0("plots/04_EDA/02_PCA/", rare_sample_ID, "_QC_boxplots_", brain_region, "_no_shape.pdf"), width = 23, height = 23, units = "cm")
+}
+
+
 #######################
 ##  Habenula samples
 #######################
 
 ########### Sample "5_F_LHb_13" ###########
 ## Sample "5_F_LHb_13" has the least number of expressed genes
-QC_boxplot('detected_num_genes', 'Substance', 'habenula', "5_F_LHb_13")
-ggsave("plots/04_EDA/02_PCA/5_F_LHb_13_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
+multiple_QC_boxplots('habenula', '5_F_LHb_13')
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
+#  "5_F_LHb_13"
 
 ########### Sample "1_F_LHb_01" ###########
 ## Sample "1_F_LHb_01" has the lowest rate of concordant reads
-QC_boxplot('concordMapRate', 'Substance', 'habenula', "1_F_LHb_01")
-ggsave("plots/04_EDA/02_PCA/1_F_LHb_01_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
+multiple_QC_boxplots('habenula', '1_F_LHb_01')
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$concordMapRate), 'SAMPLE_ID']
+#  "1_F_LHb_01"
 
 ########### Sample "3_F_LHb_09" ###########
-
 ## Sample "3_F_LHb_09" has the least amount of RNA
-QC_boxplot('Total_RNA_amount', 'Substance', 'habenula', "3_F_LHb_09")
-ggsave("plots/04_EDA/02_PCA/3_F_LHb_09_QC_boxplot_habenula.pdf", width = 13, height = 11, units = "cm")
+multiple_QC_boxplots('habenula', '3_F_LHb_09')
+colData(rse_gene_habenula_filt)[which.min(rse_gene_habenula_filt$Total_RNA_amount), 'SAMPLE_ID']
+#  "3_F_LHb_09"
 
 ########### Sample "18_S_LHb_20" ###########
-
 ## Sample "18_S_LHb_20" has the highest RNA concentration and RIN, and the largest number of expressed genes
-p1 <- QC_boxplot('RNA_concentration', 'Substance', 'habenula', "18_S_LHb_20")
-p2 <- QC_boxplot('RIN', 'Substance', 'habenula', "18_S_LHb_20")
-p3 <- QC_boxplot('detected_num_genes', 'Substance', 'habenula', "18_S_LHb_20")
-plot_grid(p1, p2, p3, ncol=3, align = 'h')
-ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 39, height = 11, units = "cm")
-
+multiple_QC_boxplots('habenula', '18_S_LHb_20')
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RNA_concentration), 'SAMPLE_ID']
+#  "18_S_LHb_20"
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$detected_num_genes), 'SAMPLE_ID']
+#   "18_S_LHb_20"
+colData(rse_gene_habenula_filt)[which.max(rse_gene_habenula_filt$RIN), 'SAMPLE_ID']
+#   "18_S_LHb_20"
 
 
 #######################
@@ -548,40 +498,43 @@ ggsave("plots/04_EDA/02_PCA/18_S_LHb_20_QC_boxplot_habenula.pdf", width = 39, he
 
 ## Sample "34_S_Amyg_22" has the biggest library size, the highest proportion of reads assigned to genes and
 ## the highest fraction of reads that mapped to the mitochondrial chr
-p1 <- QC_boxplot('library_size', 'Substance', 'amygdala', "34_S_Amyg_22")
-p2 <- QC_boxplot('totalAssignedGene', 'Substance', 'amygdala', "34_S_Amyg_22")
-p3 <- QC_boxplot('mitoRate', 'Substance', 'amygdala', "34_S_Amyg_22")
-plot_grid(p1, p2, p3, ncol=3, align = 'h')
-ggsave("plots/04_EDA/02_PCA/34_S_Amyg_22_QC_boxplot_amygdala.pdf", width = 39, height = 11, units = "cm")
+multiple_QC_boxplots('amygdala', '34_S_Amyg_22')
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$library_size), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$totalAssignedGene), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
+#  "34_S_Amyg_22"
 
 ########### Sample "33_S_Amyg_20" ###########
 
 ## Sample "33_S_Amyg_20" has the least number of expressed genes but the highest amount of RNA and the highest
 ## fractions of both, concordant reads and reads that mapped to the reference genome
-p1 <- QC_boxplot('detected_num_genes', 'Substance', 'amygdala', "33_S_Amyg_20")
-p2 <- QC_boxplot('Total_RNA_amount', 'Substance', 'amygdala', "33_S_Amyg_20")
-p3 <- QC_boxplot('concordMapRate', 'Substance', 'amygdala', "33_S_Amyg_20")
-p4 <- QC_boxplot('overallMapRate', 'Substance', 'amygdala', "33_S_Amyg_20")
-plot_grid(p1, p2, p3, p4, ncol=2, align = 'vh')
-ggsave("plots/04_EDA/02_PCA/33_S_Amyg_20_QC_boxplot_amygdala.pdf", width = 26, height = 22, units = "cm")
+multiple_QC_boxplots('amygdala', '33_S_Amyg_20')
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$detected_num_genes), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$Total_RNA_amount), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
+colData(rse_gene_amygdala_filt)[which.max(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
+#  "33_S_Amyg_20"
 
 ########### Sample "14_S_Amyg_14" ###########
 
 ## Sample "14_S_Amyg_14" has the lowest fraction of mitochondrial reads
-QC_boxplot('mitoRate', 'Substance', 'amygdala', "14_S_Amyg_14")
-ggsave("plots/04_EDA/02_PCA/14_S_Amyg_14_QC_boxplot_amygdala.pdf", width = 13, height = 11, units = "cm")
+multiple_QC_boxplots('amygdala', '14_S_Amyg_14')
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$mitoRate), 'SAMPLE_ID']
+#  "14_S_Amyg_14
 
 ########### Sample "10_S_Amyg_06" ###########
 
 ## Sample "10_S_Amyg_06" has the lowest rates for concordant and overall mapping reads
-p1 <- QC_boxplot('concordMapRate', 'Substance', 'amygdala', "10_S_Amyg_06")
-p2 <- QC_boxplot('overallMapRate', 'Substance', 'amygdala', "10_S_Amyg_06")
-plot_grid(p1, p2, ncol=2, align = 'h')
-ggsave("plots/04_EDA/02_PCA/10_S_Amyg_06_QC_boxplot_amygdala.pdf", width = 26, height = 11, units = "cm")
-
-########### Sample "16_S_Amyg_18" ###########
-QC_boxplot('Total_RNA_amount', 'Substance', 'amygdala', "16_S_Amyg_18")
-ggsave("plots/04_EDA/02_PCA/16_S_Amyg_18_QC_boxplot_amygdala.pdf", width = 13, height = 11, units = "cm")
+multiple_QC_boxplots('amygdala', '10_S_Amyg_06')
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$overallMapRate), 'SAMPLE_ID']
+#  "10_S_Amyg_06"
+colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate), 'SAMPLE_ID']
+#  "10_S_Amyg_06"
 
 
 
@@ -593,9 +546,6 @@ ggsave("plots/04_EDA/02_PCA/16_S_Amyg_18_QC_boxplot_amygdala.pdf", width = 13, h
 # rse_gene_amygdala_filt <- rse_gene_amygdala_filt[,-which(rse_gene_amygdala_filt$SAMPLE_ID %in% amyg_samples_to_remove)]
 # rse_gene_habenula_filt <- rse_gene_habenula_filt[,-which(rse_gene_habenula_filt$SAMPLE_ID %in% hab_samples_to_remove)]
 #
-# ## New PCA plots
-# plot_PCAs('habenula', 'new_plots')
-# plot_PCAs('amygdala', 'new_plots')
 
 
 
@@ -660,7 +610,6 @@ PC_boxplot <- function(PC, sample_var, brain_region){
 }
 
 ## Multiple plots
-
 multiple_PC_boxplots <- function(brain_region){
     ## Habenula
     if (brain_region=='habenula'){
