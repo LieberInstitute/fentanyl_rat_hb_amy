@@ -1,6 +1,7 @@
 
 library(here)
 library(SummarizedExperiment)
+library(jaffelab)
 library(ggplot2)
 library(ggnewscale)
 library(ggrepel)
@@ -78,15 +79,27 @@ colors <- list('Brain_Region'=c('Amygdala'='palegreen3', 'Habenula'='orchid1'),
                'Batch_lib_prep'=c('1'='darkgoldenrod3', '2'='mediumpurple2', '3'= 'darkmagenta'))
 
 
-## Colors to highlight outlier and segregated samples
+## Colors to highlight outlier and segregated (standout) samples
 rare_and_poorQC_samples_colors_hab <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum1',
                                         "1_F_LHb_01"='greenyellow',  "18_S_LHb_20"='deepskyblue1')
 rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange2", "34_S_Amyg_22"="cyan",
-                                         "14_S_Amyg_14"='orchid1', "16_S_Amyg_18"='yellow2')
+                                         "14_S_Amyg_14"='orchid1')
 
 ## PCx vs PCy plots
 
-PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_region, sample_labels) {
+PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_region, sample_labels, sample_shape) {
+
+    ## Sample shapes
+    if(sample_shape=='RNAbatch'){
+        shape_name = 'Batch RNA extraction'
+        shapes <- c('1'=8, '2'=10, '3'=15)
+        shape='Batch_RNA_extraction'
+    }
+    else{
+        shape_name = NA
+        shapes <- 1
+        shape='NULL'
+    }
 
     ## Colors of squares around samples to highlight
     if (is.null(brain_region)){
@@ -100,14 +113,15 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
     }
 
     ## Sample labels and colors (outliers only or + rare ones)
-    if (is.null(sample_labels)){
+    if (sample_labels=='outliers_only'){
         pca_data$sample_labels <- pca_data$Retention_sample_label
-        ## Red labels for outliers, gray for segregated ones
+        ## Outliers in red labels
         pca_data$sample_label_colors <- sapply(pca_data$Retention_sample_label, function(x){if(!is.na(x)){'red'}
                                                                                             else {NA}})
     }
     else{
         pca_data$sample_labels <- pca_data$outlier_or_rare_samples_labels
+        ## Red labels for outliers, gray for segregated ones
         pca_data$sample_label_colors <- sapply(pca_data$outlier_or_rare_samples_labels,
                                                function(x){if(!is.na(x) & x %in% pca_data$Retention_sample_label){'red'}
                                                            else if (!is.na(x)) {'gray35'}
@@ -137,16 +151,16 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
                   color=eval(parse_expr(sample_var)),
                   label=sample_labels)) +
             theme_classic() +
-            # Add red square around outlier samples
+            # Add squares around outlier and rare samples
             geom_point(data=subset(pca_data, !is.na(sample_labels)), aes(color=sample_labels),
                        pch = 0, size=5.6, stroke = 1) +
             scale_color_manual(values = sample_square_colors) +
             guides(color='none') +
             new_scale_color() +
-            geom_point(aes(color=eval(parse_expr(sample_var)), shape=Batch_RNA_extraction), size=3.5) +
+            geom_point(aes(color=eval(parse_expr(sample_var)), shape=eval(parse_expr(shape))), size=3.5) +
             scale_color_manual(values = colors[[sample_var]]) +
-            scale_shape_manual(name='Batch RNA extraction', values=c('1'=8, '2'=10, '3'=15)) +
-            ## Labels of outlier samples
+            scale_shape_manual(name = shape_name, values=shapes) +
+            ## Labels of outlier and rare samples
             geom_label_repel(label=pca_data$sample_labels, color=pca_data$sample_label_colors,
                              size=3.2,
                              max.overlaps = Inf,
@@ -168,7 +182,7 @@ PCx_vs_PCy <- function (PCx, PCy, pca_data, pca_vars_labs, sample_var, brain_reg
 
 ## All PCA plots
 
-plot_PCAs<-function(brain_region, filename){
+plot_PCAs<-function(brain_region, sample_labels, sample_shape){
 
     ## PC data
     pca<-PCA(brain_region)
@@ -183,13 +197,13 @@ plot_PCAs<-function(brain_region, filename){
             for (sample_var in c("Brain_Region", "Substance", "Brain_Region_and_Substance",
                                  "Batch_RNA_extraction", "Batch_lib_prep",
                                  "Num_Fentanyl_Sessions_six_hrs", "Total_Num_Fentanyl_Sessions")){
-                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, NULL)
+                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, sample_labels, sample_shape)
                 plots[[i]]=p
                 i=i+1
             }
             plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], plots[[7]], nrow = 2, align = 'vh')
             ## Save plots
-            ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_all_samples.pdf", sep=""),
+            ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_all_samples_", sample_shape, ".pdf", sep=""),
                    width = 60, height = 19, units = "cm")
         }
     }
@@ -200,21 +214,16 @@ plot_PCAs<-function(brain_region, filename){
             i=1
             for (sample_var in c("Substance", "Batch_RNA_extraction", "Batch_lib_prep",
                                  "Total_Num_Fentanyl_Sessions", "Num_Fentanyl_Sessions_six_hrs")){
-                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, 'with_rare_samples')
+                p<-PCx_vs_PCy(PCs[1], PCs[2], pca_data, pca_vars_labs, sample_var, brain_region, sample_labels, sample_shape)
                 plots[[i]]=p
                 i=i+1
             }
             plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], nrow = 2, align = 'vh')
 
             ## Save plots
-            if (is.null(filename)){
-                ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
-                       width = 47, height = 19, units = "cm")
-            }
-            else {
-                ggsave(paste("plots/04_EDA/02_PCA/New_",PCs[1],"_vs_",PCs[2],"_", brain_region,".pdf", sep=""),
-                       width = 47, height = 19, units = "cm")
-            }
+            ggsave(paste("plots/04_EDA/02_PCA/",PCs[1],"_vs_",PCs[2],"_", brain_region, "_", sample_labels,
+                          "_", sample_shape,".pdf", sep=""),
+                   width = 47, height = 19, units = "cm")
 
         }
     }
@@ -222,9 +231,18 @@ plot_PCAs<-function(brain_region, filename){
 
 
 ## Plots
-plot_PCAs(NULL, NULL)
-plot_PCAs('habenula', NULL)
-plot_PCAs('amygdala', NULL)
+plot_PCAs(NULL, 'none', 'RNAbatch')
+plot_PCAs(NULL, 'none', 'no_shape')
+
+plot_PCAs('habenula', 'outliers_only', 'RNAbatch')
+plot_PCAs('habenula', 'outliers_only', 'no_shape')
+plot_PCAs('habenula', 'outliers_plus_rare', 'RNAbatch')
+plot_PCAs('habenula', 'outliers_plus_rare', 'no_shape')
+
+plot_PCAs('amygdala', 'outliers_only', 'RNAbatch')
+plot_PCAs('amygdala', 'outliers_only', 'no_shape')
+plot_PCAs('amygdala', 'outliers_plus_rare', 'RNAbatch')
+plot_PCAs('amygdala', 'outliers_plus_rare', 'no_shape')
 
 
 
@@ -252,14 +270,7 @@ amyg_sal_pca_data[order(amyg_sal_pca_data$PC2), 'SAMPLE_ID'][1]
 #  "14_S_Amyg_14"
 
 
-########  B) Sample with the highest value in PC4:  ########
-
-## -> It is the "16_S_Amyg_18" saline sample
-amyg_pca_data[which.max(amyg_pca_data$PC4), 'SAMPLE_ID']
-#  "16_S_Amyg_18"
-
-
-########  C) Sample with the highest value in PC6:  ########
+########  B) Sample with the highest value in PC6:  ########
 
 ## -> It is the "34_S_Amyg_22" outlier sample
 amyg_pca_data[which.max(amyg_pca_data$PC6), 'SAMPLE_ID']
@@ -267,7 +278,7 @@ amyg_pca_data[which.max(amyg_pca_data$PC6), 'SAMPLE_ID']
 
 
 ## All rare amygdala samples
-rare_amyg_samples <- c("34_S_Amyg_22", "14_S_Amyg_14", "16_S_Amyg_18")
+rare_amyg_samples <- c("34_S_Amyg_22", "14_S_Amyg_14")
 
 ## Add sample ID label for rare/outlier samples
 rse_gene_amygdala_filt$outlier_or_rare_samples_labels <- sapply(rse_gene_amygdala_filt$SAMPLE_ID,
