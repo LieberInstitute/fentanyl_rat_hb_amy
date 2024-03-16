@@ -23,8 +23,8 @@ See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_
         - `RSE` with amygdala samples only
     * **2\.2 PCA visualization**: the top 6 PCs were plotted to see how variable are the samples between them based on their gene expression.
     * **2\.3 Manual sample filtering**:
-        * *2\.3\.1 Identify rare samples in PCA plots*: rare (segregated) samples were identified in PCx vs PCy plots.
-        * *2\.3\.2 Explore QC metrics of rare samples*: QC metrics of the identified rare samples and outlier samples from `01_QCA.R` were re-evaluated. 
+        * *2\.3\.1 Identify rare samples in PCA plots*: rare (segregated) and outlier samples from `01_QCA.R` were identified in PCx vs PCy plots.
+        * *2\.3\.2 Explore QC metrics of rare samples*: QC metrics of the identified rare samples and outlier samples  were re-evaluated. 
         * *2\.3\.3 Remove rare/outlier samples*: (not performed; all samples were kept).
     * **2\.4 Explore differences within fentanyl and saline sample groups**: boxplots for PCs that separated the samples were created, coloring samples by substance to observe the differences within the groups of saline and fentanyl samples.
 
