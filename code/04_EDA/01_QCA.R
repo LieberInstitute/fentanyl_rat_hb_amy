@@ -477,17 +477,21 @@ rse_gene_amygdala <- rse_gene[,which(rse_gene$Brain_Region=="Amygdala")]
 ## Filter all samples together
 
 outliers_library_size <- isOutlier(rse_gene$library_size, nmads = 3, type="lower")
-outliers_detected_num <- isOutlier(rse_gene$detected_num_genes, nmads = 3, type="lower")
-outliers_RNA_conc <- isOutlier(rse_gene$RNA_concentration, nmads = 3, type="lower")
-outliers_RNA_amount <- isOutlier(rse_gene$Total_RNA_amount, nmads = 3, type="lower")
+outliers_detected_num_genes <- isOutlier(rse_gene$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_concentration <- isOutlier(rse_gene$RNA_concentration, nmads = 3, type="lower")
+outliers_Total_RNA_amount <- isOutlier(rse_gene$Total_RNA_amount, nmads = 3, type="lower")
 outliers_totalAssignedGene <- isOutlier(rse_gene$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene$concordMapRate, nmads = 3, type="lower")
 outliers_RIN<-isOutlier(rse_gene$RIN, nmads = 3, type="lower")
-outliers_mito<-isOutlier(rse_gene$mitoRate, nmads = 3, type="higher")
+outliers_mitoRate<-isOutlier(rse_gene$mitoRate, nmads = 3, type="higher")
 
-not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
-                       outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+## Add QC metrics for which samples had outlier values
+colData(rse_gene) <- cbind(colData(rse_gene), sapply(paste0('outliers_', qc_metrics), function(x){eval(parse_expr(x))}))
+
+## Subset to samples without outliers
+not_outliers<-which(! (outliers_library_size | outliers_detected_num_genes | outliers_RNA_concentration | outliers_Total_RNA_amount |
+                       outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mitoRate | outliers_RIN))
 rse_gene_qc<-rse_gene[,not_outliers]
 save(rse_gene_qc, file='processed-data/04_EDA/01_QCA/rse_gene_qc.Rdata')
 ## Number of samples retained
@@ -499,17 +503,19 @@ dim(rse_gene_qc)[2]
 # Filter habenula samples
 
 outliers_library_size <- isOutlier(rse_gene_habenula$library_size, nmads = 3, type="lower")
-outliers_detected_num <- isOutlier(rse_gene_habenula$detected_num_genes, nmads = 3, type="lower")
-outliers_RNA_conc <- isOutlier(rse_gene_habenula$RNA_concentration, nmads = 3, type="lower")
-outliers_RNA_amount <- isOutlier(rse_gene_habenula$Total_RNA_amount, nmads = 3, type="lower")
+outliers_detected_num_genes <- isOutlier(rse_gene_habenula$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_concentration <- isOutlier(rse_gene_habenula$RNA_concentration, nmads = 3, type="lower")
+outliers_Total_RNA_amount <- isOutlier(rse_gene_habenula$Total_RNA_amount, nmads = 3, type="lower")
 outliers_totalAssignedGene <- isOutlier(rse_gene_habenula$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene_habenula$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene_habenula$concordMapRate, nmads = 3, type="lower")
 outliers_RIN<-isOutlier(rse_gene_habenula$RIN, nmads = 3, type="lower")
-outliers_mito<-isOutlier(rse_gene_habenula$mitoRate, nmads = 3, type="higher")
+outliers_mitoRate<-isOutlier(rse_gene_habenula$mitoRate, nmads = 3, type="higher")
 
-not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
-                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+colData(rse_gene_habenula) <- cbind(colData(rse_gene_habenula), sapply(paste0('outliers_', qc_metrics), function(x){eval(parse_expr(x))}))
+
+not_outliers<-which(! (outliers_library_size | outliers_detected_num_genes | outliers_RNA_concentration | outliers_Total_RNA_amount |
+                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mitoRate | outliers_RIN))
 rse_gene_habenula_qc<-rse_gene_habenula[,not_outliers]
 save(rse_gene_habenula_qc, file='processed-data/04_EDA/01_QCA/rse_gene_habenula_qc.Rdata')
 ## Number of samples retained
@@ -521,17 +527,19 @@ dim(rse_gene_habenula_qc)[2]
 # Filter amygdala samples
 
 outliers_library_size <- isOutlier(rse_gene_amygdala$library_size, nmads = 3, type="lower")
-outliers_detected_num <- isOutlier(rse_gene_amygdala$detected_num_genes, nmads = 3, type="lower")
-outliers_RNA_conc <- isOutlier(rse_gene_amygdala$RNA_concentration, nmads = 3, type="lower")
-outliers_RNA_amount <- isOutlier(rse_gene_amygdala$Total_RNA_amount, nmads = 3, type="lower")
+outliers_detected_num_genes <- isOutlier(rse_gene_amygdala$detected_num_genes, nmads = 3, type="lower")
+outliers_RNA_concentration <- isOutlier(rse_gene_amygdala$RNA_concentration, nmads = 3, type="lower")
+outliers_Total_RNA_amount <- isOutlier(rse_gene_amygdala$Total_RNA_amount, nmads = 3, type="lower")
 outliers_totalAssignedGene <- isOutlier(rse_gene_amygdala$totalAssignedGene, nmads = 3, type="lower")
 outliers_overallMapRate <- isOutlier(rse_gene_amygdala$overallMapRate, nmads = 3, type="lower")
 outliers_concordMapRate <- isOutlier(rse_gene_amygdala$concordMapRate, nmads = 3, type="lower")
 outliers_RIN<-isOutlier(rse_gene_amygdala$RIN, nmads = 3, type="lower")
-outliers_mito<-isOutlier(rse_gene_amygdala$mitoRate, nmads = 3, type="higher")
+outliers_mitoRate<-isOutlier(rse_gene_amygdala$mitoRate, nmads = 3, type="higher")
 
-not_outliers<-which(! (outliers_library_size | outliers_detected_num | outliers_RNA_conc | outliers_RNA_amount |
-                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mito | outliers_RIN))
+colData(rse_gene_amygdala) <- cbind(colData(rse_gene_amygdala), sapply(paste0('outliers_', qc_metrics), function(x){eval(parse_expr(x))}))
+
+not_outliers<-which(! (outliers_library_size | outliers_detected_num_genes | outliers_RNA_concentration | outliers_Total_RNA_amount |
+                           outliers_totalAssignedGene | outliers_overallMapRate | outliers_concordMapRate | outliers_mitoRate | outliers_RIN))
 rse_gene_amygdala_qc<-rse_gene_amygdala[,not_outliers]
 save(rse_gene_amygdala_qc, file='processed-data/04_EDA/01_QCA/rse_gene_amygdala_qc.Rdata')
 ## Number of samples retained
@@ -543,10 +551,10 @@ dim(rse_gene_amygdala_qc)[2]
 ## 1.4.1 Boxplots of QC metrics after sample filtering
 
 ## Boxplots
-boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
+boxplots_after_QC_filtering <- function(RSE_obj, qc_metric, sample_var){
 
-    rse_gene<-eval(parse_expr(RSE))
-    colors=c('Retained'='deepskyblue', 'Dropped'='brown2')
+    RSE<-eval(parse_expr(RSE_obj))
+    colors=c('FALSE'='deepskyblue', 'TRUE'='brown2')
 
     if (sample_var=="Brain_Region"){
         shapes=c('Amygdala'=3, 'Habenula'=2)
@@ -578,22 +586,33 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
     }
 
     y_label=str_replace_all(qc_metric, c("_"=" "))
-    data <- data.frame(colData(rse_gene))
+    data <- data.frame(colData(RSE))
 
     ## Median of the QC var values
-    median<-median(eval(parse_expr(paste("rse_gene$", qc_metric, sep=""))))
+    median<-median(eval(parse_expr(paste("RSE$", qc_metric, sep=""))))
     ## Mean-absolute-deviation of the QC var values
-    mad<-mad(eval(parse_expr(paste("rse_gene$", qc_metric, sep=""))))
+    mad<-mad(eval(parse_expr(paste("RSE$", qc_metric, sep=""))))
+
+    ## Label outlier sample (if any)
+    if (RSE_obj!='rse_gene'){
+        data$outlier_label <- apply(data, 1, function(x){if(x[paste0('outliers_', qc_metric)]==TRUE){x['SAMPLE_ID']}
+            else {NA}})
+    }
+    else{
+        data$outlier_label <- rep(NA, dim(rse_gene)[2])
+    }
+
 
     ## Jitter position
     pos <- position_jitter(width = 0.2, seed = 2)
 
-    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric), color = !! rlang::sym('Retention_after_QC_filtering'), label=!! rlang::sym('Retention_sample_label'))) +
+    plot <- ggplot(data = data, mapping = aes(x = '', y = !! rlang::sym(qc_metric),
+                                              color = !! rlang::sym(paste0('outliers_', qc_metric)), label=outlier_label)) +
         geom_jitter(alpha = 1, size = 2.5, position = pos, aes(shape=eval(parse_expr((sample_var))))) +
         geom_boxplot(alpha = 0, size = 0.3, color='black') +
         scale_color_manual(values = colors) +
         scale_shape_manual(values = shapes) +
-        labs(x="", y = y_label, color='Retention after QC filtering', shape=sample_var_label) +
+        labs(x="", y = y_label, color='Outlier QC metric', shape=sample_var_label) +
         sm_hgrid() +
         theme_classic() +
         ## Median line
@@ -602,7 +621,7 @@ boxplots_after_QC_filtering <- function(RSE, qc_metric, sample_var){
         geom_hline(yintercept = median+(3*mad), size=0.5, linetype=2) +
         ## Line of median - 3 MADs
         geom_hline(yintercept = median-(3*mad), size=0.5, linetype=2) +
-        ## Labels of removed samples
+        ## Labels of outlier samples
         geom_label_repel(color='gray30', size=3.2, max.overlaps = Inf,
                          box.padding = 0.7,
                          show.legend=FALSE,
