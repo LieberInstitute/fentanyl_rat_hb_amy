@@ -16,7 +16,7 @@ library(sessioninfo)
 ################################################################################
 ##                        2. Explore sample-level effects
 ################################################################################
-## (Note: genes are filtered and counts normalized in this analysis)
+## (Note: genes were filtered and counts normalized in this analysis)
 
 load(here('processed-data/03_Data_preparation/rse_gene_filt.Rdata'), verbose=TRUE)
 load(here('processed-data/04_EDA/01_QCA/rse_gene_habenula_complete.Rdata'), verbose = TRUE)
@@ -80,10 +80,10 @@ colors <- list('Brain_Region'=c('Amygdala'='palegreen3', 'Habenula'='orchid1'),
 
 
 ## Colors to highlight outlier and segregated (standout) samples
-rare_and_poorQC_samples_colors_hab <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum1',
-                                        "1_F_LHb_01"='greenyellow',  "18_S_LHb_20"='deepskyblue1')
-rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange2",
-                                         "34_S_Amyg_22"="cyan", "14_S_Amyg_14"='orchid1')
+rare_and_poorQC_samples_colors_hab <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='blue',
+                                        "1_F_LHb_01"='darkorange',  "18_S_LHb_20"='darkgreen')
+rare_and_poorQC_samples_colors_amyg <- c("33_S_Amyg_20"="orange1", "10_S_Amyg_06"="royalblue3",
+                                         "34_S_Amyg_22"="springgreen4", "14_S_Amyg_14"='orchid1')
 
 ## PCx vs PCy plots
 
@@ -344,10 +344,7 @@ rse_gene_filt$outlier_or_rare_samples_labels <- rep(NA, dim(rse_gene_filt)[2])
 
 qc_metrics <- c('mitoRate', 'overallMapRate', 'totalAssignedGene', 'concordMapRate', 'library_size', 'detected_num_genes', 'RIN', 'RNA_concentration', 'Total_RNA_amount')
 
-rare_and_poorQC_samples_colors <- c("5_F_LHb_13"="magenta", "3_F_LHb_09"='plum3',
-                                    "1_F_LHb_01"='green3',  "18_S_LHb_20"='deepskyblue1',
-                                    "33_S_Amyg_20"="darkorchid3", "10_S_Amyg_06"="orange3",
-                                    "34_S_Amyg_22"="cyan3","14_S_Amyg_14"='orchid2')
+rare_and_poorQC_samples_colors <- c(rare_and_poorQC_samples_colors_hab, rare_and_poorQC_samples_colors_amyg)
 
 QC_boxplot <- function(qc_metric, sample_var, brain_region, rare_sample_ID, sample_shape){
 
@@ -545,7 +542,6 @@ colData(rse_gene_amygdala_filt)[which.min(rse_gene_amygdala_filt$concordMapRate)
 # hab_samples_to_remove <- c("5_F_LHb_13")
 # rse_gene_amygdala_filt <- rse_gene_amygdala_filt[,-which(rse_gene_amygdala_filt$SAMPLE_ID %in% amyg_samples_to_remove)]
 # rse_gene_habenula_filt <- rse_gene_habenula_filt[,-which(rse_gene_habenula_filt$SAMPLE_ID %in% hab_samples_to_remove)]
-#
 
 
 
