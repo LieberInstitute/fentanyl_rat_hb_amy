@@ -74,6 +74,10 @@ colData(rse_gene) <- merge(colData(rse_gene), sample_data, by='SAMPLE_ID')
 colData(rse_exon) <- colData(rse_gene)
 colData(rse_jx) <- colData(rse_gene)
 
+## Mean and median of paired-end reads per sample (after trimming)
+summary(rse_gene$numReads)
+#.    Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
+# 78966156  99204582 102396054  98533714 103244250 104449850
 
 ## Save data
 save(rse_gene, file="processed-data/03_Data_preparation/rse_gene_sample_info.Rdata")
