@@ -9,3 +9,4 @@ processed-data/*
 !processed-data/Supplementary_Tables/
 !raw-data/sample_metadata_and_QCmetrics.csv
 !raw-data/covariate_sample_info.xlsx
+!raw-data/rat_behavioral_data.csv

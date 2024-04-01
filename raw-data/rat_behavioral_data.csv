@@ -1,0 +1,20 @@
+"Rat_ID","Sex","Substance","Total_Infusions","Total_Intake","Last_Session_Infusions","Last_Session_Intake","First_Hour_Infusion_Slope"
+"LgA 01","Male","Fentanyl",1088,0.544,86,0.043,0.8191
+"LgA 04","Male","Fentanyl",1229,0.6145,115,0.0575,0.6221
+"LgA 09","Male","Fentanyl",2209,1.1045,60,0.03,0.1265
+"LgA 11","Male","Fentanyl",2029,1.0145,175,0.0875,1.211
+"LgA 13","Male","Fentanyl",2094,1.047,138,0.069,0.8566
+"LgA 15","Male","Fentanyl",1684,0.842,121,0.0605,0.5119
+"LgA 19","Male","Fentanyl",1955,0.9775,167,0.0835,0.6388
+"LgA 21","Male","Fentanyl",523,0.2615,57,0.0285,1.005
+"LgA 02","Male","Saline",26,0.013,0,0,-0.01029
+"LgA 05","Male","Saline",106,0.053,2,0.001,0.1176
+"LgA 06","Male","Saline",64,0.032,7,0.0035,0.06471
+"LgA 08","Male","Saline",24,0.012,0,0,0.002941
+"LgA 10","Male","Saline",57,0.0285,1,5e-04,-0.1059
+"LgA 12","Male","Saline",81,0.0405,5,0.0025,0.06914
+"LgA 14","Male","Saline",52,0.026,0,0,0.01445
+"LgA 16","Male","Saline",23,0.0115,0,0,-0.06089
+"LgA 18","Male","Saline",38,0.019,3,0.0015,0.05573
+"LgA 20","Male","Saline",131,0.0655,10,0.005,0.3344
+"LgA 22","Male","Saline",200,0.1,12,0.006,0.2982
