@@ -31,16 +31,15 @@ See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_
 
 ## 3. Explore gene-level effects (Variance Partition)
 
-## INCLUDE ADDITIONAL COVARIATES!!!!
-
 * [`03_Explore_gene_level_effects.R`](03_Explore_gene_level_effects.R):
     * **3\.1 Analysis of explanatory variables**: 
-        * *3\.1\.1 Computation of gene-wise expression variance percentages*: the percentages of variance in the expression of each gene explained by each sample variable were computed.
+        * *3\.1\.1 Computation of gene-wise expression variance percentages*: the percentages of variance in the expression of each gene explained by each sample variable were computed, including also rat behavioral variables. 
         * *3\.1\.2 Expression exploration of most affected genes*: explore the expression levels of most affected genes by each sample variable. 
         
     * **3\.2 Variance Partition Analysis**: compute fraction of gene expression variation attributable to each variable after correcting for all other variables.
-        * *3\.2\.1 Canonical Correlation Analysis (CCA)*: the pairwise correlations between sample variables were assessed and visualized.
-        * *3\.2\.2 Model fit*: a linear mixed model (LMM) was fitted to the lognorm expression data of each gene to estimate the contribution in variance of each sample variable, taking all variables and subsetting to uncorrelated variables only.
+        * *3\.2\.1 Canonical Correlation Analysis (CCA)*: the pairwise correlations between sample variables were assessed.
+        * *3\.2\.2 Model fit*: a linear mixed model (LMM) was fitted to the lognorm expression data of each gene to estimate the contribution in variance of each sample variable. We did this including all sample variables and then subsetting to uncorrelated variables only.
         
 
+See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_and_QCmetrics.tsv) for the meaning of sample variables. 
 
