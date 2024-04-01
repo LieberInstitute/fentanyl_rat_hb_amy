@@ -24,7 +24,6 @@ library(sessioninfo)
 
 load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
 load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
-sample_metadata_and_QCmetrics <- read.csv('raw-data/sample_metadata_and_QCmetrics.csv')
 
 ## Load additional rat behavioral data (1st hr infusion slopes computed by simple linear regression)
 covariate_data <- as.data.frame(read_excel("raw-data/covariate_sample_info.xlsx"))
@@ -35,7 +34,7 @@ colnames(covariate_data) <- gsub('1st', 'First',  gsub("_\\((mg|#)\\)", '', coln
 colData(rse_gene_habenula_filt) <- merge(colData(rse_gene_habenula_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
 colData(rse_gene_amygdala_filt) <- merge(colData(rse_gene_amygdala_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
 
-## Create table with rat behavioral data
+## Create table with rat behavioral data used
 rat_behavioral_data <- subset(covariate_data, !Rat_ID %in% c('LgA 03', 'LgA 07', 'LgA 17'))[,-9]
 write.csv(rat_behavioral_data, file="raw-data/rat_behavioral_data.csv", row.names = FALSE)
 
@@ -46,11 +45,6 @@ write.csv(rat_behavioral_data, file="raw-data/rat_behavioral_data.csv", row.name
 ## 3.1.1 Computation of gene-wise expression variance percentages:
 ## Compute the % of gene expression variance explained by each sample variable
 
-variables <- c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
-               "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
-               "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake", "Last_Session_Intake",
-               "First_Hour_Infusion_Slope")
-
 ## Variables' colors
 colors=c("Substance"= 'turquoise4', "Batch_RNA_extraction"='bisque2', "Batch_lib_prep"='blueviolet',
          "Total_Num_Fentanyl_Sessions"='indianred1', 'mitoRate'='khaki3', 'totalAssignedGene'='plum2',
@@ -60,7 +54,7 @@ colors=c("Substance"= 'turquoise4', "Batch_RNA_extraction"='bisque2', "Batch_lib
 
 ## Plot density function for % of variance explained
 
-expl_var<- function(brain_region){
+expl_var<- function(brain_region, variables, all_vars){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
 
@@ -76,14 +70,27 @@ expl_var<- function(brain_region){
     p<-plotExplanatoryVariables(exp_vars, theme_size = 16, nvars_to_plot = Inf)
     p + scale_colour_manual(values = colors[c(variables)]) + labs(color="Variables")
     ## Save plot
-    ggsave(filename = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_', brain_region, '.pdf'), width = 25, height = 20, units = "cm")
+    ggsave(filename = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_', brain_region, '_', all_vars,'.pdf'), width = 25, height = 20, units = "cm")
     return(exp_vars)
 
 }
 
 ## Plots and data
-expl_vars_habenula <- as.data.frame(expl_var("habenula"))
-expl_vars_amygdala <- as.data.frame(expl_var("amygdala"))
+
+## All sample variables
+variables <- c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
+               "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
+               "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake", "Last_Session_Intake",
+               "First_Hour_Infusion_Slope")
+
+expl_vars_habenula_all <- as.data.frame(expl_var("habenula", variables, 'all'))
+expl_vars_amygdala_all <- as.data.frame(expl_var("amygdala", variables, 'all'))
+
+## Without Last_Session_Intake
+variables <- variables[!variables=="Last_Session_Intake"]
+
+expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int'))
+expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int'))
 
 
 
@@ -95,7 +102,7 @@ expl_vars_amygdala <- as.data.frame(expl_var("amygdala"))
 plot_gene_expr <- function(brain_region, sample_var, gene_id){
 
    rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
-   expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region)))
+   expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_all')))
 
    if(sample_var=='Substance'){
         sample_colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
