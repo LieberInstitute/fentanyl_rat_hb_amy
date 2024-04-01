@@ -54,9 +54,17 @@ colors=c("Substance"= 'turquoise4', "Batch_RNA_extraction"='bisque2', "Batch_lib
 
 ## Plot density function for % of variance explained
 
-expl_var<- function(brain_region, variables, all_vars){
+expl_var<- function(brain_region, variables, all_vars, substance){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+    file = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_',
+           brain_region, '_', all_vars,'.pdf')
+
+    if(!is.null(substance)){
+        RSE <- RSE[,RSE$Substance==substance]
+        file = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_',
+                    brain_region, '_', substance, '_', all_vars,'.pdf')
+    }
 
     ## % of variance in gene expression explained by each variable
 
@@ -69,28 +77,42 @@ expl_var<- function(brain_region, variables, all_vars){
     ## Plot density graph for each variable
     p<-plotExplanatoryVariables(exp_vars, theme_size = 16, nvars_to_plot = Inf)
     p + scale_colour_manual(values = colors[c(variables)]) + labs(color="Variables")
+
     ## Save plot
-    ggsave(filename = paste0('plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/ExplanatoryVars_', brain_region, '_', all_vars,'.pdf'), width = 25, height = 20, units = "cm")
+    ggsave(filename = file, width = 25, height = 20, units = "cm")
     return(exp_vars)
 
 }
 
 ## Plots and data
 
+## All samples:
 ## All sample variables
 variables <- c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
                "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
                "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake", "Last_Session_Intake",
                "First_Hour_Infusion_Slope")
 
-expl_vars_habenula_all <- as.data.frame(expl_var("habenula", variables, 'all'))
-expl_vars_amygdala_all <- as.data.frame(expl_var("amygdala", variables, 'all'))
+expl_vars_habenula_all <- as.data.frame(expl_var("habenula", variables, 'all', NULL))
+expl_vars_amygdala_all <- as.data.frame(expl_var("amygdala", variables, 'all', NULL))
 
 ## Without Last_Session_Intake
 variables <- variables[!variables=="Last_Session_Intake"]
+expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', NULL))
+expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', NULL))
 
-expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int'))
-expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int'))
+
+## Subset to fentanyl samples:
+variables <- c("Total_Num_Fentanyl_Sessions", "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene",
+               "RIN", "detected_num_genes", "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake",
+               "Last_Session_Intake", "First_Hour_Infusion_Slope")
+
+expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'all', 'Fentanyl'))
+expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'all', 'Fentanyl'))
+
+variables <- variables[!variables=="Last_Session_Intake"]
+expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', 'Fentanyl'))
+expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', 'Fentanyl'))
 
 
 
