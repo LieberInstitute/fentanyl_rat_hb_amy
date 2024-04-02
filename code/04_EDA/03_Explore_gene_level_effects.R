@@ -290,26 +290,61 @@ gene_expr_expl_var('amygdala', 'First_Hour_Infusion_Slope', 'Fentanyl')
 
 
 ## 3.2.1 Canonical Correlation Analysis (CCA)
-
 ## Assess the correlation between each pair of sample variables
 
 ## Plot Heatmap of CC
-plot_CCA<- function(brain_region){
+plot_CCA<- function(brain_region, all_vars, substance){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
 
-    ## Define variables
-    if (brain_region == 'habenula'){
-        formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
-                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
-                    Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
+    ## For fentanyl samples only
+    if(substance!='allSamples'){
+        RSE<-RSE[,colData(RSE)$Substance==substance]
+
+        if(all_vars=='all_vars'){
+            ## Define variables
+            formula = ~ Total_Num_Fentanyl_Sessions + mitoRate + overallMapRate + concordMapRate + totalAssignedGene +
+                RIN + library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
+        }
+        else{
+            formula = ~ Total_Num_Fentanyl_Sessions + mitoRate + overallMapRate + concordMapRate + totalAssignedGene +
+                RIN + library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                Total_Intake + First_Hour_Infusion_Slope
+        }
+
     }
-    else {
-        formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+
+    ## For both fentanyl and saline samples
+    else{
+        if (brain_region == 'habenula'){
+            if(all_vars=='all_vars'){
+                formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
                     mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
                     library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
                     Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
+            }
+            else{
+                formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                    Total_Intake + First_Hour_Infusion_Slope
+            }
+        }
+        else {
+            if(all_vars=='all_vars'){
+                formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                    Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
+            }
+            else{
+                formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
+                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
+                    Total_Intake + First_Hour_Infusion_Slope
+            }
+        }
     }
 
     ## Correlations
@@ -322,14 +357,24 @@ plot_CCA<- function(brain_region){
         border_color = "black",
         height = 5.5,
         width = 6,
-        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/CCA_heatmap_", brain_region, ".pdf", sep="")
+        filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/CCA_heatmap_",
+                       brain_region, '_', substance, '_', all_vars, ".pdf", sep="")
     )
 
     return(C)
 }
 
-CCA_habenula <- plot_CCA('habenula')
-CCA_amygdala <- plot_CCA('amygdala')
+## All samples
+CCA_habenula <- plot_CCA('habenula', 'all_vars', 'allSamples')
+CCA_amygdala <- plot_CCA('amygdala', 'all_vars', 'allSamples')
+CCA_habenula <- plot_CCA('habenula', 'without_last_sess_int', 'allSamples')
+CCA_amygdala <- plot_CCA('amygdala', 'without_last_sess_int', 'allSamples')
+
+## Fentanyl samples only
+CCA_habenula <- plot_CCA('habenula', 'all_vars', 'Fentanyl')
+CCA_amygdala <- plot_CCA('amygdala', 'all_vars', 'Fentanyl')
+CCA_habenula <- plot_CCA('habenula', 'without_last_sess_int', 'Fentanyl')
+CCA_amygdala <- plot_CCA('amygdala', 'without_last_sess_int', 'Fentanyl')
 
 
 
