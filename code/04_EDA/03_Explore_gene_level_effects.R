@@ -107,12 +107,12 @@ variables <- c("Total_Num_Fentanyl_Sessions", "mitoRate", "concordMapRate","over
                "RIN", "detected_num_genes", "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake",
                "Last_Session_Intake", "First_Hour_Infusion_Slope")
 
-expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'all', 'Fentanyl'))
-expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'all', 'Fentanyl'))
+expl_vars_habenula_Fent_all <- as.data.frame(expl_var("habenula", variables, 'all', 'Fentanyl'))
+expl_vars_amygdala_Fent_all <- as.data.frame(expl_var("amygdala", variables, 'all', 'Fentanyl'))
 
 variables <- variables[!variables=="Last_Session_Intake"]
-expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', 'Fentanyl'))
-expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', 'Fentanyl'))
+expl_vars_habenula_Fent_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', 'Fentanyl'))
+expl_vars_amygdala_Fent_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', 'Fentanyl'))
 
 
 
@@ -121,10 +121,17 @@ expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", v
 ## Examine expression of most affected genes by each sample variable
 
 ## Plots of gene expression lognorm counts
-plot_gene_expr <- function(brain_region, sample_var, gene_id){
+plot_gene_expr <- function(brain_region, sample_var, gene_id, substance){
 
-   rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
-   expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_all')))
+    rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    if(substance!='allSamples'){
+        rse_gene <- rse_gene[,colData(rse_gene)$Substance==substance]
+        expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_Fent_all')))
+    }
+    else{
+        expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_all')))
+    }
 
    if(sample_var=='Substance'){
         sample_colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
@@ -210,9 +217,14 @@ plot_gene_expr <- function(brain_region, sample_var, gene_id){
 }
 
 
-gene_expr_expl_var <- function(brain_region, sample_var){
+gene_expr_expl_var <- function(brain_region, sample_var, substance){
 
-    expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region)))
+    if(substance!='allSamples'){
+        expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_Fent_all')))
+    }
+    else{
+        expl_vars <- eval(parse_expr(paste0('expl_vars_', brain_region, '_all')))
+    }
 
     ## Order genes by % of variance explained by the sample var and extract top 6 affected genes
     top_genes_expl_vars <- expl_vars[order(expl_vars[,sample_var], decreasing =  TRUE),][1:6,]
@@ -221,37 +233,52 @@ gene_expr_expl_var <- function(brain_region, sample_var){
     i=1
     plots=list()
     for (gene_id in rownames(top_genes_expl_vars)){
-        plots[[i]] = plot_gene_expr(brain_region, sample_var, gene_id)
+        plots[[i]] = plot_gene_expr(brain_region, sample_var, gene_id, substance)
         i=i+1
     }
 
     plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]], plots[[6]], nrow=2)
-    ggsave(here(paste("plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/Top_affected_genes_by_", capitalize(sample_var), "_", brain_region, ".pdf", sep="")), width = 26, height = 13, units = "cm")
+    ggsave(here(paste("plots/04_EDA/03_Explore_gene_level_effects/01_Expl_vars/Top_affected_genes_by_", capitalize(sample_var), "_",
+                      brain_region, '_', substance, ".pdf", sep="")), width = 26, height = 13, units = "cm")
 }
 
 
-## Plots
-gene_expr_expl_var('habenula', 'Substance')
-gene_expr_expl_var('habenula', 'library_size')
-gene_expr_expl_var('habenula', 'totalAssignedGene')
-gene_expr_expl_var('habenula', 'Batch_RNA_extraction')
-gene_expr_expl_var('habenula', 'RNA_concentration')
-gene_expr_expl_var('habenula', 'Total_RNA_amount')
-gene_expr_expl_var('habenula', 'mitoRate')
-gene_expr_expl_var('habenula', 'Total_Intake')
-gene_expr_expl_var('habenula', 'Last_Session_Intake')
-gene_expr_expl_var('habenula', 'First_Hour_Infusion_Slope')
+## Plots for all samples:
+gene_expr_expl_var('habenula', 'Substance', 'allSamples')
+gene_expr_expl_var('habenula', 'library_size', 'allSamples')
+gene_expr_expl_var('habenula', 'totalAssignedGene', 'allSamples')
+gene_expr_expl_var('habenula', 'Batch_RNA_extraction', 'allSamples')
+gene_expr_expl_var('habenula', 'RNA_concentration', 'allSamples')
+gene_expr_expl_var('habenula', 'Total_RNA_amount', 'allSamples')
+gene_expr_expl_var('habenula', 'mitoRate', 'allSamples')
+gene_expr_expl_var('habenula', 'Total_Intake', 'allSamples')
+gene_expr_expl_var('habenula', 'Last_Session_Intake', 'allSamples')
+gene_expr_expl_var('habenula', 'First_Hour_Infusion_Slope', 'allSamples')
 
-gene_expr_expl_var('amygdala', 'Substance')
-gene_expr_expl_var('amygdala', 'totalAssignedGene')
-gene_expr_expl_var('amygdala', 'library_size')
-gene_expr_expl_var('amygdala', 'Batch_RNA_extraction')
-gene_expr_expl_var('amygdala', 'First_Hour_Infusion_Slope')
-gene_expr_expl_var('amygdala', 'Total_RNA_amount')
-gene_expr_expl_var('amygdala', 'Last_Session_Intake')
-gene_expr_expl_var('amygdala', 'Total_Intake')
-gene_expr_expl_var('amygdala', 'mitoRate')
-gene_expr_expl_var('amygdala', 'RNA_concentration')
+gene_expr_expl_var('amygdala', 'Substance', 'allSamples')
+gene_expr_expl_var('amygdala', 'totalAssignedGene', 'allSamples')
+gene_expr_expl_var('amygdala', 'library_size', 'allSamples')
+gene_expr_expl_var('amygdala', 'Batch_RNA_extraction', 'allSamples')
+gene_expr_expl_var('amygdala', 'First_Hour_Infusion_Slope', 'allSamples')
+gene_expr_expl_var('amygdala', 'Total_RNA_amount', 'allSamples')
+gene_expr_expl_var('amygdala', 'Last_Session_Intake', 'allSamples')
+gene_expr_expl_var('amygdala', 'Total_Intake', 'allSamples')
+gene_expr_expl_var('amygdala', 'mitoRate', 'allSamples')
+gene_expr_expl_var('amygdala', 'RNA_concentration', 'allSamples')
+
+
+## Plots for fentanyl samples
+gene_expr_expl_var('habenula', 'detected_num_genes', 'Fentanyl')
+gene_expr_expl_var('habenula', 'overallMapRate', 'Fentanyl')
+gene_expr_expl_var('habenula', 'Last_Session_Intake', 'Fentanyl')
+gene_expr_expl_var('habenula', 'Total_Intake', 'Fentanyl')
+gene_expr_expl_var('habenula', 'First_Hour_Infusion_Slope', 'Fentanyl')
+
+gene_expr_expl_var('amygdala', 'mitoRate', 'Fentanyl')
+gene_expr_expl_var('amygdala', 'library_size', 'Fentanyl')
+gene_expr_expl_var('amygdala', 'Last_Session_Intake', 'Fentanyl')
+gene_expr_expl_var('amygdala', 'Total_Intake', 'Fentanyl')
+gene_expr_expl_var('amygdala', 'First_Hour_Infusion_Slope', 'Fentanyl')
 
 
 
