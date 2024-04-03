@@ -365,25 +365,31 @@ plot_CCA<- function(brain_region, all_vars, substance){
 }
 
 ## All samples
-CCA_habenula <- plot_CCA('habenula', 'all_vars', 'allSamples')
-CCA_amygdala <- plot_CCA('amygdala', 'all_vars', 'allSamples')
-CCA_habenula <- plot_CCA('habenula', 'without_last_sess_int', 'allSamples')
-CCA_amygdala <- plot_CCA('amygdala', 'without_last_sess_int', 'allSamples')
+CCA_habenula_all_vars_allSamples <- plot_CCA('habenula', 'all_vars', 'allSamples')
+CCA_amygdala_all_vars_allSamples <- plot_CCA('amygdala', 'all_vars', 'allSamples')
+CCA_habenula_without_last_sess_int_allSamples <- plot_CCA('habenula', 'without_last_sess_int', 'allSamples')
+CCA_amygdala_without_last_sess_int_allSamples <- plot_CCA('amygdala', 'without_last_sess_int', 'allSamples')
 
 ## Fentanyl samples only
-CCA_habenula <- plot_CCA('habenula', 'all_vars', 'Fentanyl')
-CCA_amygdala <- plot_CCA('amygdala', 'all_vars', 'Fentanyl')
-CCA_habenula <- plot_CCA('habenula', 'without_last_sess_int', 'Fentanyl')
-CCA_amygdala <- plot_CCA('amygdala', 'without_last_sess_int', 'Fentanyl')
+CCA_habenula_all_vars_Fentanyl <- plot_CCA('habenula', 'all_vars', 'Fentanyl')
+CCA_amygdala_all_vars_Fentanyl <- plot_CCA('amygdala', 'all_vars', 'Fentanyl')
+CCA_habenula_without_last_sess_int_Fentanyl <- plot_CCA('habenula', 'without_last_sess_int', 'Fentanyl')
+CCA_amygdala_without_last_sess_int_Fentanyl <- plot_CCA('amygdala', 'without_last_sess_int', 'Fentanyl')
 
 
 
 ## Scatterplots/boxplots for each pair of correlated variables
 
-corr_plots <- function(brain_region, sample_var1, sample_var2){
+corr_plots <- function(brain_region, sample_var1, sample_var2, substance){
 
     rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
-    CCA <- eval(parse_expr(paste0('CCA_', brain_region)))
+    CCA <- eval(parse_expr(paste0('CCA_', brain_region, '_all_vars_allSamples')))
+
+    ## For fentanyl samples
+    if(substance!='allSamples'){
+        rse_gene <- rse_gene[,colData(rse_gene)$Substance==substance]
+        CCA <- eval(parse_expr(paste0('CCA_', brain_region, '_all_vars_Fentanyl')))
+    }
 
     if(sample_var1=='Substance'){
         colors=c('Fentanyl'='turquoise3', 'Saline'='yellow3')
@@ -412,7 +418,7 @@ corr_plots <- function(brain_region, sample_var1, sample_var2){
         plot <- ggplot(data = as.data.frame(data), mapping = aes(x = !! rlang::sym(sample_var1),
                                                                  y = !! rlang::sym(sample_var2),
                                                                  color = !! rlang::sym(sample_var1))) +
-            geom_boxplot(size = 0.25, width=0.32, color='black', outlier.color = "#FFFFFFFF") +
+            geom_boxplot(size = 0.25, width=0.32, color='black', outlier.color = NA) +
             geom_jitter( aes(shape=Batch_RNA_extraction), width = 0.15, alpha = 1, size = 1) +
             stat_smooth (geom="line", alpha=0.6, size=0.4, span=0.3, method = lm, aes(group=1), color='orangered3') +
             scale_color_manual(values = colors) +
@@ -420,11 +426,11 @@ corr_plots <- function(brain_region, sample_var1, sample_var2){
             theme_bw() +
             guides(color="none") +
             labs(subtitle = paste0("Corr: ", signif(CCA[sample_var1, sample_var2], digits=3)), y = gsub('_', ' ', sample_var2), x = x_label) +
-            theme(axis.title = element_text(size = (7)),
+            theme(axis.title = element_text(size = (8)),
                   axis.text = element_text(size = (6)),
                   plot.subtitle = element_text(size = 7, color='gray40'),
-                  legend.text = element_text(size=6),
-                  legend.title = element_text(size=7))
+                  legend.text = element_text(size=7),
+                  legend.title = element_text(size=8))
     }
 
     ## Scatterplots for continuous variable vs continuous variable
@@ -442,18 +448,18 @@ corr_plots <- function(brain_region, sample_var1, sample_var2){
             theme_bw() +
             labs(subtitle = paste0("Corr: ", signif(CCA[sample_var1, sample_var2], digits=3)), y= gsub('_', ' ', sample_var2), x = gsub('_', ' ', sample_var1)) +
             theme(plot.margin=unit (c (0.4,0.1,0.4,0.1), 'cm'),
-                  axis.title = element_text(size = (7)),
+                  axis.title = element_text(size = (8)),
                   axis.text = element_text(size = (6)),
                   plot.subtitle = element_text(size = 7, color='gray40'),
-                  legend.text = element_text(size=6),
-                  legend.title = element_text(size=7))
+                  legend.text = element_text(size=7),
+                  legend.title = element_text(size=8))
     }
 
     return(plot)
 }
 
 ## Multiple plots
-multiple_corr_plots <- function(brain_region, sample_vars, name){
+multiple_corr_plots <- function(brain_region, sample_vars, name, substance){
 
     ## Pairs of samples
     pairs <- list()
@@ -465,17 +471,23 @@ multiple_corr_plots <- function(brain_region, sample_vars, name){
     plots=list()
     for (i in 1:(length(pairs)-1)){
         for (j in 1:dim(pairs[[i]])[1]){
-            plots[[k]] = corr_plots(brain_region, pairs[[i]][j, 1], pairs[[i]][j, 2])
+            plots[[k]] = corr_plots(brain_region, pairs[[i]][j, 1], pairs[[i]][j, 2], substance)
             k=k+1
         }
     }
 
-    if (length(sample_vars)>2){
+    if (length(sample_vars)==6){
         width = 45
         height = 20
         plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
                   plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]],
                   plots[[11]], plots[[12]], plots[[13]], plots[[14]], plots[[15]], nrow=3)
+    }
+    else if (length(sample_vars)==5){
+        width = 45
+        height = 13
+        plot_grid(plots[[1]], plots[[2]], plots[[3]], plots[[4]], plots[[5]],
+                  plots[[6]], plots[[7]], plots[[8]], plots[[9]], plots[[10]], nrow=2)
     }
     else{
         width = 8.5
@@ -483,31 +495,36 @@ multiple_corr_plots <- function(brain_region, sample_vars, name){
         plot_grid(plots[[1]])
     }
 
-    ggsave(here(paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/Corr_", brain_region, "_", name, ".pdf", sep="")),
-           width = width, height = height, units = "cm")
+    ggsave(here(paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/Corr_", brain_region, "_", name,
+                      '_', substance,".pdf", sep="")), width = width, height = height, units = "cm")
 
 }
 
 
-## Plots of correlated variables identified in the heatmaps
+## Plots of correlated variables identified in the heatmaps for all samples
 
 sample_vars <- c('Batch_RNA_extraction', 'library_size', 'totalAssignedGene', 'RNA_concentration', 'Total_RNA_amount', 'mitoRate')
-multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction')
+multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction' ,'allSamples')
 
-multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
-multiple_corr_plots('habenula', c('Substance', 'detected_num_genes'), 'Substance_detectedNumGenes')
-multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_detectedNumGenes')
-multiple_corr_plots('habenula', c('Substance', 'mitoRate'), 'Substance_mitoRate')
+sample_vars <- c('Substance', 'detected_num_genes', 'First_Hour_Infusion_Slope', 'Total_Intake', 'Last_Session_Intake')
+multiple_corr_plots('habenula', sample_vars, 'Substance' ,'allSamples')
 
-multiple_corr_plots('amygdala', c('library_size', 'totalAssignedGene'), 'libSize_totalAssig')
-multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates')
-multiple_corr_plots('amygdala', c('Substance', 'library_size'), 'Substance_librarySize')
-multiple_corr_plots('amygdala', c('Substance', 'totalAssignedGene'), 'Substance_totalAssignedGene')
-multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'Total_RNA_amount'), 'TotalRNAamount_BatchRNAextraction')
-multiple_corr_plots('amygdala', c('Batch_lib_prep', 'Total_RNA_amount'), 'TotalRNAamount_BatchlibPrep')
-multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'mitoRate'), 'mitoRate_BatchRNAextraction')
-multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'RNA_concentration'), 'TotalNumFenSessions_RNAconcentration')
+multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates', 'allSamples')
+multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_detectedNumGenes', 'allSamples')
+multiple_corr_plots('habenula', c('Substance', 'mitoRate'), 'Substance_mitoRate', 'allSamples')
 
+sample_vars <- c('Substance', 'totalAssignedGene', 'library_size', 'First_Hour_Infusion_Slope',
+                 'Last_Session_Intake', 'Total_Intake')
+multiple_corr_plots('amygdala', sample_vars, 'Substance', 'allSamples')
+
+multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates', 'allSamples')
+multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'mitoRate'), 'mitoRate_BatchRNAextraction', 'allSamples')
+multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'Total_RNA_amount'), 'TotalRNAamount_BatchRNAextraction', 'allSamples')
+multiple_corr_plots('amygdala', c('Batch_lib_prep', 'Total_RNA_amount'), 'TotalRNAamount_BatchlibPrep', 'allSamples')
+multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'RNA_concentration'), 'TotalNumFenSessions_RNAconcentration', 'allSamples')
+
+
+## For fentanyl samples
 
 
 
