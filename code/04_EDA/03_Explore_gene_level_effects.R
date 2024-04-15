@@ -561,9 +561,13 @@ multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'Total_RNA_amou
 
 ## Fit a linear mixed model (LMM) that takes continuous variables as fixed effects and categorical variables as random effects
 
-varPartAnalysis <- function(brain_region, formula, name){
+varPartAnalysis <- function(brain_region, formula, name, substance){
 
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+
+    if(substance!='allSamples'){
+        RSE <- RSE[,colData(RSE)$Substance]
+    }
 
     ## Ignore genes with variance 0
     genes_var_zero<-which(apply(assays(RSE)$logcounts, 1, var)==0)
@@ -577,27 +581,33 @@ varPartAnalysis <- function(brain_region, formula, name){
     # Sort variables by median fraction of variance explained
     vp <- sortCols(varPart)
     p <- plotVarPart(vp)
-    ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_", brain_region, name, ".pdf", sep=""),
+    ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_",
+                          brain_region, '_', substance, '_', name, ".pdf", sep=""),
            p, width = 40, height = 20, units = "cm")
 }
 
 ## Violin plots
 
+## All variables:
+
 ## Habenula plots
 ## Define variables; random effects indicated with (1| )
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
                 mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
-varPartAnalysis('habenula', formula, '')
+                Total_RNA_amount + RNA_concentration + library_size + detected_num_genes +
+                First_Hour_Infusion_Slope + Last_Session_Intake + Total_Intake
+
+varPartAnalysis('habenula', formula, 'all_vars', 'allSamples')
 
 ## Amygdala plots
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
                 mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
                 library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
-varPartAnalysis('amygdala', formula, '')
+varPartAnalysis('amygdala', formula, 'all_vars', 'allSamples')
 
 
-## Plots without correlated variables
+
+## Plots without correlated variables:
 
 ## Habenula plots without detected_num_genes, concordMapRate, library_size, totalAssignedGene, RNA_concentration and Total_RNA_amount; remove Total_Num_Fentanyl_Sessions since it doesn't contribute
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + overallMapRate + RIN + mitoRate
