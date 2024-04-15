@@ -566,7 +566,7 @@ varPartAnalysis <- function(brain_region, formula, name, substance){
     RSE<-eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
 
     if(substance!='allSamples'){
-        RSE <- RSE[,colData(RSE)$Substance]
+        RSE <- RSE[,colData(RSE)$Substance==substance]
     }
 
     ## Ignore genes with variance 0
@@ -580,47 +580,66 @@ varPartAnalysis <- function(brain_region, formula, name, substance){
 
     # Sort variables by median fraction of variance explained
     vp <- sortCols(varPart)
-    p <- plotVarPart(vp)
+    p <- plotVarPart(vp, col = colors)
     ggsave(filename=paste("plots/04_EDA/03_Explore_gene_level_effects/02_Var_Partition/VarPart_",
                           brain_region, '_', substance, '_', name, ".pdf", sep=""),
-           p, width = 40, height = 20, units = "cm")
+           p, width = 35, height = 15, units = "cm")
 }
 
-## Violin plots
+## Violin plots without correlated variables
 
-## All variables:
+## All samples:
 
-## Habenula plots
+## Habenula covariates discarding:
+##  * 1. Variables correlated with Substance: detected_num_genes, First_Hour_Infusion_Slope,
+##                                            Total_Intake, and Last_Session_Intake
+##  * 2. Variables correlated with RNA extraction batch: mitoRate, library_size, totalAssignedGene,
+##                                                       RNA_concentration, and Total_RNA_amount
+##  * 3. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions
+##  * 4. Variables highly correlated with any other that explains higher %s of variance: overallMapRate
+
 ## Define variables; random effects indicated with (1| )
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1|Total_Num_Fentanyl_Sessions) +
-                mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                Total_RNA_amount + RNA_concentration + library_size + detected_num_genes +
-                First_Hour_Infusion_Slope + Last_Session_Intake + Total_Intake
-
-varPartAnalysis('habenula', formula, 'all_vars', 'allSamples')
-
-## Amygdala plots
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + (1|Total_Num_Fentanyl_Sessions) +
-                mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                library_size + detected_num_genes + RNA_concentration + Total_RNA_amount
-varPartAnalysis('amygdala', formula, 'all_vars', 'allSamples')
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + concordMapRate + RIN
+varPartAnalysis('habenula', formula, 'finalVariableSet', 'allSamples')
 
 
+## Amygdala covariates discarding:
+##  * 1. Variables correlated with Substance: totalAssignedGene, library_size, First_Hour_Infusion_Slope,
+##                                            Last_Session_Intake, and Total_Intake
+##  * 2. Variables correlated with RNA extraction batch: mitoRate and Total_RNA_amount
+##  * 3. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and RNA_concentration
+##  * 4. In addition detected_num_genes was removed given its very different scale for this analysis
+##  * 5. Variables highly correlated with any other that explains higher %s of variance: concordMapRate
 
-## Plots without correlated variables:
 
-## Habenula plots without detected_num_genes, concordMapRate, library_size, totalAssignedGene, RNA_concentration and Total_RNA_amount; remove Total_Num_Fentanyl_Sessions since it doesn't contribute
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + overallMapRate + RIN + mitoRate
-varPartAnalysis('habenula', formula, '_withoutCorrVars')
+formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + overallMapRate  + RIN
+varPartAnalysis('amygdala', formula, 'finalVariableSet', 'allSamples')
 
-## Amygdala plots without library_size, Total_RNA_amount, RNA_concentration, mitoRate, concordMapRate, detected_num_genes
-## and Total_Num_Fentanyl_Sessions
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) +
-             + overallMapRate + totalAssignedGene + RIN + mitoRate
-varPartAnalysis('amygdala', formula, '_withoutCorrVars')
-## Amygdala plot without totalAssignedGene as well
-formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + overallMapRate + RIN + mitoRate
-varPartAnalysis('amygdala', formula, '_withoutTotalAssignedGene')
+
+
+## Fentanyl samples only:
+## Habenula covariates discarding:
+##  * 1.1 Variables correlated with Total Intake: totalAssignedGene, library_size, and Total_RNA_amount
+##  * 1.2 Variables correlated with Last Session Intake: -
+##  * 1.3 Variables correlated with First hr Infusion Slope: -
+##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and concordMapRate
+##  * 3. Variables on different scales: detected_num_genes
+##  * 4. Variables highly correlated with any other that explains higher %s of variance: mitoRate
+
+formula <-  ~  Total_Intake +  Last_Session_Intake + First_Hour_Infusion_Slope + RIN + RNA_concentration + overallMapRate
+varPartAnalysis('habenula', formula, 'finalVariableSet', 'Fentanyl')
+
+
+## Amygdala covariates discarding:
+##  * 1.1 Variables correlated with Total Intake: detected_num_genes, concordMapRate, and overallMapRate
+##  * 1.2 Variables correlated with Last Session Intake: Total_Num_Fentanyl_Sessions and RNA_concentration
+##  * 1.3 Variables correlated with First hr Infusion Slope: Total_Num_Fentanyl_Sessions and overallMapRate
+##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions, RNA_concentration and Total_RNA_amount
+##  * 3. Variables on different scales: detected_num_genes and library_size
+##  * 4. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene
+
+formula <-  ~  Total_Intake +  Last_Session_Intake + First_Hour_Infusion_Slope + RIN + mitoRate
+varPartAnalysis('amygdala', formula, 'finalVariableSet', 'Fentanyl')
 
 
 
