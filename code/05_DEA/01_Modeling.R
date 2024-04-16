@@ -16,18 +16,19 @@ library(readxl)
 library(sessioninfo)
 
 
-########################   Differential Expression Analysis   #########################
+####################   Differential Expression Analysis   ######################
+
+
+################################################################################
+##                                1. Modeling
+################################################################################
 
 load(here('raw-data/count_objects/rse_gene_Jlab_experiment_n33.Rdata'), verbose=TRUE)
-load(here('processed-data/04_EDA/02_PCA/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
-load(here('processed-data/04_EDA/02_PCA/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
+load(here('processed-data/04_EDA/03_Explore_gene_level_effects/rse_gene_habenula_filt.Rdata'), verbose = TRUE)
+load(here('processed-data/04_EDA/03_Explore_gene_level_effects/rse_gene_amygdala_filt.Rdata'), verbose = TRUE)
 ## Load sample data for additional covariates in the model
-covariate_data <- as.data.frame(read_excel("raw-data/covariate_sample_info.xlsx"))
+rat_behavioral_data <- as.data.frame(read.csv("raw-data/rat_behavioral_data.csv"))
 
-
-################################################################################
-##                                 1. Modeling
-################################################################################
 
 ## Extract previous output from calcNormFactors for count normalization (with all samples and genes)
 norm_factors<-calcNormFactors(rse_gene, method = "TMM")
@@ -36,12 +37,14 @@ samples_factors<-data.frame(SAMPLE_ID=norm_factors$samples$SAMPLE_ID,
                             lib.size=norm_factors$samples$lib.size)
 
 
-
-###########################################################################
-##   1.1  DEA for fentanyl consumption in habenula and amygdala samples
-###########################################################################
+## -----------------------------------------------------------------------------
+##   1.1  DEA for Fentanyl vs. Saline with all samples from each brain region
+## -----------------------------------------------------------------------------
 
 DEA<- function(RSE, brain_region, formula, name, coef){
+
+    ## Set "Saline" as the reference group for model.matrix()
+    RSE$Substance <- factor(RSE$Substance, levels = c("Saline", "Fentanyl"))
 
     ## Previous lib sizes of each sample
     match_samples <- match(RSE$SAMPLE_ID, samples_factors$SAMPLE_ID)
@@ -87,13 +90,16 @@ DEA<- function(RSE, brain_region, formula, name, coef){
 
 }
 
+#######################
+##  Habenula samples
+#######################
 
-## Habenula samples
-
-## Model with all variables
-formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mitoRate + totalAssignedGene + overallMapRate + concordMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount + RNA_concentration
-name<-"all_variables"
-coef<-"SubstanceSaline"
+## Model with all variables (without behavioral ones)
+formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mitoRate + totalAssignedGene +
+            overallMapRate + concordMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount +
+            RNA_concentration
+name<-"Substance_all_variables"
+coef<-"SubstanceFentanyl"
 results_all_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_all_vars_habenula, file = 'processed-data/05_DEA/results_all_vars_habenula.Rdata')
 ## Number of DEGs (FDR<0.05)
@@ -101,22 +107,26 @@ length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
 #  0
 
 ## Model with uncorrelated variables only
-formula <-  ~ Substance + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
-name<-"uncorr_variables"
-coef<-"SubstanceSaline"
+## formula <-  ~ Substance + Batch_RNA_extraction + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~ Substance + Batch_RNA_extraction + concordMapRate + RIN
+name<-"Substance_uncorr_variables"
+coef<-"SubstanceFentanyl"
 results_uncorr_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_uncorr_vars_habenula.Rdata')
 length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
-#  88
+#  453
 
 
-
-## Amygdala samples
+#######################
+##  Amygdala samples
+#######################
 
 ## Model with all variables
-formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions + mitoRate + totalAssignedGene + overallMapRate + concordMapRate + detected_num_genes + library_size + RIN + Total_RNA_amount + RNA_concentration
-name<-"all_variables"
-coef<-"SubstanceSaline"
+formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions + mitoRate +
+            totalAssignedGene + overallMapRate + concordMapRate + detected_num_genes + library_size + RIN +
+            Total_RNA_amount + RNA_concentration
+name<-"Substance_all_variables"
+coef<-"SubstanceFentanyl"
 results_all_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_all_vars_amygdala, file = 'processed-data/05_DEA/results_all_vars_amygdala.Rdata')
 ## Number of DEGs (FDR<0.10)
@@ -124,27 +134,31 @@ length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
 ## Model with uncorrelated variables only
-formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
-name<-"uncorr_variables"
-coef<-"SubstanceSaline"
+## formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate  + RIN
+name<-"Substance_uncorr_variables"
+coef<-"SubstanceFentanyl"
 results_uncorr_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata')
 length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
-#  2728
+#  3041
 
 
 
 ## Plots for DEGs
 plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
-    if(name=='habenula_for_First_hr_infusion_slope' | name=='amygdala_for_First_hr_infusion_slope'){
-        FClab = 'log2FC(1st hour infusion slope)'
+    if(name=='First_hr_infusion_slope'){
+        FClab = 'log2FC(1st Hour Infusion Slope)'
     }
-    else if (name=='amygdala_for_Total_intake'){
-        FClab = 'log2FC(Total drug intake)'
+    else if (name=='Total_intake'){
+        FClab = 'log2FC(Total Drug Intake)'
+    }
+    else if(name=='Last_session_intake'){
+        FClab = 'log2FC(Last Session Intake)'
     }
     else{
-        FClab='log2FC(saline vs. fentanyl)'
+        FClab='log2FC(Fentanyl vs. Saline)'
     }
 
     ## n.s./Down/Upregulated genes
@@ -165,14 +179,18 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     top_genes$DE<- DE
 
 
-    ## Gene symbols for specific DEGs and position of caption in plot
-    DEGs <- c('')
+    ## Gene symbols (or ensemblID if missing) for top 10 most up and downregulated DEGs
+    top_genes$symbol_or_ensemblID <- unlist(apply(top_genes, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+    top_upDEGs <- subset(top_genes, logFC>0)[order(subset(top_genes, logFC>0)$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+    top_downDEGs <- subset(top_genes, logFC<0)[order(subset(top_genes, logFC<0)$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+    top_DEGs <- c(top_upDEGs, top_downDEGs)
+
+    ## Position of caption in plot
     caption_x_units <- 0.55
     caption_y_units1 <- 0.15
     caption_y_units2 <- 0.08
 
-    if (brain_region=='amygdala' & !name=='amygdala_for_Total_intake'){
-        DEGs <- c('Cck', 'Inka2')
+    if (brain_region=='amygdala' & !name=='Total_intake'){
         caption_x_units <- 0.55
         caption_y_units1 <- 0.1
         caption_y_units2 <- -0.09
@@ -191,24 +209,26 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         caption_y_units1 <- 0.13
         caption_y_units2 <- 0.08
     }
-    top_genes$DEG_symbol<- sapply(top_genes$Symbol, function(x){ if(x %in% DEGs){x} else {NA}})
+    top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% top_DEGs){x} else {NA}})
 
 
 
     ## Plots
-    cols <- c("Up" = "red3", "Down" = "steelblue2", "n.s." = "grey")
-    sizes <- c("Up" = 2.3, "Down" = 2.3, "n.s." = 1)
-    alphas <- c("Up" = 1, "Down" = 1, "n.s." = 0.5)
+    cols <- c("Up" = "indianred2", "Down" = "steelblue2", "n.s." = "grey")
+    sizes <- c("Up" = 1.6, "Down" = 1.6, "n.s." = 1)
+    alphas <- c("Up" = 0.4, "Down" = 0.6, "n.s." = 0.5)
 
     ## MA plot for DE genes
     top_genes$mean_log_expr<-apply(vGene$E, 1, mean)
     p1<-ggplot(data = top_genes,
                aes(x = mean_log_expr,y = logFC,
                    fill = DE,
+                   color = DE,
                    size = DE,
                    alpha = DE)) +
         sm_hgrid(legends = TRUE) +
         geom_point(shape = 21) +
+        scale_color_manual(values = cols, name=NULL) +
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
@@ -224,23 +244,33 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     ## Volcano plot for DE genes
     p2<-ggplot(data = top_genes,
                aes(x = logFC,y = -log10(adj.P.Val),
+                   color = DE,
                    fill = DE,
                    size = DE,
                    alpha = DE,
                    label= DEG_symbol)) +
         sm_hgrid(legends = TRUE) +
-        geom_point(shape =21) +
+        geom_point(shape = 21) +
         geom_hline(yintercept = -log10(FDR),
-                   linetype = "dashed", color = 'gray65', linewidth=0.5) +
+                   linetype = "dashed", color = 'gray35', linewidth=0.5) +
         geom_vline(xintercept = c(-1,1),
-                   linetype = "dashed", color = 'gray65', linewidth=0.5) +
-        geom_text_repel(aes(fontface = 'bold'),
-                        size=3.2,
-                        color='gray30',
+                   linetype = "dashed", color = 'gray35', linewidth=0.5) +
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_downDEGs), aes(fontface = 'bold'),
+                        size=2.6,
+                        color='black',
+                        alpha = 1,
                         max.overlaps = Inf,
-                         box.padding = 0.5,
-                         show.legend=FALSE) +
+                        box.padding = 0.2, nudge_y = -0.1, nudge_x = -0.4,
+                        show.legend=FALSE) +
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_upDEGs), aes(fontface = 'bold'),
+                        size=2.6,
+                        color='black',
+                        alpha = 1,
+                        max.overlaps = Inf,
+                        box.padding = 0.2, nudge_y = 0.1, nudge_x = 0.4,
+                        show.legend=FALSE) +
         labs(y="-log10(FDR)", x=FClab)+
+        scale_color_manual(values = cols, name=NULL) +
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
         scale_alpha_manual(values = alphas, name=NULL) +
@@ -252,32 +282,32 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
               legend.text = element_text(size=10, face = "bold")) +
         ## Caption: number of DEGs
         annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units1, label= paste0(length(which(top_genes$adj.P.Val<FDR)), ' DEGs'),
-                 color='gray60', size=2.8, fontface = 'bold') +
+                 color='gray20', size=2.8, fontface = 'bold') +
         ## Caption: FDR threshold
         annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units2, label= paste0("(FDR<", FDR, ")"),
-                 color='gray60', size=2.5)
+                 color='gray20', size=2.5)
 
     plot_grid(p1, p2, ncol=2)
-    ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", name, ".pdf", sep=""),
+    ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", brain_region, '_', name, ".pdf", sep=""),
            width = 22, height = 11, units = "cm")
 }
 
 
 ## Plots for habenula DEGs from the model without correlated variables
 plots_DEGs('habenula', top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
-           name='habenula_uncorr_variables')
+           name='Substance')
 ## Extract DEGs
 de_genes_habenula <- results_uncorr_vars_habenula[[1]][which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
 
 
 ## Plots for amygdala DEGs from the model without correlated variables
 plots_DEGs('amygdala', top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
-           name='amygdala_uncorr_variables')
+           name='Substance')
 de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
 
 
 
-## Add Ensembl info of DEGs
+## Add Ensembl info of DEGs (HERE)
 
 add_phenotypes <- function(de_genes){
 
@@ -348,9 +378,9 @@ write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
 
 
 
-########################################################################
-##   1.2  DEA for high/low fentanyl intake slope in fentanyl samples
-########################################################################
+## -----------------------------------------------------------------------------
+##      1.2  DEA for high/low fentanyl intake slope in fentanyl samples
+## -----------------------------------------------------------------------------
 
 ##############################
 ## Habenula fentanyl samples
@@ -367,9 +397,6 @@ rse_gene_habenula_fent$Intake_slope <- sapply(rse_gene_habenula_fent$Sample_Num,
 outlier_fent_sample <- colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope)), 'Rat_ID']
 # [1] "LgA 09"
 rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope))]
-
-
-## DEA
 
 ## Same variables for habenula DEA
 ## Substance and batches are the same for all these samples
@@ -407,9 +434,6 @@ rse_gene_amygdala_fent$Intake_slope <- sapply(rse_gene_amygdala_fent$Sample_Num,
 ## Remove sample from the outlier rat (in intake slope)
 rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(is.na(rse_gene_amygdala_fent$Intake_slope))]
 
-
-## DEA
-
 ## Same variables for amygdala DEA
 ## Substance and batches are the same
 formula<- ~ Intake_slope + overallMapRate + RIN + mitoRate
@@ -436,14 +460,15 @@ write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_
 
 
 
-############################################################################################################################
-##   1.3  DEA for fentanyl consumption with covariates: '1st hour intake slope', 'Total intake' and 'Last session intake'
-############################################################################################################################
+## -----------------------------------------------------------------------------
+##                 1.3  DEA for fentanyl vs. saline with covariates:
+##       '1st hour intake slope', 'Total intake' and 'Last session intake'
+## -----------------------------------------------------------------------------
 
 colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 
 
-######################   1.3.1 DEA with covariate '1st hour intake slope'   ######################
+############### 1.3.1 DEA with covariate '1st hour intake slope' ###############
 
 #####################
 ## Habenula samples
@@ -453,11 +478,10 @@ colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
 rse_gene_habenula_filt$First_hr_infusion_slope <- sapply(rse_gene_habenula_filt$Rat_ID,
                                                          function(x){covariate_data[which(covariate_data$Rat_ID==x), '1st_Hour_Infusion_Slope']})
 
-## DEA
 ## Same uncorrelated variables as before
 formula <-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
 name <-"with_First_hr_infusion_slope"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_FirstHrIntakeSlope_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_SubstanceDEA_FirstHrIntakeSlope_habenula, file = 'processed-data/05_DEA/results_SubstanceDEA_FirstHrIntakeSlope_habenula.Rdata')
 length(which(results_SubstanceDEA_FirstHrIntakeSlope_habenula[[1]]$adj.P.Val<0.05))
@@ -473,7 +497,7 @@ rse_gene_amygdala_filt$First_hr_infusion_slope <- sapply(rse_gene_amygdala_filt$
 ## Same uncorrelated variables as before
 formula <-  ~ Substance + First_hr_infusion_slope + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name <-"with_First_hr_infusion_slope"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_FirstHrIntakeSlope_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_SubstanceDEA_FirstHrIntakeSlope_amygdala, file = 'processed-data/05_DEA/results_SubstanceDEA_FirstHrIntakeSlope_amygdala.Rdata')
 length(which(results_SubstanceDEA_FirstHrIntakeSlope_amygdala[[1]]$adj.P.Val<0.05))
@@ -481,7 +505,7 @@ length(which(results_SubstanceDEA_FirstHrIntakeSlope_amygdala[[1]]$adj.P.Val<0.0
 
 
 
-######################   1.3.2 DEA with covariate 'total intake'  ######################
+##################   1.3.2 DEA with covariate 'total intake'  ##################
 
 #####################
 ## Habenula samples
@@ -494,7 +518,7 @@ rse_gene_habenula_filt$Total_intake <- sapply(rse_gene_habenula_filt$Rat_ID,
 ## Same uncorrelated variables as before
 formula <-  ~ Substance + Total_intake + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
 name <-"with_Total_intake"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_TotalIntake_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_SubstanceDEA_TotalIntake_habenula, file = 'processed-data/05_DEA/results_SubstanceDEA_TotalIntake_habenula.Rdata')
 length(which(results_SubstanceDEA_TotalIntake_habenula[[1]]$adj.P.Val<0.05))
@@ -509,7 +533,7 @@ rse_gene_amygdala_filt$Total_intake <- sapply(rse_gene_amygdala_filt$Rat_ID,
 
 formula <-  ~ Substance + Total_intake + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name <-"with_Total_intake"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_TotalIntake_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_SubstanceDEA_TotalIntake_amygdala, file = 'processed-data/05_DEA/results_SubstanceDEA_TotalIntake_amygdala.Rdata')
 length(which(results_SubstanceDEA_TotalIntake_amygdala[[1]]$adj.P.Val<0.05))
@@ -517,7 +541,7 @@ length(which(results_SubstanceDEA_TotalIntake_amygdala[[1]]$adj.P.Val<0.05))
 
 
 
-######################   1.3.3 DEA with covariate 'last session intake'  ######################
+##############   1.3.3 DEA with covariate 'last session intake'  ###############
 
 #####################
 ## Habenula samples
@@ -530,7 +554,7 @@ rse_gene_habenula_filt$Last_session_intake<- sapply(rse_gene_habenula_filt$Rat_I
 ## Same uncorrelated variables as before
 formula <-  ~ Substance + Last_session_intake + Batch_RNA_extraction + overallMapRate + RIN + mitoRate
 name <-"with_Last_session_intake"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_LastSessionIntake_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
 save(results_SubstanceDEA_LastSessionIntake_habenula, file = 'processed-data/05_DEA/results_SubstanceDEA_LastSessionIntake_habenula.Rdata')
 length(which(results_SubstanceDEA_LastSessionIntake_habenula[[1]]$adj.P.Val<0.05))
@@ -545,7 +569,7 @@ rse_gene_amygdala_filt$Last_session_intake <- sapply(rse_gene_amygdala_filt$Rat_
 
 formula <-  ~ Substance + Last_session_intake + Batch_RNA_extraction + Batch_lib_prep + overallMapRate + RIN + mitoRate
 name <-"with_Last_session_intake"
-coef <-"SubstanceSaline"
+coef <-"SubstanceFentanyl"
 results_SubstanceDEA_LastSessionIntake_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
 save(results_SubstanceDEA_LastSessionIntake_amygdala, file = 'processed-data/05_DEA/results_SubstanceDEA_LastSessionIntake_amygdala.Rdata')
 length(which(results_SubstanceDEA_LastSessionIntake_amygdala[[1]]$adj.P.Val<0.05))
@@ -599,9 +623,11 @@ Covariates_corr_amygdala <- covariates_CCA('amygdala')
 
 
 
-######################################################################################
+## ---------------------------------------------------------------------------------
 ##   1.4  DEA for '1st hour intake slope' in habenula and amygdala fentanyl samples
-######################################################################################
+## ---------------------------------------------------------------------------------
+
+####################  1.4.1 Analysis with all fentanyl samples  ####################
 
 ##############################
 ## Habenula fentanyl samples
@@ -610,12 +636,11 @@ Covariates_corr_amygdala <- covariates_CCA('amygdala')
 ## Fentanyl samples only
 rse_gene_habenula_fent <- rse_gene_habenula_filt[,which(rse_gene_habenula_filt$Substance=='Fentanyl')]
 
-## DEA
-## Same uncorrelated variables as before for fentanyl samples; without Substance
-formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+## formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  First_Hour_Infusion_Slope + RIN  + overallMapRate + totalAssignedGene
 name <-"for_First_hr_infusion_slope"
 ## New contrast of interest
-coef <-"First_hr_infusion_slope"
+coef <-"First_Hour_Infusion_Slope"
 results_FirstHrIntakeSlopeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_habenula.Rdata')
 
@@ -637,6 +662,7 @@ write.csv(de_genes_FirstHrIntakeSlopeDEA_habenula, "generated_data/de_genes_Firs
 plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], vGene = results_FirstHrIntakeSlopeDEA_habenula[[2]], FDR = 0.05,
            name='habenula_for_First_hr_infusion_slope')
 
+
 ##############################
 ## Amygdala fentanyl samples
 ##############################
@@ -644,18 +670,18 @@ plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], 
 rse_gene_amygdala_fent <- rse_gene_amygdala_filt[,which(rse_gene_amygdala_filt$Substance=='Fentanyl')]
 
 ## DEA
-formula <-  ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+## formula <-  ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+formula <-  ~  First_Hour_Infusion_Slope + RIN + mitoRate
 name <-"for_First_hr_infusion_slope"
-coef <-"First_hr_infusion_slope"
+coef <-"First_Hour_infusion_slope"
 results_FirstHrIntakeSlopeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala.Rdata')
 length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
 #  0
 
 
-# ______________________________________________________________________________
-## 1.4.1 Analysis without samples from negative outlier fentanyl rat
-# ______________________________________________________________________________
+
+#########  1.4.2 Analysis without samples from negative outlier fentanyl rat ########
 
 ##############################
 ## Habenula fentanyl samples
@@ -693,18 +719,20 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Va
 
 
 
-####################################################################################
+## -----------------------------------------------------------------------------
 ##    1.5  DEA for 'Total intake' in habenula and amygdala fentanyl samples
-####################################################################################
+## -----------------------------------------------------------------------------
 
+##################  1.5.1 Analysis with all fentanyl samples  ##################
 
 #####################
 ## Habenula samples
 #####################
 
-formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+##formula <-  ~ Total_Intake + overallMapRate + RIN + mitoRate
+formula <- ~  Total_Intake + RIN + RNA_concentration + overallMapRate
 name <-"for_Total_intake"
-coef <-"Total_intake"
+coef <-"Total_Intake"
 results_TotalIntakeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 save(results_TotalIntakeDEA_habenula, file = 'processed-data/05_DEA/results_TotalIntakeDEA_habenula.Rdata')
 length(which(results_TotalIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
@@ -714,9 +742,10 @@ length(which(results_TotalIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
 ## Amygdala samples
 #####################
 
-formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+## formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+formula <-  ~  Total_Intake + RIN + mitoRate
 name <-"for_Total_intake"
-coef <-"Total_intake"
+coef <-"Total_Intake"
 results_TotalIntakeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/results_TotalIntakeDEA_amygdala.Rdata')
 length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
@@ -739,9 +768,8 @@ plots_DEGs('amygdala', top_genes = results_TotalIntakeDEA_amygdala[[1]], vGene =
            name='amygdala_for_Total_intake')
 
 
-# ______________________________________________________________________________
-## 1.5.1 Analysis without samples from negative outlier fentanyl rat
-# ______________________________________________________________________________
+
+########  1.5.2 Analysis without samples from negative outlier fentanyl rat #######
 
 ##############################
 ## Habenula fentanyl samples
@@ -772,9 +800,11 @@ length(which(results_TotalIntakeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 
 
 
-####################################################################################
-##   1.6  DEA for 'Last Session Intake' in habenula and amygdala fentanyl samples
-####################################################################################
+## -----------------------------------------------------------------------------
+#  1.6  DEA for 'Last Session Intake' in habenula and amygdala fentanyl samples
+## -----------------------------------------------------------------------------
+
+##################  1.6.1 Analysis with all fentanyl samples  ##################
 
 #####################
 ## Habenula samples
@@ -801,9 +831,8 @@ length(which(results_LastSessionIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
 #  0
 
 
-# ______________________________________________________________________________
-## 1.6.1 Analysis without samples from negative outlier fentanyl rat
-# ______________________________________________________________________________
+
+#########  1.6.2 Analysis without samples from negative outlier fentanyl rat ########
 
 ##############################
 ## Habenula fentanyl samples
