@@ -11,9 +11,7 @@ library(lme4)
 library(variancePartition)
 library(pheatmap)
 library(smplot2)
-
 library(reshape2)
-
 library(sessioninfo)
 
 
@@ -33,6 +31,8 @@ colnames(covariate_data) <- gsub('1st', 'First',  gsub("_\\((mg|#)\\)", '', coln
 ## Append behavioral covariates to sample data
 colData(rse_gene_habenula_filt) <- merge(colData(rse_gene_habenula_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
 colData(rse_gene_amygdala_filt) <- merge(colData(rse_gene_amygdala_filt), covariate_data[,-c(2,3)], by='Rat_ID', sort=FALSE)
+save(rse_gene_habenula_filt, file = 'processed-data/04_EDA/03_Explore_gene_level_effects/rse_gene_habenula_filt.Rdata')
+save(rse_gene_amygdala_filt, file = 'processed-data/04_EDA/03_Explore_gene_level_effects/rse_gene_amygdala_filt.Rdata')
 
 ## Create table with rat behavioral data used
 rat_behavioral_data <- subset(covariate_data, !Rat_ID %in% c('LgA 03', 'LgA 07', 'LgA 17'))[,-9]
