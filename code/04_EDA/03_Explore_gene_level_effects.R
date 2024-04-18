@@ -305,8 +305,7 @@ plot_CCA<- function(brain_region, all_vars, substance){
         }
         else{
             formula = ~ Total_Num_Fentanyl_Sessions + mitoRate + overallMapRate + concordMapRate + totalAssignedGene +
-                RIN + library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
-                Total_Intake + First_Hour_Infusion_Slope
+                RIN  + RNA_concentration + Total_RNA_amount + Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
         }
 
     }
@@ -323,8 +322,8 @@ plot_CCA<- function(brain_region, all_vars, substance){
             else{
                 formula = ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions +
                     mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
-                    Total_Intake + First_Hour_Infusion_Slope
+                    RNA_concentration + Total_RNA_amount + Total_Intake + Last_Session_Intake +
+                    First_Hour_Infusion_Slope
             }
         }
         else {
@@ -336,9 +335,8 @@ plot_CCA<- function(brain_region, all_vars, substance){
             }
             else{
                 formula = ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentanyl_Sessions +
-                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN +
-                    library_size + detected_num_genes + RNA_concentration + Total_RNA_amount +
-                    Total_Intake + First_Hour_Infusion_Slope
+                    mitoRate + overallMapRate + concordMapRate + totalAssignedGene + RIN + RNA_concentration +
+                    Total_RNA_amount + Total_Intake + Last_Session_Intake + First_Hour_Infusion_Slope
             }
         }
     }
@@ -363,14 +361,14 @@ plot_CCA<- function(brain_region, all_vars, substance){
 ## All samples
 CCA_habenula_all_vars_allSamples <- plot_CCA('habenula', 'all_vars', 'allSamples')
 CCA_amygdala_all_vars_allSamples <- plot_CCA('amygdala', 'all_vars', 'allSamples')
-CCA_habenula_without_last_sess_int_allSamples <- plot_CCA('habenula', 'without_last_sess_int', 'allSamples')
-CCA_amygdala_without_last_sess_int_allSamples <- plot_CCA('amygdala', 'without_last_sess_int', 'allSamples')
+CCA_habenula_without_Lib_detectNum_allSamples <- plot_CCA('habenula', 'without_Lib_detectNum', 'allSamples')
+CCA_amygdala_without_Lib_detectNum_allSamples <- plot_CCA('amygdala', 'without_Lib_detectNum', 'allSamples')
 
 ## Fentanyl samples only
 CCA_habenula_all_vars_Fentanyl <- plot_CCA('habenula', 'all_vars', 'Fentanyl')
 CCA_amygdala_all_vars_Fentanyl <- plot_CCA('amygdala', 'all_vars', 'Fentanyl')
-CCA_habenula_without_last_sess_int_Fentanyl <- plot_CCA('habenula', 'without_last_sess_int', 'Fentanyl')
-CCA_amygdala_without_last_sess_int_Fentanyl <- plot_CCA('amygdala', 'without_last_sess_int', 'Fentanyl')
+CCA_habenula_without_Lib_detectNum_Fentanyl <- plot_CCA('habenula', 'without_Lib_detectNum', 'Fentanyl')
+CCA_amygdala_without_Lib_detectNum_Fentanyl <- plot_CCA('amygdala', 'without_Lib_detectNum', 'Fentanyl')
 
 
 
