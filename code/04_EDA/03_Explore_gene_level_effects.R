@@ -514,6 +514,8 @@ multiple_corr_plots('habenula', sample_vars, 'Batch_RNA_extraction' ,'allSamples
 sample_vars <- c('Substance', 'detected_num_genes', 'First_Hour_Infusion_Slope',
                  'Total_Intake', 'Last_Session_Intake')
 multiple_corr_plots('habenula', sample_vars, 'Substance' ,'allSamples')
+sample_vars <- c('Total_Num_Fentanyl_Sessions', 'Total_Intake', 'Last_Session_Intake', 'First_Hour_Infusion_Slope')
+multiple_corr_plots('habenula', sample_vars, 'Total_Num_Fentanyl_Sessions' ,'allSamples')
 multiple_corr_plots('habenula', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates', 'allSamples')
 multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_detectedNumGenes', 'allSamples')
 multiple_corr_plots('habenula', c('Substance', 'mitoRate'), 'Substance_mitoRate', 'allSamples')
@@ -521,6 +523,8 @@ multiple_corr_plots('habenula', c('Substance', 'mitoRate'), 'Substance_mitoRate'
 sample_vars <- c('Substance', 'totalAssignedGene', 'library_size', 'First_Hour_Infusion_Slope',
                  'Last_Session_Intake', 'Total_Intake')
 multiple_corr_plots('amygdala', sample_vars, 'Substance', 'allSamples')
+sample_vars <- c('Total_Num_Fentanyl_Sessions', 'Total_Intake', 'Last_Session_Intake', 'First_Hour_Infusion_Slope')
+multiple_corr_plots('amygdala', sample_vars, 'Total_Num_Fentanyl_Sessions' ,'allSamples')
 multiple_corr_plots('amygdala', c('concordMapRate', 'overallMapRate'), 'concord_overallMapRates', 'allSamples')
 multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'mitoRate'), 'mitoRate_BatchRNAextraction', 'allSamples')
 multiple_corr_plots('amygdala', c('Batch_RNA_extraction', 'Total_RNA_amount'), 'TotalRNAamount_BatchRNAextraction', 'allSamples')
@@ -531,6 +535,8 @@ multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'RNA_concentrat
 ## For fentanyl samples
 sample_vars <- c('Total_Intake', 'Total_RNA_amount', 'totalAssignedGene')
 multiple_corr_plots('habenula', sample_vars, 'Total_Intake' ,'Fentanyl')
+sample_vars <- c('Total_Num_Fentanyl_Sessions', 'Total_Intake', 'Last_Session_Intake', 'First_Hour_Infusion_Slope')
+multiple_corr_plots('habenula', sample_vars, 'Total_Num_Fentanyl_Sessions' ,'Fentanyl')
 multiple_corr_plots('habenula', c('library_size', 'totalAssignedGene'), 'lib_size_totalAssGene' ,'Fentanyl')
 multiple_corr_plots('habenula', c('Total_RNA_amount', 'totalAssignedGene'), 'Total_RNA_amount_totalAssGene' ,'Fentanyl')
 multiple_corr_plots('habenula', c('mitoRate', 'totalAssignedGene'), 'mitoRate_totalAssGene' ,'Fentanyl')
@@ -545,6 +551,8 @@ multiple_corr_plots('habenula', c('mitoRate', 'detected_num_genes'), 'mitoRate_d
 
 sample_vars <- c('Total_Intake', 'overallMapRate', 'concordMapRate', 'detected_num_genes')
 multiple_corr_plots('amygdala', sample_vars, 'Total_Intake' ,'Fentanyl')
+sample_vars <- c('Total_Num_Fentanyl_Sessions', 'Total_Intake', 'Last_Session_Intake', 'First_Hour_Infusion_Slope')
+multiple_corr_plots('amygdala', sample_vars, 'Total_Num_Fentanyl_Sessions' ,'Fentanyl')
 multiple_corr_plots('amygdala', c('library_size', 'totalAssignedGene', 'mitoRate'), 'lib_size_totalAssGene_mito' ,'Fentanyl')
 multiple_corr_plots('amygdala', c('Total_Num_Fentanyl_Sessions', 'Total_RNA_amount', 'RNA_concentration'), 'Total_Num_FentSess_TotalRNAam_RNAconc' ,'Fentanyl')
 
