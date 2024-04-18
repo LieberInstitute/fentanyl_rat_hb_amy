@@ -88,18 +88,14 @@ expl_var<- function(brain_region, variables, all_vars, substance){
 
 ## All samples:
 ## All sample variables
-variables <- c("Substance", "Batch_RNA_extraction", "Batch_lib_prep", "Total_Num_Fentanyl_Sessions",
-               "mitoRate", "concordMapRate","overallMapRate", "totalAssignedGene", "RIN", "detected_num_genes",
-               "library_size", "Total_RNA_amount", "RNA_concentration", "Total_Intake", "Last_Session_Intake",
-               "First_Hour_Infusion_Slope")
-
+variables <- names(colors)
 expl_vars_habenula_all <- as.data.frame(expl_var("habenula", variables, 'all', NULL))
 expl_vars_amygdala_all <- as.data.frame(expl_var("amygdala", variables, 'all', NULL))
 
-## Without Last_Session_Intake
-variables <- variables[!variables=="Last_Session_Intake"]
-expl_vars_habenula_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', NULL))
-expl_vars_amygdala_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', NULL))
+## Without library_size and detected_num_genes
+variables <- variables[!variables %in% c("library_size", "detected_num_genes")]
+expl_vars_habenula_without_Lib_detectNum <- as.data.frame(expl_var("habenula", variables, 'without_Lib_detectNum', NULL))
+expl_vars_amygdala_without_Lib_detectNum <- as.data.frame(expl_var("amygdala", variables, 'without_Lib_detectNum', NULL))
 
 
 ## Subset to fentanyl samples:
@@ -110,9 +106,9 @@ variables <- c("Total_Num_Fentanyl_Sessions", "mitoRate", "concordMapRate","over
 expl_vars_habenula_Fent_all <- as.data.frame(expl_var("habenula", variables, 'all', 'Fentanyl'))
 expl_vars_amygdala_Fent_all <- as.data.frame(expl_var("amygdala", variables, 'all', 'Fentanyl'))
 
-variables <- variables[!variables=="Last_Session_Intake"]
-expl_vars_habenula_Fent_without_last_sess_int <- as.data.frame(expl_var("habenula", variables, 'without_last_sess_int', 'Fentanyl'))
-expl_vars_amygdala_Fent_without_last_sess_int <- as.data.frame(expl_var("amygdala", variables, 'without_last_sess_int', 'Fentanyl'))
+variables <- variables[!variables %in% c("library_size", "detected_num_genes")]
+expl_vars_habenula_Fent_without_Lib_detectNum <- as.data.frame(expl_var("habenula", variables, 'without_Lib_detectNum', 'Fentanyl'))
+expl_vars_amygdala_Fent_without_Lib_detectNum <- as.data.frame(expl_var("amygdala", variables, 'without_Lib_detectNum', 'Fentanyl'))
 
 
 
