@@ -389,14 +389,14 @@ write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
 rse_gene_habenula_fent <- rse_gene_habenula_filt[,which(rse_gene_habenula_filt$Substance=='Fentanyl')]
 
 ## High/low intake samples
-rse_gene_habenula_fent$Intake_slope <- sapply(rse_gene_habenula_fent$Sample_Num, function(x){if(x %in% c(1,4,7)){'High'}
+rse_gene_habenula_fent$Intake_slope_binary <- sapply(rse_gene_habenula_fent$Sample_Num, function(x){if(x %in% c(1,4,7)){'High'}
                                                                                              else if(x %in% c(2,5,6,8)){'Low'}
                                                                                              else {NA}})
 ## Remove sample from the outlier rat (in intake slope)
 ## Identify it
-outlier_fent_sample <- colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope)), 'Rat_ID']
+outlier_fent_sample <- colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_habenula_fent$Intake_slope_binary)), 'Rat_ID']
 # [1] "LgA 09"
-rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope))]
+rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope_binary))]
 
 ## Same variables for habenula DEA
 ## Substance and batches are the same for all these samples
@@ -637,8 +637,8 @@ Covariates_corr_amygdala <- covariates_CCA('amygdala')
 rse_gene_habenula_fent <- rse_gene_habenula_filt[,which(rse_gene_habenula_filt$Substance=='Fentanyl')]
 
 ## formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate (previous)
-formula <-  ~  First_Hour_Infusion_Slope + RIN  + overallMapRate + totalAssignedGene
-name <-"for_First_hr_infusion_slope"
+formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + overallMapRate + totalAssignedGene
+name <-"for_First_Hour_Infusion_Slope"
 ## New contrast of interest
 coef <-"First_Hour_Infusion_Slope"
 results_FirstHrIntakeSlopeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
@@ -646,21 +646,23 @@ save(results_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/resul
 
 ## DEGs (FDR<0.05)
 length(which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05))
-#  6
-de_genes_FirstHrIntakeSlopeDEA_habenula<- results_FirstHrIntakeSlopeDEA_habenula[[1]][which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05), ]
+#  6 (previous)
+#  0
 
-## Add associated phenotypes and descriptions of DEGs
-de_genes_FirstHrIntakeSlopeDEA_habenula <- add_phenotypes(de_genes_FirstHrIntakeSlopeDEA_habenula)
-de_genes_FirstHrIntakeSlopeDEA_habenula <- add_description(de_genes_FirstHrIntakeSlopeDEA_habenula)
-de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID <- as.character(de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID)
-## Order by FDR and |logFC|
-de_genes_FirstHrIntakeSlopeDEA_habenula <- de_genes_FirstHrIntakeSlopeDEA_habenula[order(de_genes_FirstHrIntakeSlopeDEA_habenula$adj.P.Val, -abs(de_genes_FirstHrIntakeSlopeDEA_habenula$logFC)),]
-save(de_genes_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/de_genes_FirstHrIntakeSlopeDEA_habenula.Rdata')
-write.csv(de_genes_FirstHrIntakeSlopeDEA_habenula, "generated_data/de_genes_FirstHrIntakeSlopeDEA_habenula.csv")
-
-## Plots for DEGs
-plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], vGene = results_FirstHrIntakeSlopeDEA_habenula[[2]], FDR = 0.05,
-           name='habenula_for_First_hr_infusion_slope')
+# de_genes_FirstHrIntakeSlopeDEA_habenula<- results_FirstHrIntakeSlopeDEA_habenula[[1]][which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05), ]
+#
+# ## Add associated phenotypes and descriptions of DEGs
+# de_genes_FirstHrIntakeSlopeDEA_habenula <- add_phenotypes(de_genes_FirstHrIntakeSlopeDEA_habenula)
+# de_genes_FirstHrIntakeSlopeDEA_habenula <- add_description(de_genes_FirstHrIntakeSlopeDEA_habenula)
+# de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID <- as.character(de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID)
+# ## Order by FDR and |logFC|
+# de_genes_FirstHrIntakeSlopeDEA_habenula <- de_genes_FirstHrIntakeSlopeDEA_habenula[order(de_genes_FirstHrIntakeSlopeDEA_habenula$adj.P.Val, -abs(de_genes_FirstHrIntakeSlopeDEA_habenula$logFC)),]
+# save(de_genes_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/de_genes_FirstHrIntakeSlopeDEA_habenula.Rdata')
+# write.csv(de_genes_FirstHrIntakeSlopeDEA_habenula, "generated_data/de_genes_FirstHrIntakeSlopeDEA_habenula.csv")
+#
+# ## Plots for DEGs
+# plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], vGene = results_FirstHrIntakeSlopeDEA_habenula[[2]], FDR = 0.05,
+#            name='habenula_for_First_hr_infusion_slope')
 
 
 ##############################
@@ -672,8 +674,8 @@ rse_gene_amygdala_fent <- rse_gene_amygdala_filt[,which(rse_gene_amygdala_filt$S
 ## DEA
 ## formula <-  ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
 formula <-  ~  First_Hour_Infusion_Slope + RIN + mitoRate
-name <-"for_First_hr_infusion_slope"
-coef <-"First_Hour_infusion_slope"
+name <-"for_First_Hour_Infusion_Slope"
+coef <-"First_Hour_Infusion_Slope"
 results_FirstHrIntakeSlopeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_FirstHrIntakeSlopeDEA_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala.Rdata')
 length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
@@ -729,7 +731,7 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Va
 ## Habenula samples
 #####################
 
-##formula <-  ~ Total_Intake + overallMapRate + RIN + mitoRate
+##formula <-  ~ Total_Intake + overallMapRate + RIN + mitoRate (previous)
 formula <- ~  Total_Intake + RIN + RNA_concentration + overallMapRate
 name <-"for_Total_intake"
 coef <-"Total_Intake"
@@ -742,7 +744,7 @@ length(which(results_TotalIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
 ## Amygdala samples
 #####################
 
-## formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate
+## formula <-  ~ Total_intake + overallMapRate + RIN + mitoRate (previous)
 formula <-  ~  Total_Intake + RIN + mitoRate
 name <-"for_Total_intake"
 coef <-"Total_Intake"
@@ -750,22 +752,23 @@ results_TotalIntakeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula
 save(results_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/results_TotalIntakeDEA_amygdala.Rdata')
 length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
 #  26
+#. 0
 length(which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.05))
 #  0
 
 ## DEGs (FDR<0.1)
-de_genes_TotalIntakeDEA_amygdala<- results_TotalIntakeDEA_amygdala[[1]][which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1), ]
-## Add associated phenotypes and descriptions of DEGs
-de_genes_TotalIntakeDEA_amygdala<- add_phenotypes(de_genes_TotalIntakeDEA_amygdala)
-de_genes_TotalIntakeDEA_amygdala <- add_description(de_genes_TotalIntakeDEA_amygdala)
-de_genes_TotalIntakeDEA_amygdala$EntrezID <- as.character(de_genes_TotalIntakeDEA_amygdala$EntrezID)
-de_genes_TotalIntakeDEA_amygdala<- de_genes_TotalIntakeDEA_amygdala[order(de_genes_TotalIntakeDEA_amygdala$adj.P.Val, -abs(de_genes_TotalIntakeDEA_amygdala$logFC)),]
-save(de_genes_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/de_genes_TotalIntakeDEA_amygdala.Rdata')
-write.csv(de_genes_TotalIntakeDEA_amygdala, "generated_data/de_genes_TotalIntakeDEA_amygdala.csv")
-
-## Plots for DEGs
-plots_DEGs('amygdala', top_genes = results_TotalIntakeDEA_amygdala[[1]], vGene = results_TotalIntakeDEA_amygdala[[2]], FDR = 0.1,
-           name='amygdala_for_Total_intake')
+# de_genes_TotalIntakeDEA_amygdala<- results_TotalIntakeDEA_amygdala[[1]][which(results_TotalIntakeDEA_amygdala[[1]]$adj.P.Val<0.1), ]
+# ## Add associated phenotypes and descriptions of DEGs
+# de_genes_TotalIntakeDEA_amygdala<- add_phenotypes(de_genes_TotalIntakeDEA_amygdala)
+# de_genes_TotalIntakeDEA_amygdala <- add_description(de_genes_TotalIntakeDEA_amygdala)
+# de_genes_TotalIntakeDEA_amygdala$EntrezID <- as.character(de_genes_TotalIntakeDEA_amygdala$EntrezID)
+# de_genes_TotalIntakeDEA_amygdala<- de_genes_TotalIntakeDEA_amygdala[order(de_genes_TotalIntakeDEA_amygdala$adj.P.Val, -abs(de_genes_TotalIntakeDEA_amygdala$logFC)),]
+# save(de_genes_TotalIntakeDEA_amygdala, file = 'processed-data/05_DEA/de_genes_TotalIntakeDEA_amygdala.Rdata')
+# write.csv(de_genes_TotalIntakeDEA_amygdala, "generated_data/de_genes_TotalIntakeDEA_amygdala.csv")
+#
+# ## Plots for DEGs
+# plots_DEGs('amygdala', top_genes = results_TotalIntakeDEA_amygdala[[1]], vGene = results_TotalIntakeDEA_amygdala[[2]], FDR = 0.1,
+#            name='amygdala_for_Total_intake')
 
 
 
@@ -810,21 +813,24 @@ length(which(results_TotalIntakeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 ## Habenula samples
 #####################
 
-formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate
-name <-"for_Last_session_intake"
-coef <-"Last_session_intake"
+# formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  Last_Session_Intake + RIN + RNA_concentration + overallMapRate + totalAssignedGene
+name <-"for_Last_Session_Intake"
+coef <-"Last_Session_Intake"
 results_LastSessionIntakeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 save(results_LastSessionIntakeDEA_habenula, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_habenula.Rdata')
 length(which(results_LastSessionIntakeDEA_habenula[[1]]$adj.P.Val<0.1))
 #  0
+# 257
 
 #####################
 ## Amygdala samples
 #####################
 
-formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate
-name <-"for_Last_session_intake"
-coef <-"Last_session_intake"
+# formula <-  ~ Last_session_intake + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  Last_Session_Intake + RIN + totalAssignedGene + concordMapRate
+name <-"for_Last_Session_Intake"
+coef <-"Last_Session_Intake"
 results_LastSessionIntakeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
 save(results_LastSessionIntakeDEA_amygdala, file = 'processed-data/05_DEA/results_LastSessionIntakeDEA_amygdala.Rdata')
 length(which(results_LastSessionIntakeDEA_amygdala[[1]]$adj.P.Val<0.1))
