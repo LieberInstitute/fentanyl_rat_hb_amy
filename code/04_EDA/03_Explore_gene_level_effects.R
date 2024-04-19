@@ -593,9 +593,8 @@ varPartAnalysis <- function(brain_region, formula, name, substance){
 ## All samples:
 
 ## Habenula covariates discarding:
-##  * 1. Variables correlated with Substance: detected_num_genes, First_Hour_Infusion_Slope,
-##                                            Total_Intake, and Last_Session_Intake
-##  * 2. Variables correlated with RNA extraction batch: mitoRate, library_size, totalAssignedGene,
+##  * 1. Variables correlated with Substance: First_Hour_Infusion_Slope, Total_Intake, and Last_Session_Intake
+##  * 2. Variables correlated with RNA extraction batch: mitoRate, totalAssignedGene,
 ##                                                       RNA_concentration, and Total_RNA_amount
 ##  * 3. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions
 ##  * 4. Variables highly correlated with any other that explains higher %s of variance: overallMapRate
@@ -606,13 +605,11 @@ varPartAnalysis('habenula', formula, 'finalVariableSet', 'allSamples')
 
 
 ## Amygdala covariates discarding:
-##  * 1. Variables correlated with Substance: totalAssignedGene, library_size, First_Hour_Infusion_Slope,
+##  * 1. Variables correlated with Substance: totalAssignedGene, First_Hour_Infusion_Slope,
 ##                                            Last_Session_Intake, and Total_Intake
 ##  * 2. Variables correlated with RNA extraction batch: mitoRate and Total_RNA_amount
 ##  * 3. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and RNA_concentration
-##  * 4. In addition detected_num_genes was removed given its very different scale for this analysis
-##  * 5. Variables highly correlated with any other that explains higher %s of variance: concordMapRate
-
+##  * 4. Variables highly correlated with any other that explains higher %s of variance: concordMapRate
 
 formula <-  ~ (1|Substance) + (1|Batch_RNA_extraction) + (1| Batch_lib_prep) + overallMapRate  + RIN
 varPartAnalysis('amygdala', formula, 'finalVariableSet', 'allSamples')
@@ -620,39 +617,36 @@ varPartAnalysis('amygdala', formula, 'finalVariableSet', 'allSamples')
 
 
 ## Fentanyl samples only:
+
 ## Habenula covariates for Total Intake DEA:
-##  * 1. Variables correlated with Total Intake: totalAssignedGene, library_size, and Total_RNA_amount
+##  * 1. Variables correlated with Total Intake: totalAssignedGene and Total_RNA_amount
 ##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and concordMapRate
-##  * 3. Variables on different scales: detected_num_genes
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: mitoRate
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: mitoRate
 
 formula <-  ~  Total_Intake + RIN + RNA_concentration + overallMapRate
 varPartAnalysis('habenula', formula, 'Total_Intake_finalVariableSet', 'Fentanyl')
 
 ## Habenula covariates for Last Session Intake DEA:
-##  * 1. Variables correlated with Last Session Intake: -
-##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and concordMapRate
-##  * 3. Variables on different scales: library_size and detected_num_genes
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: mitoRate and Total_RNA_amount
+##  * 1. Variables correlated with Last Session Intake: Total_Num_Fentanyl_Sessions
+##  * 2. Total num session / variables correlated with it: concordMapRate
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene, Total_RNA_amount, and overallMapRate
 
-formula <-  ~  Last_Session_Intake + RIN + RNA_concentration + overallMapRate + totalAssignedGene
+formula <-  ~  Last_Session_Intake + RIN + RNA_concentration + mitoRate
 varPartAnalysis('habenula', formula, 'Last_Session_Intake_finalVariableSet', 'Fentanyl')
 
 ## Habenula covariates for First hr Infusion Slope DEA:
-##  * 1. Variables correlated with First hr Infusion Slope: -
-##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions and concordMapRate
-##  * 3. Variables on different scales: library_size and detected_num_genes
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: mitoRate and Total_RNA_amount
+##  * 1. Variables correlated with First hr Infusion Slope: Total_Num_Fentanyl_Sessions
+##  * 2. Total num session / variables correlated with it:  concordMapRate
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene, Total_RNA_amount, and overallMapRate
 
-formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + overallMapRate + totalAssignedGene
+formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + mitoRate
 varPartAnalysis('habenula', formula, 'First_Hour_Infusion_Slope_finalVariableSet', 'Fentanyl')
 
 
 ## Amygdala covariates for Total Intake DEA:
-##  * 1. Variables correlated with Total Intake: detected_num_genes, concordMapRate, and overallMapRate
+##  * 1. Variables correlated with Total Intake: concordMapRate and overallMapRate
 ##  * 2. Total num session / variables correlated with it: Total_Num_Fentanyl_Sessions, RNA_concentration, and Total_RNA_amount
-##  * 3. Variables on different scales: library_size
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene
 
 formula <-  ~  Total_Intake + RIN + mitoRate
 varPartAnalysis('amygdala', formula, 'Total_Intake_finalVariableSet', 'Fentanyl')
@@ -660,8 +654,7 @@ varPartAnalysis('amygdala', formula, 'Total_Intake_finalVariableSet', 'Fentanyl'
 ## Amygdala covariates for Last Session Intake DEA:
 ##  * 1. Variables correlated with Last Session Intake: RNA_concentration, Total_Num_Fentanyl_Sessions, and mitoRate
 ##  * 2. Total num session / variables correlated with it: Total_RNA_amount
-##  * 3. Variables on different scales: detected_num_genes and library_size
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: overallMapRate
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: overallMapRate
 
 formula <-  ~  Last_Session_Intake + RIN + totalAssignedGene + concordMapRate
 varPartAnalysis('amygdala', formula, 'Last_Session_Intake_finalVariableSet', 'Fentanyl')
@@ -670,8 +663,7 @@ varPartAnalysis('amygdala', formula, 'Last_Session_Intake_finalVariableSet', 'Fe
 ##  * 1. Variables correlated with First hr Infusion Slope:  RNA_concentration, Total_Num_Fentanyl_Sessions, overallMapRate,
 ##                                                           and concordMapRate
 ##  * 2. Total num session / variables correlated with it: Total_RNA_amount
-##  * 3. Variables on different scales: detected_num_genes and library_size
-##  * 4. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene
+##  * 3. Variables highly correlated with any other that explains higher %s of variance: totalAssignedGene
 
 formula <-  ~  First_Hour_Infusion_Slope + RIN + mitoRate
 varPartAnalysis('amygdala', formula, 'First_Hour_Infusion_Slope_finalVariableSet', 'Fentanyl')
