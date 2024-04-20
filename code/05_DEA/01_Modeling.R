@@ -196,26 +196,25 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         caption_y_units2 <- -0.09
     }
 
-    ## Gene symbols for all 6 DEGs in habenula DEA for 1st hr infusion slope
-    else if(name=='habenula_for_First_hr_infusion_slope'){
-        DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
-        caption_x_units <- 1.2
-        caption_y_units1 <- 0.4
-        caption_y_units2 <- 0.31
-    }
-
-    else if(name=='amygdala_for_Total_intake'){
-        caption_x_units <- 1.7
-        caption_y_units1 <- 0.13
-        caption_y_units2 <- 0.08
-    }
+    # ## Gene symbols for all 6 DEGs in habenula DEA for 1st hr infusion slope
+    # else if(name=='First_hr_infusion_slope'){
+    #     DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
+    #     caption_x_units <- 1.2
+    #     caption_y_units1 <- 0.4
+    #     caption_y_units2 <- 0.31
+    # }
+    #
+    # else if(name=='Total_intake'){
+    #     caption_x_units <- 1.7
+    #     caption_y_units1 <- 0.13
+    #     caption_y_units2 <- 0.08
+    # }
     top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% top_DEGs){x} else {NA}})
-
 
 
     ## Plots
     cols <- c("Up" = "indianred2", "Down" = "steelblue2", "n.s." = "grey")
-    sizes <- c("Up" = 1.6, "Down" = 1.6, "n.s." = 1)
+    sizes <- c("Up" = 1.3, "Down" = 1.3, "n.s." = 0.8)
     alphas <- c("Up" = 0.4, "Down" = 0.6, "n.s." = 0.5)
 
     ## MA plot for DE genes
@@ -238,7 +237,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10, face = "bold"))
+              legend.text = element_text(size=10))
 
 
     ## Volcano plot for DE genes
@@ -256,18 +255,22 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         geom_vline(xintercept = c(-1,1),
                    linetype = "dashed", color = 'gray35', linewidth=0.5) +
         geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_downDEGs), aes(fontface = 'bold'),
-                        size=2.6,
+                        size=2.8,
                         color='black',
                         alpha = 1,
                         max.overlaps = Inf,
-                        box.padding = 0.2, nudge_y = -0.1, nudge_x = -0.4,
+                        box.padding = 0.15, nudge_y = -0.1, nudge_x = -0.4,
+                        segment.size = unit(0.4, 'mm'),
+                        segment.alpha = 0.5,
                         show.legend=FALSE) +
         geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_upDEGs), aes(fontface = 'bold'),
-                        size=2.6,
+                        size=2.8,
                         color='black',
                         alpha = 1,
                         max.overlaps = Inf,
-                        box.padding = 0.2, nudge_y = 0.1, nudge_x = 0.4,
+                        box.padding = 0.15, nudge_y = 0.1, nudge_x = 0.4,
+                        segment.size = unit(0.4, 'mm'),
+                        segment.alpha = 0.5,
                         show.legend=FALSE) +
         labs(y="-log10(FDR)", x=FClab)+
         scale_color_manual(values = cols, name=NULL) +
@@ -279,13 +282,13 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10, face = "bold")) +
+              legend.text = element_text(size=10)) +
         ## Caption: number of DEGs
         annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units1, label= paste0(length(which(top_genes$adj.P.Val<FDR)), ' DEGs'),
-                 color='gray20', size=2.8, fontface = 'bold') +
+                 color='gray40', size=2.8, fontface = 'bold') +
         ## Caption: FDR threshold
         annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units2, label= paste0("(FDR<", FDR, ")"),
-                 color='gray20', size=2.5)
+                 color='gray40', size=2.5)
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", brain_region, '_', name, ".pdf", sep=""),
@@ -307,7 +310,7 @@ de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars
 
 
 
-## Add Ensembl info of DEGs (HERE)
+## Add Ensembl info of DEGs
 
 add_phenotypes <- function(de_genes){
 
@@ -354,12 +357,12 @@ add_description <- function(de_genes){
     return(de_genes)
 }
 
+
 ## Habenula
 ## Add associated phenotypes
 de_genes_habenula <- add_phenotypes(de_genes_habenula)
 ## Add descriptions
 de_genes_habenula <- add_description(de_genes_habenula)
-## Save
 de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
 ## Order first by increasing FDR and secondly by decreasing |logFC|
 de_genes_habenula <- de_genes_habenula[order(de_genes_habenula$adj.P.Val, -abs(de_genes_habenula$logFC)),]

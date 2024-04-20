@@ -1,14 +1,14 @@
 # Differential Expression Analysis (DEA)
 
-This directory contains a single script in which all the following differential expression analyses were carried out. 
+This directory contains the scripts in which all the following differential expression analyses were carried out and their results compared. 
 
 ## 1. Modeling
 
 * [`01_Modeling.R`](01_Modeling.R): 
     * **1\.1 DEA for *Fentanyl vs. Saline* with all samples from each brain region**: 
-    gene expression was modeled using all sample covariates in both habenula and amygdala, and with the uncorrelated variables only (defined through variance partition analysis in [04_EDA/03_Explore_gene_level_effects.R](../04_EDA)):
-        * Habenula:    ~ `Substance` + `` + `` + ``
-        * Amygdala: 
+    gene expression was modeled using all sample covariates in both habenula and amygdala, and with the following uncorrelated variables only (defined through variance partition analysis in [04_EDA/03_Explore_gene_level_effects.R](../04_EDA)):
+        * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN`
+        * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN`
             
     * **1\.2 DEA for *High vs Low fentanyl intake slope* in habenula and amygdala fentanyl samples**:
     
@@ -29,4 +29,6 @@ This directory contains a single script in which all the following differential 
     * **1\.6 DEA for *Last Session Intake* in habenula and amygdala fentanyl samples**: 
         * *1\.6\.1 Analysis with all fentanyl samples*:   
         * *1\.6\.2 Analysis without samples from negative outlier fentanyl rat*:  
-        
+
+
+## 2. Comparisons
