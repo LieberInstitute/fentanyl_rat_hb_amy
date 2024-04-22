@@ -497,7 +497,7 @@ de_genes_habenula$chr <- de_genes_habenula$seqnames
 de_genes_habenula <- de_genes_habenula[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
                                           "gene_description", "associated_phenotypes")]
-write.table(de_genes_habenula, "processed-data/Supplementary_Tables/stabl_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS4_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
