@@ -354,8 +354,9 @@ display: none;
 
 <div id="differential-expression-analysis-dea" class="section level1">
 <h1>Differential Expression Analysis (DEA)</h1>
-<p>This directory contains a single script in which all the following
-differential expression analyses were carried out.</p>
+<p>This directory contains the scripts in which all the following
+differential expression analyses were carried out and their results
+compared.</p>
 <div id="modeling" class="section level2">
 <h2>1. Modeling</h2>
 <ul>
@@ -363,11 +364,16 @@ differential expression analyses were carried out.</p>
 <ul>
 <li><p><strong>1.1 DEA for <em>Fentanyl vs. Saline</em> with all samples
 from each brain region</strong>: gene expression was modeled using all
-sample covariates in both habenula and amygdala, and with the
-uncorrelated variables only (defined in <a href="../04_EDA">04_EDA/03_Explore_gene_level_effects.R</a>):</p>
+sample covariates in both habenula and amygdala, and with the following
+uncorrelated variables only (defined through variance partition analysis
+in <a href="../04_EDA">04_EDA/03_Explore_gene_level_effects.R</a>):</p>
 <ul>
-<li>Habenula: ~ <code>Substance</code> + <code>+</code> + ``</li>
-<li>Amygdala:</li>
+<li>Habenula: ~ <code>Substance</code> +
+<code>Batch_RNA_extraction</code> + <code>concordMapRate</code> +
+<code>RIN</code></li>
+<li>Amygdala: ~ <code>Substance</code> +
+<code>Batch_RNA_extraction</code> + <code>Batch_lib_prep</code> +
+<code>overallMapRate</code> + <code>RIN</code></li>
 </ul></li>
 <li><p><strong>1.2 DEA for <em>High vs Low fentanyl intake slope</em> in
 habenula and amygdala fentanyl samples</strong>:</p></li>
@@ -407,6 +413,9 @@ rat</em>:</li>
 </ul></li>
 </ul></li>
 </ul>
+</div>
+<div id="comparisons" class="section level2">
+<h2>2. Comparisons</h2>
 </div>
 </div>
 

@@ -299,19 +299,144 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 ## Plots for habenula DEGs from the model without correlated variables
 plots_DEGs('habenula', top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
            name='Substance')
-## Extract DEGs
 de_genes_habenula <- results_uncorr_vars_habenula[[1]][which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
-
+de_genes_habenula$symbol_or_ensemblID <- unlist(apply(de_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
 
 ## Plots for amygdala DEGs from the model without correlated variables
 plots_DEGs('amygdala', top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
            name='Substance')
 de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
+de_genes_amygdala$symbol_or_ensemblID <- unlist(apply(de_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+
+
+
+## Boxplot/Scatterplot for a DEG of interest
+DEG_expression_plot <- function (de_genes, vGene, DEG, variable, brain_region){
+
+    if (variable=='Substance'){
+        rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+    }
+
+    else {
+        rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
+        rse_gene <- rse_gene[which(rse_gene$Substance=='Fentanyl'), ]
+    }
+
+    ## Sample colors
+    colors = list("Substance"= c('Fentanyl'='turquoise3', 'Saline'='yellow3'),
+                  "Total_Intake" = "yellow2",
+                  "Last_Session_Intake" = "pink",
+                  "First_Hour_Infusion_Slope" = "lightblue2")
+    x_labs = c("Substance"= "Substance",
+               "Total_Intake" = "Total intake",
+               "Last_Session_Intake" = "Last session intake",
+               "First_Hour_Infusion_Slope" = "First hour infusion slope")
+
+    ## q-value for the gene
+    q_value<-signif(de_genes[which(de_genes$symbol_or_ensemblID==DEG), "adj.P.Val"], digits = 2)
+
+    ## FC
+    FC<-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==DEG), "logFC"]), digits=2)
+
+    ## Gene symbol + ensemblID
+    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==DEG), "ensemblID"]
+    if (length(ensemblID)!=0 && DEG!=ensemblID){
+        gene_title <- paste(DEG, ensemblID, sep="-")
+    }
+    else {
+        gene_title <- DEG
+    }
+
+
+    ## Order genes by q-value
+    de_genes<-de_genes[order(de_genes$adj.P.Val),]
+    ## Merge lognorm counts of DEG with sample data
+    lognorm_DE<-vGene$E[rownames(de_genes),]
+    lognorm_DE<-t(lognorm_DE)
+    colnames(lognorm_DE)<-de_genes$symbol_or_ensemblID
+    lognorm_DE<-data.frame(lognorm_DE, variable=colData(rse_gene)[variable])
+
+    ## Boxplot for Substance DGE
+    if (variable == 'Substance'){
+        plot <- ggplot(data=lognorm_DE,
+                   aes(x=eval(parse_expr(variable)),
+                       y=eval(parse_expr(DEG)))) +
+                    ## Hide outliers
+                    geom_boxplot(outlier.color = "#FFFFFFFF", width=0.35) +
+                    ## Samples colored by variable of interest
+                    geom_jitter(aes(colour=eval(parse_expr(variable))),
+                                shape=16,
+                                position=position_jitter(0.2),
+                                size=2.7) +
+                    theme_bw() +
+                    scale_color_manual(values=colors[[variable]]) +
+                    labs(x = x_labs[variable], y = "lognorm counts",
+                         title = gene_title,
+                         subtitle = paste("FDR:", q_value, '    ', 'FC:', FC)) +
+                    theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
+                          legend.position = "none",
+                          plot.title = element_text(hjust=0.5, size=12, face="bold"),
+                          plot.subtitle = element_text(size = 11),
+                          axis.title = element_text(size = (12)),
+                          axis.text = element_text(size = 10.5))
+    }
+    else{
+        plot <- ggplot(data=lognorm_DE,
+                       aes(x=eval(parse_expr(variable)),
+                           y=eval(parse_expr(DEG)))) +
+                    geom_point(aes(color=colors[[variable]]), size=2) +
+                    stat_smooth (geom="line", alpha=0.4, size=0.85, span=0.25, method = lm, color='orangered3') +
+                    theme_bw() +
+                    guides(color="none") +
+                    labs(title = gene_title,
+                         subtitle = paste("FDR:", q_value, '    ', 'FC:', FC),
+                         y = 'lognorm counts', x =  x_labs[variable]) +
+                    theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
+                          legend.position = "none",
+                          plot.title = element_text(hjust=0.5, size=12, face="bold"),
+                          plot.subtitle = element_text(size = 11),
+                          axis.title = element_text(size = (12)),
+                          axis.text = element_text(size = 10.5))
+    }
+
+    return(plot)
+}
+
+## Plot expression of multiple DEGs of interest
+DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, direction){
+
+    plots<-list()
+    for (i in 1:length(DEGs)){
+        p<-DEG_expression_plot(de_genes, vGene, DEGs[i], variable, brain_region)
+        plots[[i]] <- p
+    }
+    plot_grid(plotlist = plots, ncol = 3, align = 'hv')
+    ggsave(here(paste("plots/05_DEA/01_Modeling/", direction, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
+           width = 24, height = 16.5, units = "cm")
+}
+
+
+## Top 5 most downregulated DEGs for Substance in habenula
+down_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC<0), ]
+down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+DEG_expression_plots(down_DEGs, de_genes_habenula, results_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'down')
+## Top 5 most upregulated DEGs for Substance in habenula
+up_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC>0), ]
+up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+DEG_expression_plots(up_DEGs, de_genes_habenula, results_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'up')
+
+## Top 5 most downregulated DEGs for Substance in amygdala
+down_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC<0), ]
+down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+DEG_expression_plots(down_DEGs, de_genes_amygdala, results_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'down')
+## Top 5 most upregulated DEGs for Substance in amygdala
+up_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC>0), ]
+up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
+DEG_expression_plots(up_DEGs, de_genes_amygdala, results_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'up')
 
 
 
 ## Add Ensembl info of DEGs
-
 add_phenotypes <- function(de_genes){
 
     de_genes$associated_phenotypes <- NA
@@ -358,7 +483,7 @@ add_description <- function(de_genes){
 }
 
 
-## Habenula
+## Habenula (HERE: CREATE SUPP TABLES)
 ## Add associated phenotypes
 de_genes_habenula <- add_phenotypes(de_genes_habenula)
 ## Add descriptions
