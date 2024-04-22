@@ -483,7 +483,7 @@ add_description <- function(de_genes){
 }
 
 
-## Habenula (HERE: CREATE SUPP TABLES)
+## Habenula
 ## Add associated phenotypes
 de_genes_habenula <- add_phenotypes(de_genes_habenula)
 ## Add descriptions
@@ -492,14 +492,19 @@ de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
 ## Order first by increasing FDR and secondly by decreasing |logFC|
 de_genes_habenula <- de_genes_habenula[order(de_genes_habenula$adj.P.Val, -abs(de_genes_habenula$logFC)),]
 save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_Substance_habenula.Rdata')
-write.csv(de_genes_habenula, "processed-data/Supplementary_Tables/stabl_de_genes_Substance_habenula")
+## Create supp table with results
+de_genes_habenula$chr <- de_genes_habenula$seqnames
+de_genes_habenula <- de_genes_habenula[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
+                                          "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
+                                          "gene_description", "associated_phenotypes")]
+write.table(de_genes_habenula, "processed-data/Supplementary_Tables/stabl_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
 de_genes_amygdala <- add_description(de_genes_amygdala)
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
-save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_amygdala.Rdata')
+save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
 write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
 
 
