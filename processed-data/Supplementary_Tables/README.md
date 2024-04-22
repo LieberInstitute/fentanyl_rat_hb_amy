@@ -1,7 +1,7 @@
 # Supplementary Tables
 
 
-## [Supplementary Table A]([stabl_sample_variables_dictionary])
+## [Supplementary Table 1]([TableS1_sample_variables_dictionary])
 
 **Dictionary of sample variables.**
 
@@ -9,7 +9,7 @@ Meaning of the sample (or rat) variables and sample-level quality control metric
 
 
 
-## [Supplementary Table B]([stabl_sample_metadata_and_QCmetrics])
+## [Supplementary Table 2]([TableS2_sample_metadata_and_QCmetrics])
 
 **Sample metadata and QC metrics.**
 
@@ -19,7 +19,7 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/e081d
 
 
 
-## [Supplementary Table C]([stabl_rat_behavioral_data])
+## [Supplementary Table 3]([TableS3_rat_behavioral_data])
 
 **Rat behavioral data.**
 
@@ -29,16 +29,20 @@ Maybe not necessary: Created [here]()
 
 
 
-## [Supplementary Table D]([TableS4_de_genes_Substance_habenula.tsv])
+## [Supplementary Table 4](TableS4_de_genes_Substance_habenula.tsv)
 
 **DEGs for substance in habenula**
 
-DE statistics for DEGs for substance in habenula 
+Metadata, *limma* DE statistics, and Ensembl associated phenotypes and descriptions of DEGs obtained for fentanyl vs. saline in habenula. See [_limma_](https://bioconductor.org/packages/release/bioc/html/limma.html) documentation for these statistics definitions. Volcano plot in **Figure XX** was created with the data provided in this table.
+
+Created [here]()
 
 
 
-## [Supplementary Table E]([TableS5_de_genes_Substance_amygdala.tsv])
+## [Supplementary Table 5](TableS5_de_genes_Substance_amygdala.tsv)
 
 **DEGs for substance in amygdala**
 
-DE statist
+Metadata, *limma* DE statistics, and Ensembl associated phenotypes and descriptions of DEGs obtained for fentanyl vs. saline in amygdala. See [_limma_](https://bioconductor.org/packages/release/bioc/html/limma.html) documentation for these statistics definitions. Volcano plot in **Figure XX** was created with the data provided in this table.
+
+Created [here]()
