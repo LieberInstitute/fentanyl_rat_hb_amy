@@ -100,10 +100,10 @@ formula<- ~ Substance + Batch_RNA_extraction + Total_Num_Fentanyl_Sessions + mit
             RNA_concentration
 name<-"Substance_all_variables"
 coef<-"SubstanceFentanyl"
-results_all_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
-save(results_all_vars_habenula, file = 'processed-data/05_DEA/results_all_vars_habenula.Rdata')
+results_Substance_all_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
+save(results_Substance_all_vars_habenula, file = 'processed-data/05_DEA/results_Substance_all_vars_habenula.Rdata')
 ## Number of DEGs (FDR<0.05)
-length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
+length(which(results_Substance_all_vars_habenula[[1]]$adj.P.Val<0.05))
 #  0
 
 ## Model with uncorrelated variables only
@@ -111,9 +111,9 @@ length(which(results_all_vars_habenula[[1]]$adj.P.Val<0.05))
 formula <-  ~ Substance + Batch_RNA_extraction + concordMapRate + RIN
 name<-"Substance_uncorr_variables"
 coef<-"SubstanceFentanyl"
-results_uncorr_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
-save(results_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_uncorr_vars_habenula.Rdata')
-length(which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
+results_Substance_uncorr_vars_habenula<-DEA(rse_gene_habenula_filt, 'habenula', formula, name, coef)
+save(results_Substance_uncorr_vars_habenula, file = 'processed-data/05_DEA/results_Substance_uncorr_vars_habenula.Rdata')
+length(which(results_Substance_uncorr_vars_habenula[[1]]$adj.P.Val<0.05))
 #  453
 
 
@@ -127,10 +127,10 @@ formula<- ~ Substance + Batch_RNA_extraction + Batch_lib_prep + Total_Num_Fentan
             Total_RNA_amount + RNA_concentration
 name<-"Substance_all_variables"
 coef<-"SubstanceFentanyl"
-results_all_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
-save(results_all_vars_amygdala, file = 'processed-data/05_DEA/results_all_vars_amygdala.Rdata')
+results_Substance_all_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
+save(results_Substance_all_vars_amygdala, file = 'processed-data/05_DEA/results_Substance_all_vars_amygdala.Rdata')
 ## Number of DEGs (FDR<0.10)
-length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
+length(which(results_Substance_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 #  0
 
 ## Model with uncorrelated variables only
@@ -138,9 +138,9 @@ length(which(results_all_vars_amygdala[[1]]$adj.P.Val<0.10))
 formula <-  ~  Substance + Batch_RNA_extraction + Batch_lib_prep + overallMapRate  + RIN
 name<-"Substance_uncorr_variables"
 coef<-"SubstanceFentanyl"
-results_uncorr_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
-save(results_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata')
-length(which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
+results_Substance_uncorr_vars_amygdala<-DEA(rse_gene_amygdala_filt, 'amygdala', formula, name, coef)
+save(results_Substance_uncorr_vars_amygdala, file = 'processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata')
+length(which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 #  3041
 
 
@@ -297,15 +297,15 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
 
 ## Plots for habenula DEGs from the model without correlated variables
-plots_DEGs('habenula', top_genes = results_uncorr_vars_habenula[[1]], vGene = results_uncorr_vars_habenula[[2]], FDR = 0.05,
+plots_DEGs('habenula', top_genes = results_Substance_uncorr_vars_habenula[[1]], vGene = results_Substance_uncorr_vars_habenula[[2]], FDR = 0.05,
            name='Substance')
-de_genes_habenula <- results_uncorr_vars_habenula[[1]][which(results_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
+de_genes_habenula <- results_Substance_uncorr_vars_habenula[[1]][which(results_Substance_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
 de_genes_habenula$symbol_or_ensemblID <- unlist(apply(de_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
 
 ## Plots for amygdala DEGs from the model without correlated variables
-plots_DEGs('amygdala', top_genes = results_uncorr_vars_amygdala[[1]], vGene = results_uncorr_vars_amygdala[[2]], FDR = 0.05,
+plots_DEGs('amygdala', top_genes = results_Substance_uncorr_vars_amygdala[[1]], vGene = results_Substance_uncorr_vars_amygdala[[2]], FDR = 0.05,
            name='Substance')
-de_genes_amygdala <- results_uncorr_vars_amygdala[[1]][which(results_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
+de_genes_amygdala <- results_Substance_uncorr_vars_amygdala[[1]][which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
 de_genes_amygdala$symbol_or_ensemblID <- unlist(apply(de_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
 
 
@@ -419,20 +419,20 @@ DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, 
 ## Top 5 most downregulated DEGs for Substance in habenula
 down_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC<0), ]
 down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(down_DEGs, de_genes_habenula, results_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'down')
+DEG_expression_plots(down_DEGs, de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'down')
 ## Top 5 most upregulated DEGs for Substance in habenula
 up_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC>0), ]
 up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(up_DEGs, de_genes_habenula, results_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'up')
+DEG_expression_plots(up_DEGs, de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'up')
 
 ## Top 5 most downregulated DEGs for Substance in amygdala
 down_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC<0), ]
 down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(down_DEGs, de_genes_amygdala, results_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'down')
+DEG_expression_plots(down_DEGs, de_genes_amygdala, results_Substance_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'down')
 ## Top 5 most upregulated DEGs for Substance in amygdala
 up_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC>0), ]
 up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(up_DEGs, de_genes_amygdala, results_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'up')
+DEG_expression_plots(up_DEGs, de_genes_amygdala, results_Substance_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'up')
 
 
 
@@ -491,8 +491,8 @@ de_genes_habenula <- add_description(de_genes_habenula)
 de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
 ## Order first by increasing FDR and secondly by decreasing |logFC|
 de_genes_habenula <- de_genes_habenula[order(de_genes_habenula$adj.P.Val, -abs(de_genes_habenula$logFC)),]
-save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_habenula.Rdata')
-write.csv(de_genes_habenula, "generated_data/de_genes_habenula.csv")
+save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_Substance_habenula.Rdata')
+write.csv(de_genes_habenula, "processed-data/Supplementary_Tables/stabl_de_genes_Substance_habenula")
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
