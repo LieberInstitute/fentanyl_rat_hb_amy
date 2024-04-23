@@ -15,15 +15,15 @@ This directory contains the scripts in which all the following differential expr
         * Amygdala: ~ **`Intake_slope_binary`** + `overallMapRate` + `RIN`
     
     * **1\.3 DEA for *Fentanyl vs. Saline* with behavioral covariates in habenula and amygdala:**: DGE analysis for substance in habenula and amygdala adjusting gene expression for the final set of uncorrelated covariates as in **1.1** DEA but including also the rat behavioral covariates.  
-        * *1\.3\.1 DEA with covariate 1st hour intake slope*:
-            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`First_hr_infusion_slope`**
-            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`First_hr_infusion_slope`**
-        * *1\.3\.2 DEA with covariate total intake*:
-            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`Total_intake`**
-            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Total_intake`**
-        * *1\.3\.3 DEA with covariate last session intake*:
-            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`Last_session_intake`**
-            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Last_session_intake`**
+        * *1\.3\.1 DEA with covariate 1st Hour Intake Slope*:
+            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`First_Hour_Infusion_Slope`**
+            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`First_Hour_Infusion_Slope`**
+        * *1\.3\.2 DEA with covariate Total Intake*:
+            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`Total_Intake`**
+            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Total_Intake`**
+        * *1\.3\.3 DEA with covariate Last Session Intake*:
+            * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`Last_Session_Intake`**
+            * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Last_Session_Intake`**
     
     Then subsetting to fentanyl samples only we performed the following DGE analyses:
     * **1\.4 DEA for *1st Hour Intake Slope* in habenula and amygdala fentanyl samples**: DGE analysis for the first hour infusion slope among fentanyl rats in habenula and amygdala, adjusting for:
