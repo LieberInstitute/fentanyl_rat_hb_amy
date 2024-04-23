@@ -26,12 +26,14 @@ This directory contains the scripts in which all the following differential expr
             * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Last_Session_Intake`**
             
     The following DGE analyses for rat behavior were performed on fentanyl samples only and were done with habenula and amygdala samples from all rats self-administered fentanyl and then excluding samples from a negative outlier fentanyl rat detected in **1.2**.
-    * **1\.4 DEA for *1st Hour Intake Slope* in habenula and amygdala fentanyl samples**: DGE analysis for the first hour infusion slope     among fentanyl rats in habenula and amygdala, adjusting for:
+    * **1\.4 DEA for *1st Hour Intake Slope* in habenula and amygdala fentanyl samples**: DGE analysis for the first hour infusion slope among fentanyl rats in habenula and amygdala, adjusting for:
 
         * Habenula: ~ **`First_Hour_Infusion_Slope`** + `RIN` + `RNA_concentration` + `mitoRate`
         * Amygdala: ~ **`First_Hour_Infusion_Slope`** + `RIN` + `mitoRate`    
     
-    * **1\.5 DEA for *Total Intake* in habenula and amygdala fentanyl samples**: 
+    * **1\.5 DEA for *Total Intake* in habenula and amygdala fentanyl samples**: DGE analysis for the total drug intake of the fentanyl rats in habenula and amygdala, adjusting gene expression for:
+        * Habenula: ~ **`Total_Intake`** + `RIN` + `RNA_concentration` + `overallMapRate`
+        * Amygdala: ~ **`Total_Intake`** + `RIN` + `mitoRate`    
     
     * **1\.6 DEA for *Last Session Intake* in habenula and amygdala fentanyl samples**: 
 
