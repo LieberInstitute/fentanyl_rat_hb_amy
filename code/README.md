@@ -28,6 +28,9 @@ See more details in [04_EDA](04_EDA/).
 
 ## 05. Differential Expression Analysis (DEA)
 
+Differential Expression Analyses were performed to assess the effect of substance, total fentanyl intake, last session fentanyl intake, and fentanyl infusion slope on gene expression in habenula and amygdala of rats. Results were visualized and compared within each brain region. 
+
+See more details and specifications about each DGE analysis in [05_DEA](05_DEA/).
 
 
 ## 06. Functional Enrichment Analysis (GO & KEGG terms)
@@ -37,5 +40,3 @@ See more details in [04_EDA](04_EDA/).
 ## 07. Multi-marker analysis of genomic annotation (MAGMA)
 
 
-
-## 08. snRNA-data comparisons (*chage name in the future*)
