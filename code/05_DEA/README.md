@@ -44,8 +44,8 @@ See [Table S1](TableS1_sample_variables_dictionary.tsv) for the meaning of covar
 
 
 ## 2. Comparisons
-* [`02_Comparisons.R`](02_Comparisons.R): 
-    * **2\.1 Comparison of gene DE signal for substance and behavior in habenula**:
+* [`02_Comparisons.R`](02_Comparisons.R): the DE signals of the genes were compared for substance and behavioral covariates. 
+    * **2\.1 Comparison of gene DE signal for substance and behavior in habenula**: the gene t-stats for substance and behavior DGE analyses were contrasted in habenula.  
     
-    * **2\.2 Comparison of gene DE signal for substance and behavior in amygdala**:
+    * **2\.2 Comparison of gene DE signal for substance and behavior in amygdala**: the gene t-stats for substance and behavior DGE analyses were contrasted in amygdala.  
         

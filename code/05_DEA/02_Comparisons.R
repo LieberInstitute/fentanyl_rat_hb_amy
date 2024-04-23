@@ -17,12 +17,12 @@ load(here("processed-data/05_DEA/results_FirstHrIntakeSlope_habenula.Rdata"), ve
 load(here("processed-data/05_DEA/results_TotalIntake_habenula.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_LastSessionIntake_habenula.Rdata"), verbose = TRUE)
 
-
 ## Amygdala results
 load(here("processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_FirstHrIntakeSlope_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_TotalIntake_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_LastSessionIntake_amygdala.Rdata"), verbose = TRUE)
+
 
 
 ## 2.1 Comparison of gene DE signal for substance and behavior in habenula
