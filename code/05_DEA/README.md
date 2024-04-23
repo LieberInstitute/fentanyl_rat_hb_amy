@@ -14,7 +14,7 @@ This directory contains the scripts in which all the following differential expr
         * Habenula: ~ **`Intake_slope_binary`** + `concordMapRate` + `RIN`
         * Amygdala: ~ **`Intake_slope_binary`** + `overallMapRate` + `RIN`
     
-    * **1\.3 DEA for *Fentanyl vs. Saline* with behavioral covariates in habenula and amygdala:**: DGE analysis for substance in habenula and amygdala adjusting gene expression for the final set of uncorrelated covariates as in **1.1** DEA but including also the rat behavioral covariates.  
+    * **1\.3 DEA for *Fentanyl vs. Saline* with behavioral covariates in habenula and amygdala**: DGE analysis for substance in habenula and amygdala adjusting gene expression for the final set of uncorrelated covariates as in **1.1** DEA but including also the rat behavioral covariates.  
         * *1\.3\.1 DEA with covariate 1st Hour Intake Slope*:
             * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`First_Hour_Infusion_Slope`**
             * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`First_Hour_Infusion_Slope`**
