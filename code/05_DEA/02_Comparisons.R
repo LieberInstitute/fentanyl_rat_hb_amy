@@ -74,6 +74,110 @@ ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_amygdala.pdf'))
 
 
 
+## Function to add gene DE info with respect to two groups
+add_DE_info <-function(t_stats_1, t_stats_2, name_1, name_2) {
+
+    DE<-vector()
+
+    for (i in 1:dim(t_stats_1)[1]) {
+        ## DE genes in both DGE analyses
+        if (t_stats_1$adj.P.Val[i]<0.05 && t_stats_2$adj.P.Val[i]<0.05) {
+            DE<-append(DE, "sig Both")
+        }
+        ## DE genes in only one DEA
+        else if (t_stats_1$adj.P.Val[i]<0.05 && !t_stats_2$adj.P.Val[i]<0.05) {
+            DE<-append(DE, paste("sig", name_1))
+        }
+
+        else if (t_stats_2$adj.P.Val[i]<0.05 && !t_stats_1$adj.P.Val[i]<0.05) {
+            DE<-append(DE, paste("sig", name_2))
+        }
+        ## No DE genes in neither group
+        else {
+            DE<-append(DE, "None")
+        }
+    }
+    return(DE)
+}
+
+
+## Compare t-stats of genes from different DGE analyses
+t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
+
+    ## Spearman correlation coeff
+    rho <- cor(t_stats_1$t, t_stats_2$t, method = "spearman")
+    rho_anno = paste0("rho = ", format(round(rho, 2), nsmall = 2))
+
+    ## Colors and transparency
+    cols <- c("dodgerblue3", "deepskyblue1","cyan3", "darkgrey")
+    names(cols) <- c("sig Both", paste0("sig ", name_1), paste0("sig ", name_2), "None")
+    alphas <- c( 1, 1, 1, 0.5)
+    names(alphas) <- names(cols)
+
+    ## Merge t-stats
+    t_stats<-data.frame(t1=t_stats_1$t, t2=t_stats_2$t)
+    ## Add DE info for the genes in both DEAs
+    t_stats$DEG<-add_DE_info(t_stats_1, t_stats_2, name_1, name_2)
+    t_stats$DEG <- factor(t_stats$DEG, levels=names(cols))
+
+    plot <- ggplot(t_stats, aes(x = t1, y = t2, color=DEG, alpha=DEG)) +
+        geom_point(size = 1.5) +
+        scale_color_manual(values = cols) +
+        scale_alpha_manual(values = alphas) +
+        labs(x = paste("t-stats", name_1),
+             y = paste("t-stats", name_2),
+             subtitle = rho_anno,
+             color = "Differential expression",
+             parse = T) +
+        guides(alpha = 'none', color = guide_legend(override.aes = list(size=2))) +
+        theme_bw() +
+        theme(plot.margin = unit(c(1,1,1,1), "cm"),
+              axis.title = element_text(size = 12),
+              axis.text = element_text(size = 10),
+              legend.text = element_text(size=11),
+              legend.title = element_text(size=12))
+    plot
+
+    name1 <- gsub(' ', '_', name_1)
+    name2 <- gsub(' ', '_', name_2)
+    ggsave(paste0('plots/05_DEA/02_Comparisons/t_stats_', name1, '_vs_', name2, '_', brain_region, '.pdf'), width = 5.3, height = 3.5)
+}
+
+
+## Compare DE signal for substance vs behavior in habenula
+t_stat_plot(t_stats_Substance_habenula, t_stats_FirstHrIntakeSlope_habenula,
+            'Substance', 'First hr infusion slope', 'habenula')
+t_stat_plot(t_stats_Substance_habenula, t_stats_TotalIntake_habenula,
+            'Substance', 'Total intake', 'habenula')
+t_stat_plot(t_stats_Substance_habenula, t_stats_LastSessionIntake_habenula,
+            'Substance', 'Last session Intake', 'habenula')
+
+## Compare DE signal for behavioral covariates in habenula
+t_stat_plot(t_stats_FirstHrIntakeSlope_habenula, t_stats_TotalIntake_habenula,
+            'First hr infusion slope', 'Total intake', 'habenula')
+t_stat_plot(t_stats_FirstHrIntakeSlope_habenula, t_stats_LastSessionIntake_habenula,
+            'First hr infusion slope', 'Last session Intake', 'habenula')
+t_stat_plot(t_stats_TotalIntake_habenula, t_stats_LastSessionIntake_habenula,
+            'Total intake', 'Last session Intake', 'habenula')
+
+
+## Same comparisons in amygdala
+t_stat_plot(t_stats_Substance_amygdala, t_stats_FirstHrIntakeSlope_amygdala,
+            'Substance', 'First hr infusion slope', 'amygdala')
+t_stat_plot(t_stats_Substance_amygdala, t_stats_TotalIntake_amygdala,
+            'Substance', 'Total intake', 'amygdala')
+t_stat_plot(t_stats_Substance_amygdala, t_stats_LastSessionIntake_amygdala,
+            'Substance', 'Last session Intake', 'amygdala')
+t_stat_plot(t_stats_FirstHrIntakeSlope_amygdala, t_stats_TotalIntake_amygdala,
+            'First hr infusion slope', 'Total intake', 'amygdala')
+t_stat_plot(t_stats_FirstHrIntakeSlope_amygdala, t_stats_LastSessionIntake_amygdala,
+            'First hr infusion slope', 'Last session Intake', 'amygdala')
+t_stat_plot(t_stats_TotalIntake_amygdala, t_stats_LastSessionIntake_amygdala,
+            'Total intake', 'Last session Intake', 'amygdala')
+
+
+
+
 
 
 
