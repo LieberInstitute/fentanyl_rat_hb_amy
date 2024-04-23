@@ -1,6 +1,6 @@
 # Differential Expression Analysis (DEA)
 
-This directory contains the scripts in which all the following differential expression analyses were carried out and their results compared. 
+This directory contains the scripts in which all the following differential expression analyses were executed and their results visualized and compared. 
 
 ## 1. Modeling
 
