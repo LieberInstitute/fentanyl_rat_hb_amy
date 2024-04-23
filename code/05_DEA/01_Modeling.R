@@ -501,11 +501,16 @@ write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS4_de_g
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
-de_genes_amygdala <- add_description(de_genes_amygdala)
+de_genes_amygdala <- add_description(de_genes_amygdala) #PENDING
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
-write.csv(de_genes_amygdala, "generated_data/de_genes_amygdala.csv")
+## Create supp table with results
+de_genes_amygdala$chr <- de_genes_amygdala$seqnames
+de_genes_amygdala <- de_genes_amygdala[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
+                                          "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
+                                          "associated_phenotypes")]
+write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
@@ -596,6 +601,7 @@ write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_
 ## -----------------------------------------------------------------------------
 ##                 1.3  DEA for fentanyl vs. saline with covariates:
 ##       '1st hour intake slope', 'Total intake' and 'Last session intake'
+##                             in habenula and amygdala
 ## -----------------------------------------------------------------------------
 
 colnames(covariate_data) <- gsub(' ', '_', colnames(covariate_data))
