@@ -10,7 +10,7 @@ This directory contains the following scripts with code for exploratory analyses
     * **1\.3 Compare QC metrics of samples**: assess the correlation between QC metrics and RNA concentration/RNA amount for all samples together and for amygdala and habenula samples separately. 
     * **1\.4  QC-based sample filtering**: identify bad-quality samples by detecting outlier samples based on their QC metrics, for all samples together and separately for habenula and amygdala samples; all metrics of these samples were examined to further support their removal as poor-quality. 
 
-See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_and_QCmetrics.tsv) for sample variable meaning. 
+See [Table S1](TableS1_sample_variables_dictionary.tsv) for sample variable meaning. 
 
 
 ## 2. Explore sample-level effects (PCA)
@@ -41,5 +41,5 @@ See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_
         * *3\.2\.2 Model fit*: a linear mixed model (LMM) was fitted to the lognorm expression data of each gene to estimate the contribution in variance of each sample variable. This was performed for all habenula and amygdala samples separately, and for fentanyl samples from each brain region only. This was done excluding correlated variables for each specific DGE model (i.e. just for the final sets of variables used in DGE analysis in [here](../05_DEA/).
         
 
-See [TableSA](../../processed-data/Supplementary_Tables/TableSX_sample_metadata_and_QCmetrics.tsv) for the meaning of sample variables. 
+See [Table S1](TableS1_sample_variables_dictionary.tsv) for the meaning of sample variables. 
 

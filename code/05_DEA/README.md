@@ -43,5 +43,7 @@ This directory contains the scripts in which all the following differential expr
         * *1\.6\.1 Analysis with all fentanyl samples*:   
         * *1\.6\.2 Analysis without samples from negative outlier fentanyl rat*:  
 
+See [Table S1](TableS1_sample_variables_dictionary.tsv) for the meaning of covariates. 
+
 
 ## 2. Comparisons
