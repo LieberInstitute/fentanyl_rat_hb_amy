@@ -35,7 +35,10 @@ This directory contains the scripts in which all the following differential expr
         * Habenula: ~ **`Total_Intake`** + `RIN` + `RNA_concentration` + `overallMapRate`
         * Amygdala: ~ **`Total_Intake`** + `RIN` + `mitoRate`    
     
-    * **1\.6 DEA for *Last Session Intake* in habenula and amygdala fentanyl samples**: 
+    * **1\.6 DEA for *Last Session Intake* in habenula and amygdala fentanyl samples**: DGE analysis for the drug intake in the last session for each fentanyl rat in habenula and amygdala, adjusting for:
+        * Habenula: ~ **`Last_Session_Intake`** + `RIN` + `RNA_concentration` + `mitoRate`
+        * Amygdala: ~ **`Last_Session_Intake`** + `RIN` + `totalAssignedGene` + `concordMapRate`
+
 
 See [Table S1](TableS1_sample_variables_dictionary.tsv) for the meaning of covariates. 
 

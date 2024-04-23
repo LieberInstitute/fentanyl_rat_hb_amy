@@ -454,7 +454,17 @@ expression for:</p>
 <code>RIN</code> + <code>mitoRate</code></li>
 </ul></li>
 <li><p><strong>1.6 DEA for <em>Last Session Intake</em> in habenula and
-amygdala fentanyl samples</strong>:</p></li>
+amygdala fentanyl samples</strong>: DGE analysis for the drug intake in
+the last session for each fentanyl rat in habenula and amygdala,
+adjusting for:</p>
+<ul>
+<li>Habenula: ~ <strong><code>Last_Session_Intake</code></strong> +
+<code>RIN</code> + <code>RNA_concentration</code> +
+<code>mitoRate</code></li>
+<li>Amygdala: ~ <strong><code>Last_Session_Intake</code></strong> +
+<code>RIN</code> + <code>totalAssignedGene</code> +
+<code>concordMapRate</code></li>
+</ul></li>
 </ul></li>
 </ul>
 <p>See <a href="TableS1_sample_variables_dictionary.tsv">Table S1</a>
