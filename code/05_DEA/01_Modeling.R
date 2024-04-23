@@ -148,13 +148,13 @@ length(which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 ## Plots for DEGs
 plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
-    if(name=='First_hr_infusion_slope'){
+    if(name=='First_Hour_Infusion_Slope'){
         FClab = 'log2FC(1st Hour Infusion Slope)'
     }
-    else if (name=='Total_intake'){
+    else if (name=='Total_Intake'){
         FClab = 'log2FC(Total Drug Intake)'
     }
-    else if(name=='Last_session_intake'){
+    else if(name=='Last_Session_Intake'){
         FClab = 'log2FC(Last Session Intake)'
     }
     else{
@@ -190,25 +190,12 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     caption_y_units1 <- 0.15
     caption_y_units2 <- 0.08
 
-    if (brain_region=='amygdala' & !name=='Total_intake'){
+    if (brain_region=='amygdala' & !name=='Total_Intake'){
         caption_x_units <- 0.55
         caption_y_units1 <- 0.1
         caption_y_units2 <- -0.09
     }
 
-    # ## Gene symbols for all 6 DEGs in habenula DEA for 1st hr infusion slope
-    # else if(name=='First_hr_infusion_slope'){
-    #     DEGs <- de_genes_FirstHrIntakeSlopeDEA_habenula$Symbol
-    #     caption_x_units <- 1.2
-    #     caption_y_units1 <- 0.4
-    #     caption_y_units2 <- 0.31
-    # }
-    #
-    # else if(name=='Total_intake'){
-    #     caption_x_units <- 1.7
-    #     caption_y_units1 <- 0.13
-    #     caption_y_units2 <- 0.08
-    # }
     top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% top_DEGs){x} else {NA}})
 
 
