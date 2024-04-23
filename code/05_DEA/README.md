@@ -11,8 +11,8 @@ This directory contains the scripts in which all the following differential expr
         * Amygdala: ~ **`Substance`** + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN`
             
     * **1\.2 DEA for *High vs Low fentanyl intake slope* in habenula and amygdala fentanyl samples**: DGE analysis between fentanyl rats presenting high and low infusion slopes (computed with the old method based on 3 session averages) in habenula and amygdala. Gene expression was modeled as:
-        * Habenula: ~ **`Intake_slope`** + `concordMapRate` + `RIN`
-        * Amygdala: ~ **`Intake_slope`** + `overallMapRate` + `RIN`
+        * Habenula: ~ **`Intake_slope_binary`** + `concordMapRate` + `RIN`
+        * Amygdala: ~ **`Intake_slope_binary`** + `overallMapRate` + `RIN`
     
     * **1\.3 DEA for *Fentanyl vs. Saline* with behavioral covariates in habenula and amygdala:**: DGE analysis for substance in habenula and amygdala adjusting gene expression for the final set of uncorrelated covariates as in **1.1** DEA but including also the rat behavioral covariates.  
         * *1\.3\.1 DEA with covariate 1st hour intake slope*:

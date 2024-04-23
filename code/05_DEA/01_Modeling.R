@@ -516,9 +516,10 @@ write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_g
 
 
 
-## -----------------------------------------------------------------------------
-##      1.2  DEA for high/low fentanyl intake slope in fentanyl samples
-## -----------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------
+##      1.2 DEA for High vs Low fentanyl intake slope in habenula and amygdala fentanyl samples
+## --------------------------------------------------------------------------------------------------
+## Note: slopes used to categorize rats in this analysis were computed with an old method based on 3 session averages per rat
 
 ##############################
 ## Habenula fentanyl samples
@@ -536,27 +537,19 @@ outlier_fent_sample <- colData(rse_gene_habenula_fent)[ which(is.na(rse_gene_hab
 # [1] "LgA 09"
 rse_gene_habenula_fent <- rse_gene_habenula_fent[,-which(is.na(rse_gene_habenula_fent$Intake_slope_binary))]
 
-## Same variables for habenula DEA
-## Substance and batches are the same for all these samples
-formula<- ~ Intake_slope + overallMapRate + RIN + mitoRate
-name<-"Intake_slope_Habenula"
-coef<-"Intake_slopeLow"
-results_intake_slope_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+## Same variables for habenula Substance DEA
+## (Substance and batches are the same for all these samples)
+## formula<- ~ Intake_slope_binary + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  Intake_slope_binary + concordMapRate + RIN
+name<-"Intake_slope_binary_Habenula"
+coef<-"Intake_slope_binaryLow"
+results_Intake_Slope_binary_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
 ## DEGs (FDR<0.05)
-de_genes_intake_slope_habenula <- results_intake_slope_habenula[[1]][which(results_intake_slope_habenula[[1]]$adj.P.Val<0.05), ]
-save(results_intake_slope_habenula, file = 'processed-data/05_DEA/results_intake_slope_habenula.Rdata')
-## Number of DEGs
-dim(de_genes_intake_slope_habenula)[1]
-##  65
-
-## Add associated phenotypes and descriptions of DEGs
-de_genes_intake_slope_habenula <- add_phenotypes(de_genes_intake_slope_habenula)
-de_genes_intake_slope_habenula <- add_description(de_genes_intake_slope_habenula)
-de_genes_intake_slope_habenula$EntrezID <- as.character(de_genes_intake_slope_habenula$EntrezID)
-## Order by FDR and |logFC|
-de_genes_intake_slope_habenula <- de_genes_intake_slope_habenula[order(de_genes_intake_slope_habenula$adj.P.Val, -abs(de_genes_intake_slope_habenula$logFC)),]
-save(de_genes_intake_slope_habenula, file = 'processed-data/05_DEA/de_genes_intake_slope_habenula.Rdata')
-write.csv(de_genes_intake_slope_habenula, "generated_data/de_genes_intake_slope_habenula.csv")
+de_genes_Intake_Slope_binary_habenula <- results_Intake_Slope_binary_habenula[[1]][which(results_Intake_Slope_binary_habenula[[1]]$adj.P.Val<0.05), ]
+save(results_Intake_Slope_binary_habenula, file = 'processed-data/05_DEA/results_Intake_Slope_binary_habenula.Rdata')
+## No DEGs
+dim(de_genes_Intake_Slope_binary_habenula)[1]
+##  0
 
 
 ##############################
@@ -566,33 +559,23 @@ write.csv(de_genes_intake_slope_habenula, "generated_data/de_genes_intake_slope_
 rse_gene_amygdala_fent <- rse_gene_amygdala_filt[,which(rse_gene_amygdala_filt$Substance=='Fentanyl')]
 
 ## High/low intake samples
-rse_gene_amygdala_fent$Intake_slope <- sapply(rse_gene_amygdala_fent$Sample_Num, function(x){if(x %in% c(17,20,23)){'High'}
+rse_gene_amygdala_fent$Intake_slope_binary <- sapply(rse_gene_amygdala_fent$Sample_Num, function(x){if(x %in% c(17,20,23)){'High'}
                                                                                              else if(x %in% c(18,21,22,24)){'Low'}
                                                                                              else {NA}})
 ## Remove sample from the outlier rat (in intake slope)
-rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(is.na(rse_gene_amygdala_fent$Intake_slope))]
+rse_gene_amygdala_fent <- rse_gene_amygdala_fent[,-which(is.na(rse_gene_amygdala_fent$Intake_slope_binary))]
 
 ## Same variables for amygdala DEA
-## Substance and batches are the same
-formula<- ~ Intake_slope + overallMapRate + RIN + mitoRate
-name<-"Intake_slope_Amygdala"
-coef<-"Intake_slopeLow"
-results_intake_slope_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
-## DEGs (FDR<0.05)
-de_genes_intake_slope_amygdala <- results_intake_slope_amygdala[[1]][which(results_intake_slope_amygdala[[1]]$adj.P.Val<0.05), ]
-save(results_intake_slope_amygdala, file = 'processed-data/05_DEA/results_intake_slope_amygdala.Rdata')
-## Number of DEGs
-dim(de_genes_intake_slope_amygdala)[1]
-##  2
-
-## Add associated phenotypes and descriptions of DEGs
-de_genes_intake_slope_amygdala <- add_phenotypes(de_genes_intake_slope_amygdala)
-de_genes_intake_slope_amygdala <- add_description(de_genes_intake_slope_amygdala)
-de_genes_intake_slope_amygdala$EntrezID <- as.character(de_genes_intake_slope_amygdala$EntrezID)
-## Order by FDR and |logFC|
-de_genes_intake_slope_amygdala <- de_genes_intake_slope_amygdala[order(de_genes_intake_slope_amygdala$adj.P.Val, -abs(de_genes_intake_slope_amygdala$logFC)),]
-save(de_genes_intake_slope_amygdala, file = 'processed-data/05_DEA/de_genes_intake_slope_amygdala.Rdata')
-write.csv(de_genes_intake_slope_amygdala, "generated_data/de_genes_intake_slope_amygdala.csv")
+## formula<- ~ Intake_slope_binary + overallMapRate + RIN + mitoRate  (previous)
+formula <-  ~  Intake_slope_binary + overallMapRate  + RIN
+name<-"Intake_slope_binary_Amygdala"
+coef<-"Intake_slope_binaryLow"
+results_Intake_Slope_binary_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+de_genes_Intake_Slope_binary_amygdala <- results_Intake_Slope_binary_amygdala[[1]][which(results_Intake_Slope_binary_amygdala[[1]]$adj.P.Val<0.05), ]
+save(results_Intake_Slope_binary_amygdala, file = 'processed-data/05_DEA/results_Intake_Slope_binary_amygdala.Rdata')
+## No DEGs
+dim(de_genes_Intake_Slope_binary_amygdala)[1]
+##  0
 
 
 
