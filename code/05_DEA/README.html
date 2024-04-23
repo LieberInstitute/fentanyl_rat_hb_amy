@@ -426,37 +426,26 @@ including also the rat behavioral covariates.
 </ul></li>
 </ul></li>
 </ul>
-Then subsetting to fentanyl samples only we performed the following DGE
-analyses:
+The following DGE analyses for rat behavior were performed on fentanyl
+samples only and were done with habenula and amygdala samples from all
+rats self-administered fentanyl and then excluding samples from a
+negative outlier fentanyl rat detected in <strong>1.2</strong>.
 <ul>
 <li><p><strong>1.4 DEA for <em>1st Hour Intake Slope</em> in habenula
 and amygdala fentanyl samples</strong>: DGE analysis for the first hour
 infusion slope among fentanyl rats in habenula and amygdala, adjusting
 for:</p>
-<pre><code>  * Habenula: ~ **`First_hr_infusion_slope`** + `concordMapRate` + `RIN` 
-  * Amygdala: ~ **`First_hr_infusion_slope**` + `overallMapRate` + `RIN`    </code></pre>
 <ul>
-<li><p><em>1.4.1 Analysis with all fentanyl samples</em>: all rats were
-considered for the analysis and adjusting for:</p></li>
-<li><p><em>1.4.2 Analysis without samples from negative outlier fentanyl
-rat</em></p></li>
+<li>Habenula: ~ <strong><code>First_Hour_Infusion_Slope</code></strong>
++ <code>RIN</code> + <code>RNA_concentration</code> +
+<code>mitoRate</code></li>
+<li>Amygdala: ~ <strong><code>First_Hour_Infusion_Slope</code></strong>
++ <code>RIN</code> + <code>mitoRate</code></li>
 </ul></li>
 <li><p><strong>1.5 DEA for <em>Total Intake</em> in habenula and
-amygdala fentanyl samples</strong>:</p>
-<ul>
-<li><em>1.5.1 Analysis with all fentanyl samples</em>:<br />
-</li>
-<li><em>1.5.2 Analysis without samples from negative outlier fentanyl
-rat</em>:</li>
-</ul></li>
+amygdala fentanyl samples</strong>:</p></li>
 <li><p><strong>1.6 DEA for <em>Last Session Intake</em> in habenula and
-amygdala fentanyl samples</strong>:</p>
-<ul>
-<li><em>1.6.1 Analysis with all fentanyl samples</em>:<br />
-</li>
-<li><em>1.6.2 Analysis without samples from negative outlier fentanyl
-rat</em>:</li>
-</ul></li>
+amygdala fentanyl samples</strong>:</p></li>
 </ul></li>
 </ul>
 <p>See <a href="TableS1_sample_variables_dictionary.tsv">Table S1</a>

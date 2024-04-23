@@ -682,8 +682,9 @@ length(which(results_Substance_with_LastSessionIntake_amygdala[[1]]$adj.P.Val<0.
 
 
 ## ---------------------------------------------------------------------------------
-##   1.4  DEA for '1st hour intake slope' in habenula and amygdala fentanyl samples
+##   1.4  DEA for 1st Hour Intake Slope in habenula and amygdala fentanyl samples
 ## ---------------------------------------------------------------------------------
+## Note: infusion slopes used for this analysis were calculated fitting a regression line
 
 ####################  1.4.1 Analysis with all fentanyl samples  ####################
 
@@ -694,34 +695,16 @@ length(which(results_Substance_with_LastSessionIntake_amygdala[[1]]$adj.P.Val<0.
 ## Fentanyl samples only
 rse_gene_habenula_fent <- rse_gene_habenula_filt[,which(rse_gene_habenula_filt$Substance=='Fentanyl')]
 
-## formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate (previous)
-formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + overallMapRate + totalAssignedGene
+## formula <- ~ First_Hour_Infusion_Slope + overallMapRate + RIN + mitoRate (previous)
+formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + mitoRate
 name <-"for_First_Hour_Infusion_Slope"
 ## New contrast of interest
 coef <-"First_Hour_Infusion_Slope"
-results_FirstHrIntakeSlopeDEA_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
-save(results_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_habenula.Rdata')
-
-## DEGs (FDR<0.05)
-length(which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05))
-#  6 (previous)
+results_FirstHrIntakeSlope_habenula<-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+save(results_FirstHrIntakeSlope_habenula, file = 'processed-data/05_DEA/results_FirstHrIntakeSlope_habenula.Rdata')
+## No DEGs (FDR<0.05)
+length(which(results_FirstHrIntakeSlope_habenula[[1]]$adj.P.Val<0.05))
 #  0
-
-# de_genes_FirstHrIntakeSlopeDEA_habenula<- results_FirstHrIntakeSlopeDEA_habenula[[1]][which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05), ]
-#
-# ## Add associated phenotypes and descriptions of DEGs
-# de_genes_FirstHrIntakeSlopeDEA_habenula <- add_phenotypes(de_genes_FirstHrIntakeSlopeDEA_habenula)
-# de_genes_FirstHrIntakeSlopeDEA_habenula <- add_description(de_genes_FirstHrIntakeSlopeDEA_habenula)
-# de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID <- as.character(de_genes_FirstHrIntakeSlopeDEA_habenula$EntrezID)
-# ## Order by FDR and |logFC|
-# de_genes_FirstHrIntakeSlopeDEA_habenula <- de_genes_FirstHrIntakeSlopeDEA_habenula[order(de_genes_FirstHrIntakeSlopeDEA_habenula$adj.P.Val, -abs(de_genes_FirstHrIntakeSlopeDEA_habenula$logFC)),]
-# save(de_genes_FirstHrIntakeSlopeDEA_habenula, file = 'processed-data/05_DEA/de_genes_FirstHrIntakeSlopeDEA_habenula.Rdata')
-# write.csv(de_genes_FirstHrIntakeSlopeDEA_habenula, "generated_data/de_genes_FirstHrIntakeSlopeDEA_habenula.csv")
-#
-# ## Plots for DEGs
-# plots_DEGs('habenula', top_genes = results_FirstHrIntakeSlopeDEA_habenula[[1]], vGene = results_FirstHrIntakeSlopeDEA_habenula[[2]], FDR = 0.05,
-#            name='habenula_for_First_hr_infusion_slope')
-
 
 ##############################
 ## Amygdala fentanyl samples
@@ -729,14 +712,13 @@ length(which(results_FirstHrIntakeSlopeDEA_habenula[[1]]$adj.P.Val<0.05))
 
 rse_gene_amygdala_fent <- rse_gene_amygdala_filt[,which(rse_gene_amygdala_filt$Substance=='Fentanyl')]
 
-## DEA
-## formula <-  ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
+## formula <-  ~ First_Hour_Infusion_Slope + overallMapRate + RIN + mitoRate (previous)
 formula <-  ~  First_Hour_Infusion_Slope + RIN + mitoRate
 name <-"for_First_Hour_Infusion_Slope"
 coef <-"First_Hour_Infusion_Slope"
-results_FirstHrIntakeSlopeDEA_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
-save(results_FirstHrIntakeSlopeDEA_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala.Rdata')
-length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
+results_FirstHrIntakeSlope_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+save(results_FirstHrIntakeSlope_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlope_amygdala.Rdata')
+length(which(results_FirstHrIntakeSlope_amygdala[[1]]$adj.P.Val<0.1))
 #  0
 
 
@@ -750,15 +732,12 @@ length(which(results_FirstHrIntakeSlopeDEA_amygdala[[1]]$adj.P.Val<0.1))
 ## Remove outlier rat sample in habenula
 rse_gene_habenula_fent_withoutOutlier <- rse_gene_habenula_fent[,-which(rse_gene_habenula_fent$Rat_ID==outlier_fent_sample)]
 
-## DEA
-formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
-name <-"for_First_hr_infusion_slope_withoutOutlier"
-coef <-"First_hr_infusion_slope"
-results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent_withoutOutlier, 'habenula', formula, name, coef)
-save(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier.Rdata')
-
-## DEGs (FDR<0.1)
-length(which(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier[[1]]$adj.P.Val<0.1))
+formula <-  ~  First_Hour_Infusion_Slope + RIN + RNA_concentration + mitoRate
+name <-"for_First_Hour_Infusion_Slope_withoutOutlier"
+coef <-"First_Hour_Infusion_Slope"
+results_FirstHrIntakeSlope_habenula_withoutOutlier<-DEA(rse_gene_habenula_fent_withoutOutlier, 'habenula', formula, name, coef)
+save(results_FirstHrIntakeSlope_habenula_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlope_habenula_withoutOutlier.Rdata')
+length(which(results_FirstHrIntakeSlope_habenula_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
 
 ##############################
@@ -767,12 +746,12 @@ length(which(results_FirstHrIntakeSlopeDEA_habenula_withoutOutlier[[1]]$adj.P.Va
 
 rse_gene_amygdala_fent_withoutOutlier <- rse_gene_amygdala_fent[,-which(rse_gene_amygdala_fent$Rat_ID==outlier_fent_sample)]
 
-formula <- ~ First_hr_infusion_slope + overallMapRate + RIN + mitoRate
-name <-"for_First_hr_infusion_slope_withoutOutlier"
-coef <-"First_hr_infusion_slope"
-results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent_withoutOutlier, 'amygdala', formula, name, coef)
-save(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier.Rdata')
-length(which(results_FirstHrIntakeSlopeDEA_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
+formula <- ~ First_Hour_Infusion_Slope + RIN + mitoRate
+name <-"for_First_Hour_Infusion_Slope_withoutOutlier"
+coef <-"First_Hour_Infusion_Slope"
+results_FirstHrIntakeSlope_amygdala_withoutOutlier<-DEA(rse_gene_amygdala_fent_withoutOutlier, 'amygdala', formula, name, coef)
+save(results_FirstHrIntakeSlope_amygdala_withoutOutlier, file = 'processed-data/05_DEA/results_FirstHrIntakeSlope_amygdala_withoutOutlier.Rdata')
+length(which(results_FirstHrIntakeSlope_amygdala_withoutOutlier[[1]]$adj.P.Val<0.1))
 #  0
 
 

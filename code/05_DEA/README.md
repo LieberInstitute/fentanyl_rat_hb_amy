@@ -24,24 +24,16 @@ This directory contains the scripts in which all the following differential expr
         * *1\.3\.3 DEA with covariate Last Session Intake*:
             * Habenula: ~ `Substance` + `Batch_RNA_extraction` + `concordMapRate` + `RIN` + **`Last_Session_Intake`**
             * Amygdala: ~ `Substance` + `Batch_RNA_extraction` + `Batch_lib_prep` + `overallMapRate` + `RIN` + **`Last_Session_Intake`**
-    
-    Then subsetting to fentanyl samples only we performed the following DGE analyses:
-    * **1\.4 DEA for *1st Hour Intake Slope* in habenula and amygdala fentanyl samples**: DGE analysis for the first hour infusion slope among fentanyl rats in habenula and amygdala, adjusting for:
-    
-            * Habenula: ~ **`First_hr_infusion_slope`** + `concordMapRate` + `RIN` 
-            * Amygdala: ~ **`First_hr_infusion_slope**` + `overallMapRate` + `RIN`    
             
-        * *1\.4\.1 Analysis with all fentanyl samples*: all rats were considered for the analysis and adjusting for:
+    The following DGE analyses for rat behavior were performed on fentanyl samples only and were done with habenula and amygdala samples from all rats self-administered fentanyl and then excluding samples from a negative outlier fentanyl rat detected in **1.2**.
+    * **1\.4 DEA for *1st Hour Intake Slope* in habenula and amygdala fentanyl samples**: DGE analysis for the first hour infusion slope     among fentanyl rats in habenula and amygdala, adjusting for:
 
-        * *1\.4\.2 Analysis without samples from negative outlier fentanyl rat*
+        * Habenula: ~ **`First_Hour_Infusion_Slope`** + `RIN` + `RNA_concentration` + `mitoRate`
+        * Amygdala: ~ **`First_Hour_Infusion_Slope`** + `RIN` + `mitoRate`    
     
     * **1\.5 DEA for *Total Intake* in habenula and amygdala fentanyl samples**: 
-        * *1\.5\.1 Analysis with all fentanyl samples*:   
-        * *1\.5\.2 Analysis without samples from negative outlier fentanyl rat*:  
     
     * **1\.6 DEA for *Last Session Intake* in habenula and amygdala fentanyl samples**: 
-        * *1\.6\.1 Analysis with all fentanyl samples*:   
-        * *1\.6\.2 Analysis without samples from negative outlier fentanyl rat*:  
 
 See [Table S1](TableS1_sample_variables_dictionary.tsv) for the meaning of covariates. 
 
