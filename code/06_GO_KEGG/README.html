@@ -352,140 +352,23 @@ display: none;
 </div>
 
 
-<div id="differential-expression-analysis-dea" class="section level1">
-<h1>Differential Expression Analysis (DEA)</h1>
-<p>This directory contains the scripts in which all the following
-differential expression analyses were executed and their results
-visualized and compared.</p>
-<div id="modeling" class="section level2">
-<h2>1. Modeling</h2>
+<div id="functional-enrichment-analysis-go-kegg-terms" class="section level1">
+<h1>Functional Enrichment Analysis (GO &amp; KEGG terms)</h1>
+<p>Habenula and amygdala DEGs for substance obtained in <a href="../05_DEA">05_DEA/01_Modeling.R</a> were assessed for their
+enrichment in <a href="https://geneontology.org">GO</a> and <a href="https://www.genome.jp/kegg/">KEGG</a> gene sets.</p>
 <ul>
-<li><a href="01_Modeling.R"><code>01_Modeling.R</code></a>:
+<li><a href="01_GO_KEGG_Analyses.R"><code>01_GO_KEGG_Analyses.R</code></a>: GO
+biological processes (BP), molecular functions (MF), cellular components
+(CC), and KEGG pathways (KEGG) enriched in the clusters of DEGs were
+identified, specifically performing:
 <ul>
-<li><strong>1.1 DEA for <em>Fentanyl vs. Saline</em> with all samples
-from each brain region</strong>: gene expression was modeled using all
-sample covariates in both habenula and amygdala, and with the following
-uncorrelated and informative variables only (defined through variance
-partition analysis in <a href="../04_EDA">04_EDA/03_Explore_gene_level_effects.R</a>):
-<ul>
-<li>Habenula: ~ <strong><code>Substance</code></strong> +
-<code>Batch_RNA_extraction</code> + <code>concordMapRate</code> +
-<code>RIN</code></li>
-<li>Amygdala: ~ <strong><code>Substance</code></strong> +
-<code>Batch_RNA_extraction</code> + <code>Batch_lib_prep</code> +
-<code>overallMapRate</code> + <code>RIN</code></li>
-</ul></li>
-<li><strong>1.2 DEA for <em>High vs Low fentanyl intake slope</em> in
-habenula and amygdala fentanyl samples</strong>: DGE analysis between
-fentanyl rats presenting high and low infusion slopes (computed with the
-old method based on 3 session averages) in habenula and amygdala. Gene
-expression was modeled as:
-<ul>
-<li>Habenula: ~ <strong><code>Intake_slope_binary</code></strong> +
-<code>concordMapRate</code> + <code>RIN</code></li>
-<li>Amygdala: ~ <strong><code>Intake_slope_binary</code></strong> +
-<code>overallMapRate</code> + <code>RIN</code></li>
-</ul></li>
-<li><strong>1.3 DEA for <em>Fentanyl vs. Saline</em> with behavioral
-covariates in habenula and amygdala</strong>: DGE analysis for substance
-in habenula and amygdala adjusting gene expression for the final set of
-uncorrelated covariates as in <strong>1.1</strong> DEA but including
-also the rat behavioral covariates.
-<ul>
-<li><em>1.3.1 DEA with covariate 1st Hour Intake Slope</em>:
-<ul>
-<li>Habenula: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>concordMapRate</code> +
-<code>RIN</code> +
-<strong><code>First_Hour_Infusion_Slope</code></strong></li>
-<li>Amygdala: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>Batch_lib_prep</code> +
-<code>overallMapRate</code> + <code>RIN</code> +
-<strong><code>First_Hour_Infusion_Slope</code></strong></li>
-</ul></li>
-<li><em>1.3.2 DEA with covariate Total Intake</em>:
-<ul>
-<li>Habenula: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>concordMapRate</code> +
-<code>RIN</code> + <strong><code>Total_Intake</code></strong></li>
-<li>Amygdala: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>Batch_lib_prep</code> +
-<code>overallMapRate</code> + <code>RIN</code> +
-<strong><code>Total_Intake</code></strong></li>
-</ul></li>
-<li><em>1.3.3 DEA with covariate Last Session Intake</em>:
-<ul>
-<li>Habenula: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>concordMapRate</code> +
-<code>RIN</code> +
-<strong><code>Last_Session_Intake</code></strong></li>
-<li>Amygdala: ~ <code>Substance</code> +
-<code>Batch_RNA_extraction</code> + <code>Batch_lib_prep</code> +
-<code>overallMapRate</code> + <code>RIN</code> +
-<strong><code>Last_Session_Intake</code></strong></li>
-</ul></li>
+<li><strong>1. Analysis for all DEGs from each brain region</strong>:
+all habenula and amygdala DEGs were tested.</li>
+<li><strong>2. Analysis for up- and down-regulated DEGs from each brain
+region</strong>: habenula and amygdala up- and down-regulated DEGs were
+separately tested.</li>
 </ul></li>
 </ul>
-The following DGE analyses for rat behavior were performed on fentanyl
-samples only and were done with habenula and amygdala samples from all
-rats self-administered fentanyl and then excluding samples from a
-negative outlier fentanyl rat detected in <strong>1.2</strong>.
-<ul>
-<li><p><strong>1.4 DEA for <em>1st Hour Intake Slope</em> in habenula
-and amygdala fentanyl samples</strong>: DGE analysis for the first hour
-infusion slope among fentanyl rats in habenula and amygdala, adjusting
-for:</p>
-<ul>
-<li>Habenula: ~ <strong><code>First_Hour_Infusion_Slope</code></strong>
-+ <code>RIN</code> + <code>RNA_concentration</code> +
-<code>mitoRate</code></li>
-<li>Amygdala: ~ <strong><code>First_Hour_Infusion_Slope</code></strong>
-+ <code>RIN</code> + <code>mitoRate</code></li>
-</ul></li>
-<li><p><strong>1.5 DEA for <em>Total Intake</em> in habenula and
-amygdala fentanyl samples</strong>: DGE analysis for the total drug
-intake of the fentanyl rats in habenula and amygdala, adjusting gene
-expression for:</p>
-<ul>
-<li>Habenula: ~ <strong><code>Total_Intake</code></strong> +
-<code>RIN</code> + <code>RNA_concentration</code> +
-<code>overallMapRate</code></li>
-<li>Amygdala: ~ <strong><code>Total_Intake</code></strong> +
-<code>RIN</code> + <code>mitoRate</code></li>
-</ul></li>
-<li><p><strong>1.6 DEA for <em>Last Session Intake</em> in habenula and
-amygdala fentanyl samples</strong>: DGE analysis for the drug intake in
-the last session for each fentanyl rat in habenula and amygdala,
-adjusting for:</p>
-<ul>
-<li>Habenula: ~ <strong><code>Last_Session_Intake</code></strong> +
-<code>RIN</code> + <code>RNA_concentration</code> +
-<code>mitoRate</code></li>
-<li>Amygdala: ~ <strong><code>Last_Session_Intake</code></strong> +
-<code>RIN</code> + <code>totalAssignedGene</code> +
-<code>concordMapRate</code></li>
-</ul></li>
-</ul></li>
-</ul>
-<p>See <a href="TableS1_sample_variables_dictionary.tsv">Table S1</a>
-for the meaning of covariates.</p>
-</div>
-<div id="comparisons" class="section level2">
-<h2>2. Comparisons</h2>
-<ul>
-<li><a href="02_Comparisons.R"><code>02_Comparisons.R</code></a>: the DE
-signals of the genes were compared for substance and behavioral
-covariates.
-<ul>
-<li><p><strong>2.1 Comparison of gene DE signal for substance and
-behavior in habenula</strong>: the gene <em>t</em>-stats for substance
-and behavior DGE analyses were contrasted in habenula.</p></li>
-<li><p><strong>2.2 Comparison of gene DE signal for substance and
-behavior in amygdala</strong>: the gene <em>t</em>-stats for substance
-and behavior DGE analyses were contrasted in amygdala.</p></li>
-</ul></li>
-</ul>
-</div>
 </div>
 
 

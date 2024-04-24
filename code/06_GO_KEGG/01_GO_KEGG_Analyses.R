@@ -6,7 +6,7 @@ library(org.Rn.eg.db)
 library(sessioninfo)
 
 
-#######################   GO & KEGG Analyses   #######################
+#######################  Functional Enrichment Analysis  #######################
 
 load(here('processed-data/05_DEA/results_all_vars_habenula.Rdata'))
 load(here('processed-data/05_DEA/results_uncorr_vars_habenula.Rdata'))
@@ -14,7 +14,7 @@ load(here('processed-data/05_DEA/results_all_vars_amygdala.Rdata'))
 load(here('processed-data/05_DEA/results_uncorr_vars_amygdala.Rdata'))
 
 
-## Groups of DEG
+## Groups of DEGs
 
 ## Habenula DEGs from model with uncorrelated sample variables
 top_genes_hab <- results_uncorr_vars_habenula[[1]]
