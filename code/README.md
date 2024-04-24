@@ -35,6 +35,9 @@ See more details and specifications about each DGE analysis in [05_DEA](05_DEA/)
 
 ## 06. Functional Enrichment Analysis (GO & KEGG terms)
 
+Analysis of overrepresentation of habenula and amygdala DEGs for substance among gene sets of [GO](https://geneontology.org) and [KEGG](https://www.genome.jp/kegg/) terms. 
+ 
+See more details in [06_GO_KEGG](06_GO_KEGG/).
 
 
 ## 07. Multi-marker analysis of genomic annotation (MAGMA)
