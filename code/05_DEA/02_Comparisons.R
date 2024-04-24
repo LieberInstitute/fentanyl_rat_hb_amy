@@ -33,15 +33,20 @@ t_stats_FirstHrIntakeSlope_habenula <- results_FirstHrIntakeSlope_habenula[[1]]
 t_stats_TotalIntake_habenula <- results_TotalIntake_habenula[[1]]
 t_stats_LastSessionIntake_habenula <- results_LastSessionIntake_habenula[[1]]
 
-## Df
-df_habenula <- cbind(t_stats_Substance_habenula[,c("ensemblID", "Symbol", "logFC", "t", "P.Value", "adj.P.Val")],
+## Df with gene metadata and DE statistics
+df_habenula <- cbind(t_stats_Substance_habenula[,c("seqnames", "start", "end", "width", "strand", "Length", "ensemblID",
+                                                   "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_FirstHrIntakeSlope_habenula[,c("logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_TotalIntake_habenula[,c("logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_LastSessionIntake_habenula[,c("logFC", "t", "P.Value", "adj.P.Val")])
 
-colnames(df_habenula)[3:18] <- paste(c("logFC", "t", "P.Value", "adj.P.Val"),
-                               rep(c('Substance', 'FirstHrIntakeSlope', 'TotalIntake', 'LastSessionIntake'), c(4,4,4,4)),
-                               sep='_')
+colnames(df_habenula)[c(1,11:26)] <- c("chr", paste(c("logFC", "t", "P.Value", "adj.P.Val"),
+                                           rep(c('Substance', 'FirstHrIntakeSlope', 'TotalIntake', 'LastSessionIntake'), c(4,4,4,4)),
+                                           sep='_'))
+df_habenula$EntrezID <- as.character(df_habenula$EntrezID)
+
+## Create supp table
+write.table(df_habenula, "processed-data/Supplementary_Tables/TableS6_DEAs_results_all_genes_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Pairwise correlations between t-stats
 ggpairs(df_habenula, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_TotalIntake", "t_LastSessionIntake")) + theme_bw()
@@ -58,14 +63,19 @@ t_stats_FirstHrIntakeSlope_amygdala <- results_FirstHrIntakeSlope_amygdala[[1]]
 t_stats_TotalIntake_amygdala <- results_TotalIntake_amygdala[[1]]
 t_stats_LastSessionIntake_amygdala <- results_LastSessionIntake_amygdala[[1]]
 
-df_amygdala <- cbind(t_stats_Substance_amygdala[,c("ensemblID", "Symbol", "logFC", "t", "P.Value", "adj.P.Val")],
+df_amygdala <- cbind(t_stats_Substance_amygdala[,c("seqnames", "start", "end", "width", "strand", "Length", "ensemblID",
+                                                   "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_FirstHrIntakeSlope_amygdala[,c("logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_TotalIntake_amygdala[,c("logFC", "t", "P.Value", "adj.P.Val")],
                      t_stats_LastSessionIntake_amygdala[,c("logFC", "t", "P.Value", "adj.P.Val")])
 
-colnames(df_amygdala)[3:18] <- paste(c("logFC", "t", "P.Value", "adj.P.Val"),
-                                     rep(c('Substance', 'FirstHrIntakeSlope', 'TotalIntake', 'LastSessionIntake'), c(4,4,4,4)),
-                                     sep='_')
+colnames(df_amygdala)[c(1,11:26)]<- c("chr", paste(c("logFC", "t", "P.Value", "adj.P.Val"),
+                                                  rep(c('Substance', 'FirstHrIntakeSlope', 'TotalIntake', 'LastSessionIntake'),
+                                                      c(4,4,4,4)),sep='_'))
+df_amygdala$EntrezID <- as.character(df_amygdala$EntrezID)
+
+## Create supp table
+write.table(df_amygdala, "processed-data/Supplementary_Tables/TableS7_DEAs_results_all_genes_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Pairwise correlations between t-stats
 ggpairs(df_amygdala, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_TotalIntake", "t_LastSessionIntake")) + theme_bw()
