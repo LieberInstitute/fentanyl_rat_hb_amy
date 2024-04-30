@@ -3,6 +3,8 @@ library(here)
 library(SummarizedExperiment)
 library(clusterProfiler)
 library(org.Rn.eg.db)
+library(cowplot)
+library(ggplot2)
 library(sessioninfo)
 
 
@@ -35,9 +37,6 @@ down_amy <- de_genes_amygdala[which(de_genes_amygdala$logFC<0), ]
 
 GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
-    height=5
-    width=7
-
     ## GO terms
     ## Obtain biological processes
     goBP_Adj <- compareCluster(
@@ -53,9 +52,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
     ## Save
     if (!is.null(goBP_Adj)){
-        pdf(paste("plots/06_GO_KEGG/GO_BP_", name, ".pdf", sep=""), height = height, width = width)
-        print(dotplot(goBP_Adj, title="GO Enrichment Analysis: Biological processes"))
-        dev.off()
+        p1 <- dotplot(goBP_Adj, title="GO Enrichment Analysis: Biological processes")
     }
 
 
@@ -72,9 +69,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     )
 
     if (!is.null(goMF_Adj)){
-        pdf(paste("plots/06_GO_KEGG/GO_MF_", name, ".pdf", sep=""), height = height, width = width)
-        print(dotplot(goMF_Adj, title="GO Enrichment Analysis: Molecular function"))
-        dev.off()
+        p2 <- dotplot(goMF_Adj, title="GO Enrichment Analysis: Molecular function")
     }
 
 
@@ -91,9 +86,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     )
 
     if (!is.null(goCC_Adj)){
-        pdf(paste("plots/06_GO_KEGG/GO_CC_", name, ".pdf", sep=""), height = height, width = width)
-        print(dotplot(goCC_Adj, title="GO Enrichment Analysis: Cellular components"))
-        dev.off()
+        p3 <- dotplot(goCC_Adj, title="GO Enrichment Analysis: Cellular components")
     }
 
 
@@ -108,12 +101,14 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     )
 
     if (!is.null(kegg_Adj)){
-        pdf(paste("plots/06_GO_KEGG/KEGG_", name, ".pdf", sep=""), height = height, width = width)
-        print(dotplot(kegg_Adj, title="KEGG Enrichment Analysis"))
-        dev.off()
+        p4 <- dotplot(kegg_Adj, title="KEGG Enrichment Analysis")
     }
 
+    ## Plots
+    plot_grid(p1, p2, p3, p4, ncol=2, align = 'vh')
+    ggsave(paste("plots/06_GO_KEGG/GO_KEGG_", name, ".pdf", sep=""), height = 10, width = 14)
 
+    ## Save results
     goList <- list(
         BP = goBP_Adj,
         MF = goMF_Adj,
