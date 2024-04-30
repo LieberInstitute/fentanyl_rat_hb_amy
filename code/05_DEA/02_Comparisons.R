@@ -45,9 +45,6 @@ colnames(df_habenula)[c(1,11:26)] <- c("chr", paste(c("logFC", "t", "P.Value", "
                                            sep='_'))
 df_habenula$EntrezID <- as.character(df_habenula$EntrezID)
 
-## Create supp table
-write.table(df_habenula, "processed-data/Supplementary_Tables/TableS6_DEAs_results_all_genes_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
-
 ## Pairwise correlations between t-stats
 ggpairs(df_habenula, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_TotalIntake", "t_LastSessionIntake")) + theme_bw()
 ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_habenula.pdf'))
@@ -74,12 +71,29 @@ colnames(df_amygdala)[c(1,11:26)]<- c("chr", paste(c("logFC", "t", "P.Value", "a
                                                       c(4,4,4,4)),sep='_'))
 df_amygdala$EntrezID <- as.character(df_amygdala$EntrezID)
 
-## Create supp table
-write.table(df_amygdala, "processed-data/Supplementary_Tables/TableS7_DEAs_results_all_genes_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
-
 ## Pairwise correlations between t-stats
 ggpairs(df_amygdala, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_TotalIntake", "t_LastSessionIntake")) + theme_bw()
 ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_amygdala.pdf'))
+
+
+
+
+
+## 2.3 Comparison of gene DE signal for substance and behavior in habenula and amygdala
+
+colnames(df_habenula)[11:26] <- paste0(colnames(df_habenula)[11:26], '_habenula')
+colnames(df_amygdala)[11:26] <- paste0(colnames(df_amygdala)[11:26], '_amygdala')
+df_DEstats_complete <- cbind(df_habenula, df_amygdala[,11:26])
+
+## Create supp table
+write.table(df_DEstats_complete, "processed-data/Supplementary_Tables/TableS6_DEAs_results_all_genes_hab_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
+## Scatter plots
+ggpairs(df_DEstats_complete,
+        columns = paste0(c("t_Substance", "t_FirstHrIntakeSlope", "t_TotalIntake", "t_LastSessionIntake"), rep(c('_habenula', '_amygdala'), c(4,4)))) + theme_bw() +
+    theme(strip.text.x = element_text(size = 10),
+          strip.text.y = element_text(size = 10))
+ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_hab_amyg.pdf'), height = 18, width = 20)
 
 
 
