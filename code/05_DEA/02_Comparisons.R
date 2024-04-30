@@ -96,6 +96,11 @@ ggpairs(df_DEstats_complete,
 ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_hab_amyg.pdf'), height = 18, width = 20)
 
 
+## Number of common habenula and amygdala DEGs for substance
+length(intersect(de_genes_habenula$ensemblID, de_genes_amygdala$ensemblID))
+# [1] 106
+
+
 
 
 ## Function to add gene DE info with respect to two groups
