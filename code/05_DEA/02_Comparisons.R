@@ -16,12 +16,14 @@ load(here("processed-data/05_DEA/results_Substance_uncorr_vars_habenula.Rdata"),
 load(here("processed-data/05_DEA/results_FirstHrIntakeSlope_habenula.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_TotalIntake_habenula.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_LastSessionIntake_habenula.Rdata"), verbose = TRUE)
+load(here('processed-data/05_DEA/de_genes_Substance_habenula.Rdata'), verbose = TRUE)
 
 ## Amygdala results
 load(here("processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_FirstHrIntakeSlope_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_TotalIntake_amygdala.Rdata"), verbose = TRUE)
 load(here("processed-data/05_DEA/results_LastSessionIntake_amygdala.Rdata"), verbose = TRUE)
+load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = TRUE)
 
 
 
@@ -97,8 +99,13 @@ ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_hab_amyg.pdf'), height = 
 
 
 ## Number of common habenula and amygdala DEGs for substance
-length(intersect(de_genes_habenula$ensemblID, de_genes_amygdala$ensemblID))
-# [1] 106
+common_genes <- intersect(de_genes_habenula$ensemblID, de_genes_amygdala$ensemblID)
+common_DEGs_hab_amyg <- de_genes_habenula[which(de_genes_habenula$ensemblID %in% common_genes), ]
+dim(common_DEGs_hab_amyg)
+# [1] 106  19
+
+## Data frame with common genes
+write.table(common_DEGs_hab_amyg, "processed-data/05_DEA/common_DEGs_hab_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
