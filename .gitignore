@@ -6,6 +6,7 @@ raw-data/count_objects/*
 raw-data/FASTQ/*
 processed-data/*
 !processed-data/Supplementary_Tables/
+!processed-data/05_DEA/common_DEGs_hab_amyg.tsv
 !raw-data/sample_metadata_and_QCmetrics.csv
 !raw-data/covariate_sample_info.xlsx
 !raw-data/rat_behavioral_data.csv
