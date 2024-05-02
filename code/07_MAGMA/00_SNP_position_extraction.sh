@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH -p shared
-#SBATCH --mem-per-cpu=25G
-#SBATCH --job-name=01_MAGMA
+#SBATCH --mem=25G
+#SBATCH --job-name=00_SNP_position_extraction
 #SBATCH -c 1
-#SBATCH -o logs/01_MAGMA.txt
-#SBATCH -e logs/01_MAGMA.txt
+#SBATCH -t 1-00:00:00
+#SBATCH -o logs/00_SNP_position_extraction.txt
+#SBATCH -e logs/00_SNP_position_extraction.txt
 #SBATCH --mail-type=ALL
 
 set -e
@@ -16,20 +17,20 @@ echo "**** JHPCE info ****"
 echo "User: ${USER}"
 echo "Job id: ${SLURM_JOB_ID}"
 echo "Job name: ${SLURM_JOB_NAME}"
-echo "Node name: ${SLURMD_NODENAME}"
+echo "Node name: ${HOSTNAME}"
 echo "Task id: ${SLURM_ARRAY_TASK_ID}"
 
 ## Load the R module
-module load conda_R
+module load conda_R/4.3
 
 ## List current modules for reproducibility
 module list
 
 ## Edit with your job command
-Rscript 01_MAGMA.R
+Rscript 00_SNP_position_extraction.R
 
 echo "**** Job ends ****"
 date
 
-## This script was made using slurmjobs version 0.99.0
+## This script was made using slurmjobs version 1.2.2
 ## available from http://research.libd.org/slurmjobs/
