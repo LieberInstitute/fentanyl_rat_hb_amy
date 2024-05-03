@@ -3,7 +3,7 @@
 
 Describe here 
 
-* [`01_Input_GWAS_data.R`](01_Input_GWAS_data.R): 
+* [`01_Input_GWAS_data_prep.R`](01_Input_GWAS_data_prep.R): 
     GWAS results from 6 different studies previously formatted and prepared for MAGMA by [Louise Huuki-Myers](https://lahuuki.github.io) in the [Habenula Pilot LIBD project](https://github.com/LieberInstitute/Habenula_Pilot/tree/master) were explored and further processed to use as input for MAGMA analysis:
 
      * **GWAS SZC data**:
@@ -15,3 +15,7 @@ Describe here
  
     For each dataset, the `.snploc` file with the position of the SNPs were generated, as well as the `.pval` file containing the *p*-values of the SNPs for their association with the phenotype. 
 
+* [`02_Input_GeneSets_data_prep.R`](02_Input_GeneSets_data_prep.R): 
+    
+    The human orthologues of rat habenula and amygdala DEGs  were ...
+    (all, up-, and down-regulated DEGs)
