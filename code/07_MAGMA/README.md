@@ -15,5 +15,5 @@ Describe here
  
     For each dataset, the `.snploc` file with the position of the SNPs were generated, as well as the `.pval` file containing the *p*-values of the SNPs for their association with the phenotype. 
 
-* [`02_Input_GeneSets_data_prep.R`](02_Input_GeneSets_data_prep.R): 
+* [`02_Input_Gene_Sets_prep.R`](02_Input_Gene_Sets_prep.R): 
     the gene sets of human orthologues of rat habenula and amygdala DEGs (all, up-, and down-regulated) were obtained for MAGMA. 
