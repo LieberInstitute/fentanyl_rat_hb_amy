@@ -54,13 +54,13 @@ SNP_loc_extraction <- function(snp_list){
 #  - - - - - - - - - - - - - - A) SNP location file  - - - - - - - - - - - - - -
 
 ## Internal paths (data is in JHPCE)
-snploc_szc = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/scz2022/PGC3_SCZ_wave3.european.autosome.public.v3.snploc")))
+snploc_scz =fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/scz2022/PGC3_SCZ_wave3.european.autosome.public.v3.snploc"))
 
-dim(snploc_szc)
+dim(snploc_scz)
 # [1] 7659767      3
 
 ## Explore data
-head(snploc_szc)
+head(snploc_scz)
 #          SNP CHR        BP
 # 1 rs62513865   8 101592213
 # 2 rs79643588   8 106973048
@@ -70,31 +70,31 @@ head(snploc_szc)
 # 6  rs7014597   8 104152280
 
 ## Confirm no repearted variant IDs
-which(duplicated(snploc_szc$ID))
+which(duplicated(snploc_scz$ID))
 # integer(0)
 
 ## Check no variants in sexual chrs
-unique(snploc_szc$CHR)
+unique(snploc_scz$CHR)
 # [1]  8  2 16  7  6 15 14 12 17  1  3 11 22 20 21  9  4 13  5 10 18 19
 
 ## Remove NA
-snploc_szc <- subset(snploc_szc, !is.na(SNP) & !is.na(CHR) & !is.na(BP))
-dim(snploc_szc)
+snploc_scz <- subset(snploc_scz, !is.na(SNP) & !is.na(CHR) & !is.na(BP))
+dim(snploc_scz)
 # [1] 7659767      3
 
 ## Save
-save(snploc_szc, file=here('processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.snploc'))
+save(snploc_scz, file=here('processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.snploc'))
 
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
-snp_pval_szc = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/scz2022/PGC3_SCZ_wave3.european.autosome.public.v3.pval")))
+snp_pval_scz =fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/scz2022/PGC3_SCZ_wave3.european.autosome.public.v3.pval"))
 
-dim(snp_pval_szc)
+dim(snp_pval_scz)
 # [1] 7659767      3
 
 ## Explore data
-head(snp_pval_szc)
+head(snp_pval_scz)
 #          SNP      P      N
 # 1 rs62513865 0.4847 130644
 # 2 rs79643588 0.5605 130644
@@ -104,16 +104,16 @@ head(snp_pval_szc)
 # 6  rs7014597 0.5034 130644
 
 ## Check we have the same SNPs in snploc and snp_pval files
-setdiff(snploc_szc$SNP, snp_pval_szc$SNP)
+setdiff(snploc_scz$SNP, snp_pval_scz$SNP)
 # character(0)
 
 ## Remove NA
-snp_pval_szc <- subset(snp_pval_szc, !is.na(SNP) & !is.na(P) & !is.na(N))
-dim(snp_pval_szc)
+snp_pval_scz <- subset(snp_pval_scz, !is.na(SNP) & !is.na(P) & !is.na(N))
+dim(snp_pval_scz)
 # [1] 7659767      3
 
 ## Save
-save(snp_pval_szc, file='processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.pval')
+save(snp_pval_scz, file='processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.pval')
 
 
 
@@ -123,7 +123,7 @@ save(snp_pval_szc, file='processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wa
 
 #  - - - - - - - - - - - - - - A) SNP location file  - - - - - - - - - - - - - -
 
-snploc_mdd2019 = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/mdd2019edinburgh/PGC_UKB_depression_genome-wide.snploc")))
+snploc_mdd2019 =fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/mdd2019edinburgh/PGC_UKB_depression_genome-wide.snploc"))
 
 dim(snploc_mdd2019)
 # [1] 8481694       3
@@ -138,8 +138,8 @@ head(snploc_mdd2019)
 # 6  rs6977693   7 145771806
 
 ## Remove repeated SNPs
-rep_SNPs <- snploc_mdd2019[which(duplicated(snploc_mdd2019$SNP)), 'SNP']
-snploc_mdd2019[which(snploc_mdd2019$SNP %in% rep_SNPs),]
+rep_SNPs <- as.vector(snploc_mdd2019[which(duplicated(snploc_mdd2019$SNP)), 'SNP'])
+snploc_mdd2019[which(snploc_mdd2019$SNP %in% rep_SNPs$SNP),]
 #                 SNP CHR        BP
 # 1929499 rs188230556   7  45554166
 # 2254826 rs188230556   7  45554166
@@ -164,7 +164,7 @@ dim(snploc_mdd2019)
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
-snp_pval_mdd2019 = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/mdd2019edinburgh/PGC_UKB_depression_genome-wide.pval")))
+snp_pval_mdd2019 = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/mdd2019edinburgh/PGC_UKB_depression_genome-wide.pval"))
 
 dim(snp_pval_mdd2019)
 # [1] 8483301       2
@@ -211,7 +211,7 @@ save(snp_pval_mdd2019, file="processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MD
 
 #  - - - - - - - - - - - - - - A) SNP location file  - - - - - - - - - - - - - -
 
-snploc_panic = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/panic2019/pgc-panic2019.snploc")))
+snploc_panic = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/panic2019/pgc-panic2019.snploc"))
 
 dim(snploc_panic)
 # [1] 10151624        3
@@ -272,7 +272,7 @@ save(snploc_panic, file=here('processed-data/07_MAGMA/Input_GWAS_data/Panic/Pani
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
-snp_pval_panic = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/panic2019/pgc-panic2019.pval")))
+snp_pval_panic = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/panic2019/pgc-panic2019.pval"))
 
 dim(snp_pval_panic)
 # [1] 10151300        3
@@ -292,7 +292,7 @@ head(snp_pval_panic)
 #    They may represent different variants in the same position   |
 # ----------------------------------------------------------------|
 rep_SNPs <- snp_pval_panic[which(duplicated(snp_pval_panic$SNP)), 'SNP']
-snp_pval_panic[which(snp_pval_panic$SNP %in% rep_SNPs),]
+snp_pval_panic[which(snp_pval_panic$SNP %in% rep_SNPs$SNP),]
 #                      SNP       P    N
 # 58433         rs74733400 0.85430 9907
 # 68879         rs74733400 0.89080 9907
@@ -327,7 +327,7 @@ save(snp_pval_panic, file="processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_P
 
 #  - - - - - - - - - - - - - - A) SNP location file  - - - - - - - - - - - - - -
 
-snploc_SUD = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/sud2020op/opi.DEPvEXP_EUR.noAF.snploc")))
+snploc_SUD = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/sud2020op/opi.DEPvEXP_EUR.noAF.snploc"))
 
 dim(snploc_SUD)
 # [1] 4187212       3
@@ -343,7 +343,7 @@ head(snploc_SUD)
 
 ## Remove repeated SNPs
 rep_SNPs <- snploc_SUD[which(duplicated(snploc_SUD$SNP)), 'SNP']
-head(snploc_SUD[which(snploc_SUD$SNP %in% rep_SNPs),])
+head(snploc_SUD[which(snploc_SUD$SNP %in% rep_SNPs$SNP),])
 #                SNP CHR        BP
 # 64312   rs58887011   4  25086197
 # 95726   rs58996925   1  56267033
@@ -368,7 +368,7 @@ dim(snploc_SUD)
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
-snp_pval_SUD = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/sud2020op/opi.DEPvEXP_EUR.noAF.pval")))
+snp_pval_SUD = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/sud2020op/opi.DEPvEXP_EUR.noAF.pval"))
 
 dim(snp_pval_SUD)
 # [1] 4211587       3
@@ -414,7 +414,7 @@ save(snp_pval_SUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DE
 
 #  - - - - - - - - - - - - - - A) SNP location file  - - - - - - - - - - - - - -
 
-snploc_MDD = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/MDD/MDD.phs001672.pha005122.snploc")))
+snploc_MDD = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/MDD/MDD.phs001672.pha005122.snploc"))
 
 dim(snploc_MDD)
 # [1] 11700     3
@@ -447,7 +447,7 @@ save(snploc_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs0
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
-snp_pval_MDD = as.data.frame(fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/MDD/MDD.phs001672.pha005122.pval")))
+snp_pval_MDD = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/MDD/MDD.phs001672.pha005122.pval"))
 
 dim(snp_pval_MDD)
 # [1] 1700     2
@@ -534,8 +534,6 @@ snploc_OUD <- subset(snploc_OUD, !is.na(SNP) & !is.na(CHR) & !is.na(BP))
 dim(snploc_OUD)
 # [1] 1322    3
 
-snploc_OUD <- as.data.frame(snploc_OUD)
-
 ## Save
 save(snploc_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.snploc'))
 
@@ -562,8 +560,6 @@ setdiff(snploc_OUD$SNP, snp_pval_OUD$SNP)
 snp_pval_OUD <- subset(snp_pval_OUD, !is.na(SNP) & !is.na(P))
 dim(snp_pval_OUD)
 # [1] 1322    3
-
-snp_pval_OUD <- as.data.frame(snp_pval_OUD)
 
 ## Save
 save(snp_pval_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.pval'))

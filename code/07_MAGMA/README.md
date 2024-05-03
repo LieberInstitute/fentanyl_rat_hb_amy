@@ -6,7 +6,7 @@ Describe here
 * [`01_Input_GWAS_data_prep.R`](01_Input_GWAS_data_prep.R): 
     GWAS results from 6 different studies previously formatted and prepared for MAGMA by [Louise Huuki-Myers](https://lahuuki.github.io) in the [Habenula Pilot LIBD project](https://github.com/LieberInstitute/Habenula_Pilot/tree/master) were explored and further processed to use as input for MAGMA analysis:
 
-     * **GWAS SZC data**:
+     * **GWAS SCZ data**:
      * **GWAS MDD data**:
      * **GWAS Panic data**:
      * **GWAS SUD data**:
