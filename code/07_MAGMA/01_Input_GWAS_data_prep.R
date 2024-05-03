@@ -83,7 +83,8 @@ dim(snploc_scz)
 # [1] 7659767      3
 
 ## Save
-save(snploc_scz, file=here('processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.snploc'))
+write.table(snploc_scz, file=here('processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
@@ -113,7 +114,8 @@ dim(snp_pval_scz)
 # [1] 7659767      3
 
 ## Save
-save(snp_pval_scz, file='processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.pval')
+write.table(snp_pval_scz, file=here('processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 
@@ -200,8 +202,11 @@ dim(snp_pval_mdd2019)
 # [1] 8481690       2
 
 ## Save
-save(snploc_mdd2019, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide.snploc'))
-save(snp_pval_mdd2019, file="processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide.pval")
+write.table(snploc_mdd2019, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
+
+write.table(snp_pval_mdd2019, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 
@@ -267,8 +272,8 @@ dim(snploc_panic)
 # [1] 10151294        3
 
 ## Save
-save(snploc_panic, file=here('processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_PGC_panic2019.snploc'))
-
+write.table(snploc_panic, file=here('processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_PGC_panic2019.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
 
@@ -317,8 +322,8 @@ dim(snp_pval_panic)
 # [1] 10151300        3
 
 ## Save
-save(snp_pval_panic, file="processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_PGC_panic2019.pval")
-
+write.table(snp_pval_panic, file=here('processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_PGC_panic2019.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 # ------------------------------------------------------------------------------
@@ -403,8 +408,11 @@ dim(snp_pval_SUD)
 # [1] 4187118       3
 
 ## Save
-save(snploc_SUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DEPvEXP_EUR.noAF.snploc'))
-save(snp_pval_SUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DEPvEXP_EUR.noAF.pval'))
+write.table(snploc_SUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DEPvEXP_EUR.noAF.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
+
+write.table(snp_pval_SUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DEPvEXP_EUR.noAF.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 
@@ -442,7 +450,8 @@ dim(snploc_MDD)
 # [1] 11700     3
 
 ## Save
-save(snploc_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122.snploc'))
+write.table(snploc_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
@@ -475,7 +484,8 @@ dim(snp_pval_MDD)
 # [1] 11700     2
 
 ## Save
-save(snp_pval_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122.pval'))
+write.table(snp_pval_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 
@@ -535,7 +545,8 @@ dim(snploc_OUD)
 # [1] 1322    3
 
 ## Save
-save(snploc_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.snploc'))
+write.table(snploc_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.snploc'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 #  - - - - - - - - - - - - - - - B) SNP p-values - - - - - - - - - - - - - - - -
@@ -562,7 +573,8 @@ dim(snp_pval_OUD)
 # [1] 1322    3
 
 ## Save
-save(snp_pval_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.pval'))
+write.table(snp_pval_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954.pval'),
+            sep = "\t", col.names = T, row.names = F, quote = F)
 
 
 
