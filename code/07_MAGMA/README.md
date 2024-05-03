@@ -17,3 +17,5 @@ Describe here
 
 * [`02_Input_Gene_Sets_prep.R`](02_Input_Gene_Sets_prep.R): 
     the gene sets of human orthologues of rat habenula and amygdala DEGs (all, up-, and down-regulated) were obtained for MAGMA. 
+    
+* [`03_Gene_loc_prep.R`](03_Gene_loc_prep.R): create file with human gene data in the GRCh37 human genome assembly, including location needed for the annotation step to map SNPs onto genes. 
