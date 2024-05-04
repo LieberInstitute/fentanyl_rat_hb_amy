@@ -32,22 +32,31 @@ ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.e
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3"
 
 ## Step 1: Annotate SNPs onto genes 
-## (with GRCh37 human genome reference build)
+## (with GRCh37 (h19) human genome reference build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
-	--gene-loc ../../processed-data/07_MAGMA/geneloc/human_GRCh37_Ensembl.gene.loc\
+	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
 	--out $OUTPUT_PREFIX
 
-## Step 2 Gene Analysis - SNP p-values
+
+
+#magma --annotate --snp-loc /dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/scz2022/PGC3_SCZ_wave3.european.autosome.public.v3.snploc\
+	#--gene-loc /dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
+	#--out $OUTPUT_PREFIX
+
+
+
+## Step 2 Gene Analysis - SNP p-values (model SNPwise-mean)
 ## Use same reference dataset as in HumanPilot project
-magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Layer_Guesses/MAGMA/g1000_eur.bed\
---pval $ANNOT_PREFIX.pval ncol=N\
---gene-annot $OUTPUT_PREFIX.genes.annot\
---out $OUTPUT_PREFIX
+magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Layer_Guesses/MAGMA/g1000_eur\
+	--pval $ANNOT_PREFIX.pval ncol=N\
+	--gene-annot $OUTPUT_PREFIX.genes.annot\
+	--out $OUTPUT_PREFIX
+
 
 ## Step 3 Gene Set Analysis 
-magma --gene-results $ANNOT_PREFIX.genes.raw\
---set-annot ../../processed-data/13_MAGMA/gene_sets/markerSets_broad_ENSEMBL_FDR05.txt gene-col=Gene set-col=Set\
---out ../../processed-data/13_MAGMA/MAGMA_output/scz2022/scz2022_broad
+magma --gene-results $OUTPUT_PREFIX.genes.raw\
+	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
+	--out ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA
 
 echo "**** Job ends ****"
 date
