@@ -45,7 +45,8 @@ num_DEGs <- as.data.frame(table(gene_sets$Set))
 row_gene_anno <- ComplexHeatmap::rowAnnotation(
     'n genes' = ComplexHeatmap::anno_barplot(num_DEGs$Freq))
 
-pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap.pdf"), width = 6.4, height = 4)
+## With significance cutoff at 5%
+pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_05.pdf"), width = 6.4, height = 4)
 Heatmap(log_pvals,
         name = "-log10(p-val)",
         col = colorRampPalette(c('azure2', 'dodgerblue4'))(50),
@@ -58,14 +59,38 @@ Heatmap(log_pvals,
         right_annotation = row_gene_anno,
         ## Mark cells with p<0.05
         cell_fun = function(j, i, x, y,  w, h, col){
-             if(! is.na(log_pvals[i,j])){
+            if(! is.na(log_pvals[i,j])){
                 if (log_pvals[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 15, col='magenta'))}
-             }
+            }
             else {
                 grid.text('NA', x, y, gp = gpar(fontsize = 10, col='gray40'))
             }
         })
 
+dev.off()
+
+
+## With significance cutoff at 10%
+pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_10.pdf"), width = 6.4, height = 4)
+Heatmap(log_pvals,
+        name = "-log10(p-val)",
+        col = colorRampPalette(c('azure2', 'dodgerblue4'))(50),
+        na_col = 'gray90',
+        rect_gp = grid::gpar(col = "black", lwd = 1),
+        cluster_rows = FALSE,
+        cluster_columns = FALSE,
+        column_title = 'GWAS',
+        row_title = 'Groups of genes',
+        right_annotation = row_gene_anno,
+        ## Mark cells with p<0.1
+        cell_fun = function(j, i, x, y,  w, h, col){
+            if(! is.na(log_pvals[i,j])){
+                if (log_pvals[i,j]>(-log10(0.1))){ grid.text('*', x, y, gp = gpar(fontsize = 15, col='magenta'))}
+            }
+            else {
+                grid.text('NA', x, y, gp = gpar(fontsize = 10, col='gray40'))
+            }
+        })
 
 dev.off()
 
