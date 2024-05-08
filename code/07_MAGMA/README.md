@@ -19,3 +19,5 @@ Describe here
     the gene sets of human orthologues of rat habenula and amygdala DEGs (all, up-, and down-regulated) were obtained for MAGMA. 
     
 * [`03_run_MAGMA.sh`](03_run_MAGMA.sh): script to run MAGMA on SNP *p*-values of the previous GWAS. The human gene data in the GRCh37 and GRCh38 human genome assemblies were used as the `.geneloc` files needed for the annotation step to map SNPs onto genes. As reference dataset in the Gene-level Analysis we used ...  The model SNP-wise mean was implemented and the ... for Gene Set Analysis. 
+
+* [`04_Results_visualization.R`](04_Results_visualization.R): the resulting *p*-values for the Gene Set Analyses in the six GWAS were plotted in a heatmap. 
