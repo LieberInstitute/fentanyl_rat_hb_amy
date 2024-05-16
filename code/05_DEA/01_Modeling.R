@@ -146,7 +146,29 @@ length(which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 
 
 ## Plots for DEGs
-plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
+
+de_genes_habenula <- results_Substance_uncorr_vars_habenula[[1]][which(results_Substance_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
+de_genes_habenula$symbol_or_ensemblID <- unlist(apply(de_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+
+de_genes_amygdala <- results_Substance_uncorr_vars_amygdala[[1]][which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
+de_genes_amygdala$symbol_or_ensemblID <- unlist(apply(de_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+
+
+## Gene symbols (or ensemblID if missing) for specific DEGs to highlight
+hab_DEGs <- c("Grik1", "Grm1", "Kcnj3", "Kcnj9", "Kcnc2", "Kcnip4", "Cacna1i", "Cacna2d3",
+              "Cacna1c", "Scn1a", "Clic6", "Chrm3", "Crhr2", "Adora1", "Npy1r", "Cdh10",
+              "Itgal", "Tmem88b", "Col9a3", "Hspa5", "Aifm3", "Hyou1", "Stip1", "Mapk13")
+amy_DEGs <- c("Cacna2d1", "Cacnb3", "Chrna5", "Mmp9", "CCK", "Bdnf", "Crhbp", "Snca", "Cnr1",
+              "Htr2a", "Bmper", "Arc", "Kcnj6", "Chrna4", "Gabbr2", "Calm2", "Grk3", "Calm1",
+              "Homer2", "Homer1", "Gria2", "Gabrg2", "Cdk5", "Syt13", "Egln2", "Uqcrq",
+              "Atp5mk", "Ndufv2", "Ndufa2", "Isca1", "Taco1", "Rrm2b", "Mapk1", "Mapk8",
+              "Abat", "Acad10", "Gad2", "Crhr2", "Drd3")
+
+## Common DEGs
+common_DEGs <- intersect(de_genes_habenula$symbol_or_ensemblID, de_genes_amygdala$symbol_or_ensemblID)
+
+
+plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
 
     if(name=='First_Hour_Infusion_Slope'){
         FClab = 'log2FC(1st Hour Infusion Slope)'
@@ -179,11 +201,10 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
     top_genes$DE<- DE
 
 
-    ## Gene symbols (or ensemblID if missing) for top 10 most up and downregulated DEGs
+    ## Gene symbols (or ensemblID if missing) for specific DEGs
     top_genes$symbol_or_ensemblID <- unlist(apply(top_genes, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
-    top_upDEGs <- subset(top_genes, logFC>0)[order(subset(top_genes, logFC>0)$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-    top_downDEGs <- subset(top_genes, logFC<0)[order(subset(top_genes, logFC<0)$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-    top_DEGs <- c(top_upDEGs, top_downDEGs)
+    up_genes <- subset(top_genes, logFC>0)$symbol_or_ensemblID
+    down_genes <- subset(top_genes, logFC<0)$symbol_or_ensemblID
 
     ## Position of caption in plot
     caption_x_units <- 0.55
@@ -196,8 +217,8 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         caption_y_units2 <- -0.09
     }
 
-    top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% top_DEGs){x} else {NA}})
-
+    ## Label specific DEGs in plot
+    top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% DEGs_list){x} else {NA}})
 
     ## Plots
     cols <- c("Up" = "indianred2", "Down" = "steelblue2", "n.s." = "grey")
@@ -220,7 +241,7 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
         scale_alpha_manual(values = alphas, name=NULL) +
         labs(x="Mean of normalized counts", y=FClab) +
         theme(plot.margin = unit(c(1,1,1,1), "cm"),
-              legend.position = c(0.82, 0.15),
+              legend.position.inside = c(0.82, 0.15),
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
@@ -241,24 +262,57 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
                    linetype = "dashed", color = 'gray35', linewidth=0.5) +
         geom_vline(xintercept = c(-1,1),
                    linetype = "dashed", color = 'gray35', linewidth=0.5) +
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_downDEGs), aes(fontface = 'bold'),
-                        size=2.8,
+        ## Label down DEGs (not common)
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% down_genes &
+                                          ! symbol_or_ensemblID %in% common_DEGs),
+                        aes(fontface = 'bold'),
+                        size=2.3,
                         color='black',
                         alpha = 1,
                         max.overlaps = Inf,
                         box.padding = 0.15, nudge_y = -0.1, nudge_x = -0.4,
-                        segment.size = unit(0.4, 'mm'),
-                        segment.alpha = 0.5,
+                        segment.size = unit(0.35, 'mm'),
+                        segment.alpha = 0.4,
                         show.legend=FALSE) +
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% top_upDEGs), aes(fontface = 'bold'),
-                        size=2.8,
+        ## Label up DEGs (not common)
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% up_genes &
+                                          ! symbol_or_ensemblID %in% common_DEGs),
+                        aes(fontface = 'bold'),
+                        size=2.3,
                         color='black',
                         alpha = 1,
                         max.overlaps = Inf,
                         box.padding = 0.15, nudge_y = 0.1, nudge_x = 0.4,
-                        segment.size = unit(0.4, 'mm'),
-                        segment.alpha = 0.5,
+                        segment.size = unit(0.35, 'mm'),
+                        segment.alpha = 0.4,
                         show.legend=FALSE) +
+        ## Label common DEGs (down)
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
+                                                 symbol_or_ensemblID %in% DEGs_list &
+                                                 symbol_or_ensemblID %in% down_genes),
+                         aes(fontface = 'bold'),
+                         size=2.3,
+                         color='darkorange3',
+                         alpha = 1,
+                         max.overlaps = Inf,
+                         box.padding = 0.15, nudge_y = -0.3, nudge_x = -0.7,
+                         segment.size = unit(0.4, 'mm'),
+                         segment.alpha = 0.48,
+                         show.legend=FALSE)+
+        ## Label common DEGs (up)
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
+                                          symbol_or_ensemblID %in% DEGs_list &
+                                          symbol_or_ensemblID %in% up_genes),
+                        aes(fontface = 'bold'),
+                        size=2.3,
+                        color='darkorange3',
+                        alpha = 1,
+                        max.overlaps = Inf,
+                        box.padding = 0.15, nudge_y = 0.3, nudge_x = 0.7,
+                        segment.size = unit(0.4, 'mm'),
+                        segment.alpha = 0.48,
+                        show.legend=FALSE)+
+
         labs(y="-log10(FDR)", x=FClab)+
         scale_color_manual(values = cols, name=NULL) +
         scale_fill_manual(values = cols, name=NULL) +
@@ -279,21 +333,19 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name) {
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", brain_region, '_', name, ".pdf", sep=""),
-           width = 22, height = 11, units = "cm")
+           width = 24, height = 12, units = "cm")
 }
 
 
 ## Plots for habenula DEGs from the model without correlated variables
-plots_DEGs('habenula', top_genes = results_Substance_uncorr_vars_habenula[[1]], vGene = results_Substance_uncorr_vars_habenula[[2]], FDR = 0.05,
-           name='Substance')
-de_genes_habenula <- results_Substance_uncorr_vars_habenula[[1]][which(results_Substance_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
-de_genes_habenula$symbol_or_ensemblID <- unlist(apply(de_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+plots_DEGs('habenula', top_genes = results_Substance_uncorr_vars_habenula[[1]],
+           vGene = results_Substance_uncorr_vars_habenula[[2]], FDR = 0.05,
+           name='Substance', DEGs_list = hab_DEGs)
 
 ## Plots for amygdala DEGs from the model without correlated variables
-plots_DEGs('amygdala', top_genes = results_Substance_uncorr_vars_amygdala[[1]], vGene = results_Substance_uncorr_vars_amygdala[[2]], FDR = 0.05,
-           name='Substance')
-de_genes_amygdala <- results_Substance_uncorr_vars_amygdala[[1]][which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
-de_genes_amygdala$symbol_or_ensemblID <- unlist(apply(de_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+plots_DEGs('amygdala', top_genes = results_Substance_uncorr_vars_amygdala[[1]],
+           vGene = results_Substance_uncorr_vars_amygdala[[2]], FDR = 0.05,
+           name='Substance', DEGs_list = amy_DEGs)
 
 
 
