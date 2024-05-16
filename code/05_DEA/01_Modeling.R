@@ -442,7 +442,7 @@ DEG_expression_plot <- function (de_genes, vGene, DEG, variable, brain_region){
 }
 
 ## Plot expression of multiple DEGs of interest
-DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, direction){
+DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, name){
 
     plots<-list()
     for (i in 1:length(DEGs)){
@@ -450,7 +450,7 @@ DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, 
         plots[[i]] <- p
     }
     plot_grid(plotlist = plots, ncol = 3, align = 'hv')
-    ggsave(here(paste("plots/05_DEA/01_Modeling/", direction, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
+    ggsave(here(paste("plots/05_DEA/01_Modeling/", name, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
            width = 24, height = 16.5, units = "cm")
 }
 

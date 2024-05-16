@@ -109,7 +109,6 @@ write.table(common_DEGs_hab_amyg, "processed-data/05_DEA/common_DEGs_hab_amyg.ts
 
 
 
-
 ## Function to add gene DE info with respect to two groups
 add_DE_info <-function(t_stats_1, t_stats_2, name_1, name_2) {
 
@@ -145,7 +144,7 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
     rho_anno = paste0("rho = ", format(round(rho, 2), nsmall = 2))
 
     ## Colors and transparency
-    cols <- c("dodgerblue3", "deepskyblue1","cyan3", "darkgrey")
+    cols <- c("darkorange3", "palegreen3","orchid2", "darkgrey")
     names(cols) <- c("sig Both", paste0("sig ", name_1), paste0("sig ", name_2), "None")
     alphas <- c( 1, 1, 1, 0.5)
     names(alphas) <- names(cols)
@@ -157,7 +156,7 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
     t_stats$DEG <- factor(t_stats$DEG, levels=names(cols))
 
     plot <- ggplot(t_stats, aes(x = t1, y = t2, color=DEG, alpha=DEG)) +
-        geom_point(size = 1.5) +
+        geom_point(size = 1) +
         scale_color_manual(values = cols) +
         scale_alpha_manual(values = alphas) +
         labs(x = paste("t-stats", name_1),
@@ -165,7 +164,7 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
              subtitle = rho_anno,
              color = "Differential expression",
              parse = T) +
-        guides(alpha = 'none', color = guide_legend(override.aes = list(size=2))) +
+        guides(alpha = 'none', color = guide_legend(override.aes = list(size=1.3))) +
         theme_bw() +
         theme(plot.margin = unit(c(1,1,1,1), "cm"),
               axis.title = element_text(size = 12),
@@ -176,7 +175,7 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
 
     name1 <- gsub(' ', '_', name_1)
     name2 <- gsub(' ', '_', name_2)
-    ggsave(paste0('plots/05_DEA/02_Comparisons/t_stats_', name1, '_vs_', name2, '_', brain_region, '.pdf'), width = 5.3, height = 3.5)
+    ggsave(paste0('plots/05_DEA/02_Comparisons/t_stats_', name1, '_vs_', name2, '_', brain_region, '.pdf'), width = 6.6, height = 4.5)
 }
 
 
@@ -210,6 +209,11 @@ t_stat_plot(t_stats_FirstHrIntakeSlope_amygdala, t_stats_LastSessionIntake_amygd
             'First hr infusion slope', 'Last session Intake', 'amygdala')
 t_stat_plot(t_stats_TotalIntake_amygdala, t_stats_LastSessionIntake_amygdala,
             'Total intake', 'Last session Intake', 'amygdala')
+
+
+## Compare DE signal for substance in habenula vs amygdala
+t_stat_plot(t_stats_Substance_habenula, t_stats_Substance_amygdala,
+            'Substance habenula', 'Substance amygdala', 'hab_amy')
 
 
 
