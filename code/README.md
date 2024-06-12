@@ -43,3 +43,11 @@ See more details in [06_GO_KEGG](06_GO_KEGG/).
 ## 07. Multi-marker analysis of genomic annotation (MAGMA)
 
 
+
+## 08. Gene Set Enrichment Analysis (GSEA)
+
+
+
+
+
+
