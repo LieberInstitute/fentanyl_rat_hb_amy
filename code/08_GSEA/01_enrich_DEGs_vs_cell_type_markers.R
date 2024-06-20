@@ -20,7 +20,6 @@ load(here('processed-data/05_DEA/de_genes_Substance_habenula.Rdata'), verbose = 
 load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = TRUE)
 
 
-
 ############################################################################
 ##         1. Obtain sets of orthologs of human marker genes in rat
 ############################################################################
@@ -66,6 +65,31 @@ table(MeanRatio_genes$cellType.target)
 # MHb.1      MHb.2      MHb.3  Microglia      Oligo        OPC
 #    50         50         50         50         50         50
 
+## Range of expression ratios of marker genes per cell type
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+
+# [1] "Range of ratios of marker genes for Astrocyte: 2.8 - 80"
+# [1] "Range of ratios of marker genes for Endo: 2.7 - 160"
+# [1] "Range of ratios of marker genes for Excit.Thal: 1.1 - 14"
+# [1] "Range of ratios of marker genes for Inhib.Thal: 2.1 - 41"
+# [1] "Range of ratios of marker genes for LHb.1: 1.2 - 2.8"
+# [1] "Range of ratios of marker genes for LHb.2: 1.1 - 14"
+# [1] "Range of ratios of marker genes for LHb.3: 1.2 - 4"
+# [1] "Range of ratios of marker genes for LHb.4: 1.1 - 1.7"
+# [1] "Range of ratios of marker genes for LHb.5: 1.2 - 2.2"
+# [1] "Range of ratios of marker genes for LHb.6: 1.4 - 8.8"
+# [1] "Range of ratios of marker genes for LHb.7: 1.1 - 3"
+# [1] "Range of ratios of marker genes for MHb.1: 1.8 - 17"
+# [1] "Range of ratios of marker genes for MHb.2: 1.2 - 5.6"
+# [1] "Range of ratios of marker genes for MHb.3: 1.6 - 14"
+# [1] "Range of ratios of marker genes for Microglia: 6.4 - 9.8"
+# [1] "Range of ratios of marker genes for Oligo: 6.1 - 24"
+# [1] "Range of ratios of marker genes for OPC: 1.2 - 16"
+
+
 ## Divide marker genes per cell type and obtain rat IDs
 MeanRatio_top50_fine_hab_ratIDs <- list()
 for (cell_type in cell_types){
@@ -73,7 +97,7 @@ for (cell_type in cell_types){
 
     ## Find rat orthologs
     markers_rat_IDs <- obtain_rat_orthologs(markers$Symbol)
-    ## Take unique rat ensembl IDs: human marker genes with at least one ortholog in rat
+    ## Take unique rat ensembl IDs: rat genes with at least one human ortholog marker gene
     markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
     markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
@@ -120,6 +144,21 @@ table(MeanRatio_genes$cellType.target)
 # Astrocyte     Endothelial             ExN             InN       Microglia Oligodendrocyte             OPC
 #      100             100             100             100             100             100             100
 
+## Marker ratios
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+
+# [1] "Range of ratios of marker genes for Astrocyte: 1.7 - 3.7"
+# [1] "Range of ratios of marker genes for Endothelial: 1.3 - 3.5"
+# [1] "Range of ratios of marker genes for ExN: 1.7 - 9.1"
+# [1] "Range of ratios of marker genes for InN: 1.2 - 7.8"
+# [1] "Range of ratios of marker genes for Microglia: 2.2 - 11"
+# [1] "Range of ratios of marker genes for Oligodendrocyte: 2 - 11"
+# [1] "Range of ratios of marker genes for OPC: 1.3 - 36"
+
+
 ## Marker genes per cell type and obtain rat IDs
 MeanRatio_top100_broad_amyg_ratIDs <- list()
 for (cell_type in cell_types){
@@ -164,10 +203,71 @@ cell_types
 unique(table(MeanRatio_genes$cellType.target))
 # [1] 100
 
+## Ratios
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+
+#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+#      We don't want markers with ratios <1 as they are      |
+#         more expressed in the non-target cell type !!!     |
+#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+# [1] "Range of ratios of marker genes for Human_Astro_1 FGFR3: 1.1 - 2.4"
+# [1] "Range of ratios of marker genes for Human_Astro_2 FGFR3: 1.1 - 1.9"
+# [1] "Range of ratios of marker genes for Human_Astro_3 FGFR3: 0.99 - 2.5"
+# [1] "Range of ratios of marker genes for Human_Astro_4 FGFR3: 0.92 - 1.1"
+# [1] "Range of ratios of marker genes for Human_CALCR LHX8: 0.94 - 1"
+# [1] "Range of ratios of marker genes for Human_DRD2 ISL1: 1.1 - 11"
+# [1] "Range of ratios of marker genes for Human_DRD2 PAX6: 1 - 2.3"
+# [1] "Range of ratios of marker genes for Human_Endo NOSTRIN: 1.1 - 1.8"
+# [1] "Range of ratios of marker genes for Human_HGF C11orf87: 1.1 - 1.3"
+# [1] "Range of ratios of marker genes for Human_HGF ESR1: 0.98 - 1.4"
+# [1] "Range of ratios of marker genes for Human_HGF NPSR1: 0.97 - 1.2"
+# [1] "Range of ratios of marker genes for Human_HTR3A DRD2: 0.99 - 2.5"
+# [1] "Range of ratios of marker genes for Human_LAMP5 ABO: 1 - 2.1"
+# [1] "Range of ratios of marker genes for Human_LAMP5 BDNF: 1 - 1.3"
+# [1] "Range of ratios of marker genes for Human_LAMP5 COL14A1: 1 - 3.4"
+# [1] "Range of ratios of marker genes for Human_LAMP5 COL25A1: 0.98 - 1.1"
+# [1] "Range of ratios of marker genes for Human_LAMP5 NDNF: 1 - 2.1"
+# [1] "Range of ratios of marker genes for Human_Micro CTSS: 1.2 - 1.6"
+# [1] "Range of ratios of marker genes for Human_Oligo_1 OPALIN: 0.97 - 1.2"
+# [1] "Range of ratios of marker genes for Human_Oligo_2 OPALIN: 1 - 1.6"
+# [1] "Range of ratios of marker genes for Human_Oligo_3 OPALIN: 0.92 - 1"
+# [1] "Range of ratios of marker genes for Human_Oligo_4 OPALIN: 1 - 1.4"
+# [1] "Range of ratios of marker genes for Human_Oligo_5 OPALIN: 1 - 1.4"
+# [1] "Range of ratios of marker genes for Human_Oligo_6 OPALIN: 1 - 1.1"
+# [1] "Range of ratios of marker genes for Human_OPC_1 PDGFRA: 1.3 - 4.3"
+# [1] "Range of ratios of marker genes for Human_OPC_2 PDGFRA: 0.94 - 1.1"
+# [1] "Range of ratios of marker genes for Human_OPC_3 PDGFRA: 1 - 1.3"
+# [1] "Range of ratios of marker genes for Human_OPC_4 PDGFRA: 0.96 - 2.9"
+# [1] "Range of ratios of marker genes for Human_PRKCD: 1.1 - 3.1"
+# [1] "Range of ratios of marker genes for Human_PVALB ADAMTS5: 1.1 - 4.3"
+# [1] "Range of ratios of marker genes for Human_RXFP2 RSPO2: 0.98 - 1.5"
+# [1] "Range of ratios of marker genes for Human_SATB2 CALCRL: 0.99 - 1.4"
+# [1] "Range of ratios of marker genes for Human_SATB2 IL15: 1 - 2.3"
+# [1] "Range of ratios of marker genes for Human_SATB2 ST8SIA2: 1.1 - 3"
+# [1] "Range of ratios of marker genes for Human_SOX11 EBF2: 0.92 - 1.1"
+# [1] "Range of ratios of marker genes for Human_SST EPYC: 1 - 23"
+# [1] "Range of ratios of marker genes for Human_SST HGF: 0.97 - 1.5"
+# [1] "Range of ratios of marker genes for Human_STRIP2: 1.1 - 4.1"
+# [1] "Range of ratios of marker genes for Human_TFAP2C: 1.2 - 26"
+# [1] "Range of ratios of marker genes for Human_TSHZ1 CALCRL: 0.98 - 1.3"
+# [1] "Range of ratios of marker genes for Human_TSHZ1 SEMA3C: 1 - 1.8"
+# [1] "Range of ratios of marker genes for Human_VGLL3 CNGB1: 1 - 1.3"
+# [1] "Range of ratios of marker genes for Human_VGLL3 MEPE: 0.94 - 1.3"
+# [1] "Range of ratios of marker genes for Human_VIP ABI3BP: 0.98 - 3.2"
+# [1] "Range of ratios of marker genes for Human_VIP NDNF: 0.98 - 9.6"
+
+
 ## Marker genes per cell type and obtain rat IDs
 MeanRatio_top100_fine_amyg_ratIDs <- list()
 for (cell_type in cell_types){
     markers <- subset(MeanRatio_genes, cellType.target==cell_type)
+
+    ## Remove markers with ratio =<1
+    markers <- markers[markers$ratio>1, ]
 
     ## Find rat orthologs
     markers_rat_IDs <- obtain_rat_orthologs(markers$gene)
@@ -180,51 +280,49 @@ for (cell_type in cell_types){
 }
 # [1] "Number of Human_Astro_1 FGFR3 marker genes in rat: 85"
 # [1] "Number of Human_Astro_2 FGFR3 marker genes in rat: 85"
-# [1] "Number of Human_Astro_3 FGFR3 marker genes in rat: 79"
-# [1] "Number of Human_Astro_4 FGFR3 marker genes in rat: 74"
-# [1] "Number of Human_CALCR LHX8 marker genes in rat: 96"
+# [1] "Number of Human_Astro_3 FGFR3 marker genes in rat: 72"
+# [1] "Number of Human_Astro_4 FGFR3 marker genes in rat: 11"
+# [1] "Number of Human_CALCR LHX8 marker genes in rat: 2"
 # [1] "Number of Human_DRD2 ISL1 marker genes in rat: 76"
-# [1] "Number of Human_DRD2 PAX6 marker genes in rat: 93"
+# [1] "Number of Human_DRD2 PAX6 marker genes in rat: 92"
 # [1] "Number of Human_Endo NOSTRIN marker genes in rat: 147"
 # [1] "Number of Human_HGF C11orf87 marker genes in rat: 84"
-# [1] "Number of Human_HGF ESR1 marker genes in rat: 97"
-# [1] "Number of Human_HGF NPSR1 marker genes in rat: 88"
-# [1] "Number of Human_HTR3A DRD2 marker genes in rat: 89"
+# [1] "Number of Human_HGF ESR1 marker genes in rat: 50"
+# [1] "Number of Human_HGF NPSR1 marker genes in rat: 23"
+# [1] "Number of Human_HTR3A DRD2 marker genes in rat: 73"
 # [1] "Number of Human_LAMP5 ABO marker genes in rat: 67"
 # [1] "Number of Human_LAMP5 BDNF marker genes in rat: 69"
-# [1] "Number of Human_LAMP5 COL14A1 marker genes in rat: 88"
-# [1] "Number of Human_LAMP5 COL25A1 marker genes in rat: 96"
+# [1] "Number of Human_LAMP5 COL14A1 marker genes in rat: 86"
+# [1] "Number of Human_LAMP5 COL25A1 marker genes in rat: 47"
 # [1] "Number of Human_LAMP5 NDNF marker genes in rat: 97"
 # [1] "Number of Human_Micro CTSS marker genes in rat: 97"
-# [1] "Number of Human_Oligo_1 OPALIN marker genes in rat: 98"
+# [1] "Number of Human_Oligo_1 OPALIN marker genes in rat: 59"
 # [1] "Number of Human_Oligo_2 OPALIN marker genes in rat: 92"
-# [1] "Number of Human_Oligo_3 OPALIN marker genes in rat: 104"
+# [1] "Number of Human_Oligo_3 OPALIN marker genes in rat: 2"
 # [1] "Number of Human_Oligo_4 OPALIN marker genes in rat: 92"
 # [1] "Number of Human_Oligo_5 OPALIN marker genes in rat: 75"
 # [1] "Number of Human_Oligo_6 OPALIN marker genes in rat: 93"
 # [1] "Number of Human_OPC_1 PDGFRA marker genes in rat: 102"
-# [1] "Number of Human_OPC_2 PDGFRA marker genes in rat: 103"
+# [1] "Number of Human_OPC_2 PDGFRA marker genes in rat: 19"
 # [1] "Number of Human_OPC_3 PDGFRA marker genes in rat: 90"
-# [1] "Number of Human_OPC_4 PDGFRA marker genes in rat: 92"
+# [1] "Number of Human_OPC_4 PDGFRA marker genes in rat: 43"
 # [1] "Number of Human_PRKCD marker genes in rat: 89"
 # [1] "Number of Human_PVALB ADAMTS5 marker genes in rat: 79"
-# [1] "Number of Human_RXFP2 RSPO2 marker genes in rat: 77"
-# [1] "Number of Human_SATB2 CALCRL marker genes in rat: 84"
+# [1] "Number of Human_RXFP2 RSPO2 marker genes in rat: 35"
+# [1] "Number of Human_SATB2 CALCRL marker genes in rat: 65"
 # [1] "Number of Human_SATB2 IL15 marker genes in rat: 91"
 # [1] "Number of Human_SATB2 ST8SIA2 marker genes in rat: 86"
-# [1] "Number of Human_SOX11 EBF2 marker genes in rat: 85"
+# [1] "Number of Human_SOX11 EBF2 marker genes in rat: 3"
 # [1] "Number of Human_SST EPYC marker genes in rat: 84"
-# [1] "Number of Human_SST HGF marker genes in rat: 89"
+# [1] "Number of Human_SST HGF marker genes in rat: 41"
 # [1] "Number of Human_STRIP2 marker genes in rat: 79"
 # [1] "Number of Human_TFAP2C marker genes in rat: 73"
-# [1] "Number of Human_TSHZ1 CALCRL marker genes in rat: 87"
-# [1] "Number of Human_TSHZ1 SEMA3C marker genes in rat: 94"
+# [1] "Number of Human_TSHZ1 CALCRL marker genes in rat: 44"
+# [1] "Number of Human_TSHZ1 SEMA3C marker genes in rat: 83"
 # [1] "Number of Human_VGLL3 CNGB1 marker genes in rat: 81"
-# [1] "Number of Human_VGLL3 MEPE marker genes in rat: 92"
-# [1] "Number of Human_VIP ABI3BP marker genes in rat: 94"
-# [1] "Number of Human_VIP NDNF marker genes in rat: 90"
-
-
+# [1] "Number of Human_VGLL3 MEPE marker genes in rat: 2"
+# [1] "Number of Human_VIP ABI3BP marker genes in rat: 59"
+# [1] "Number of Human_VIP NDNF marker genes in rat: 60"
 
 
 
@@ -237,7 +335,7 @@ for (cell_type in cell_types){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ####################  Broad resolution cell type markers  ######################
-## (DEGs (FDR<0.05) based in the enrichment model for one cell type vs the rest were taken as markers)
+## (DEGs (FDR<0.05) based on the enrichment model for one cell type vs the rest were taken as markers)
 
 lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
 lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
@@ -350,7 +448,6 @@ for (cell_type in cell_types){
 # [1] "Number of Oligo marker genes in rat: 460"
 # [1] "Number of OPC human DEGs: 440"
 # [1] "Number of OPC marker genes in rat: 295"
-
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -567,7 +664,7 @@ enrichment_analysis<- function(region, method, top_n, resolution, DEGs_region){
     for (group in names(DEGs_groups)){
         for (cell_type in names(markers)){
 
-            ## Universe:
+            ## Universe = DEGs + non-DEGs
             ## * DEGs
             de_genes <- DEGs_groups[[group]]
             ## * Non-DE genes
