@@ -28,7 +28,8 @@ load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = 
 ## Obtain rat orthologs of human marker genes
 obtain_rat_orthologs <- function(human_marker_genes){
     mart <- useEnsembl(biomart="ENSEMBL_MART_ENSEMBL",
-                       dataset="hsapiens_gene_ensembl")
+                       dataset="hsapiens_gene_ensembl",
+                       GRCh = "GRCh38")
 
     human_rat_ids <- getBM(values  = human_marker_genes,
                            mart  = mart,
@@ -45,7 +46,7 @@ obtain_rat_orthologs <- function(human_marker_genes){
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #               i)  Markers for cell types in human epithalamus*
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# *From https://github.com/LieberInstitute/Habenula_Pilot/tree/master
+# *From doi: 10.1101/2024.02.26.582081
 
 ####################  Fine resolution cell type markers  ######################
 
@@ -610,20 +611,30 @@ enrichment_analysis<- function(region, method, top_n, resolution, DEGs_region){
 
     }
 
-    return(list(p_values, ms, numbers))
+    return(list(p_values, ms))
 }
 
 
 ## Create heatmaps for results
-heatmap_pvals <- function(p_values, numbers, DEGs_region, marker_set_name, filename, width){
+heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, width){
 
     ## Heatmap for -log(p-values)
     log_p_values <- -log10(p_values)
 
     ## Num of DEGs in each group
+    de_genes <- eval(parse_expr(paste0('de_genes_', DEGs_region)))
+    all_DEGs <- de_genes$ensemblID
+    up_DEGs <- subset(de_genes, logFC>0)$ensemblID
+    down_DEGs <- subset(de_genes, logFC<0)$ensemblID
+    num_DEGs_group <- data.frame('Freq'=c('all_DEGs'=length(all_DEGs), 'up_DEGs'=length(up_DEGs), 'down_DEGs'=length(down_DEGs)))
 
     ## Num of marker genes for each cell type
+    markers <- eval(parse_expr(paste0(filename, '_ratIDs')))
+    num_markers_cell_type <- data.frame('Freq'=unlist(lapply(markers, length)))
 
+    ## Row and col bars
+    row_gene_anno <- ComplexHeatmap::rowAnnotation('n genes' = ComplexHeatmap::anno_barplot(num_DEGs_group$Freq))
+    col_gene_anno <- ComplexHeatmap::columnAnnotation('n markers' = ComplexHeatmap::anno_barplot(num_markers_cell_type$Freq))
 
     h <- Heatmap(log_p_values,
                  name='-log10(p-value)',
@@ -634,8 +645,12 @@ heatmap_pvals <- function(p_values, numbers, DEGs_region, marker_set_name, filen
                  rect_gp = gpar(col = "gray20", lwd = 1),
                  column_title = marker_set_name,
                  row_title = paste0('Groups of ', DEGs_region, ' DEGs'),
-                 column_title_gp = gpar(fontsize = 15),
-                 row_title_gp = gpar(fontsize = 15),
+                 column_title_gp = gpar(fontsize = 11),
+                 row_title_gp = gpar(fontsize = 11),
+                 column_names_gp = gpar(fontsize = 9),
+                 row_names_gp = gpar(fontsize = 9),
+                 right_annotation = row_gene_anno,
+                 top_annotation = col_gene_anno,
                  ## Add '*' if p<0.05
                  cell_fun = function(j, i, x, y,  w, h, col)
                  { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 17, col='yellow1'))} }
@@ -647,39 +662,59 @@ heatmap_pvals <- function(p_values, numbers, DEGs_region, marker_set_name, filen
 }
 
 
-## Compare amygdala DEGs vs cell type marker genes in amygdala
+####  Compare amygdala DEGs vs cell type marker genes in amygdala:
+
+#   * Top 100 MeanRatio-based cell type marker genes at fine resolution
 results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[1]]
-heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top 100 MeanRatio-based amygdala cell type markers',
-              'MeanRatio_100_fine_amyg', 10)
+heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based amygdala fine cell type markers',
+              'MeanRatio_top100_fine_amyg', 11)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
 
+#   * Top 100 MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'MeanRatio', 'top100', 'broad', 'amygdala')
 p_values_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[1]]
-heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top 100 MeanRatio-based amygdala cell type markers',
-              'MeanRatio_100_broad_amyg', 7)
+heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based amygdala broad cell type markers',
+              'MeanRatio_top100_broad_amyg', 6.7)
 ms_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[2]]
 
+#   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[1]]
+heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based amygdala fine cell type markers',
+              'lvsALL_fine_amy', 11)
 ms_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[2]]
 
+#   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'lvsALL', NULL, 'broad', 'amygdala')
 p_values_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[1]]
+heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based amygdala broad cell type markers',
+              'lvsALL_broad_amy', 6.7)
 ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 
 
-## Compare habenula DEGs vs cell type marker genes in epithalamus
+
+####  Compare habenula DEGs vs cell type marker genes in epithalamus
+
+#   * Top 50 MeanRatio-based cell type marker genes at fine resolution
 results_MeanRatio_50_fine_hab <- enrichment_analysis('hab', 'MeanRatio', 'top50', 'fine', 'habenula')
 p_values_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[1]]
+heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based habenula fine cell type markers',
+              'MeanRatio_top50_fine_hab', 8)
 ms_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[2]]
 
+#   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_hab <- enrichment_analysis('hab', 'lvsALL', NULL, 'fine', 'habenula')
 p_values_lvsALL_fine_hab <- results_lvsALL_fine_hab[[1]]
+heatmap_pvals(p_values_lvsALL_fine_hab, 'habenula', '1vsALL-based habenula fine cell type markers',
+              'lvsALL_fine_hab', 8)
 ms_lvsALL_fine_hab <- results_lvsALL_fine_hab[[2]]
 
+#   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_hab <- enrichment_analysis('hab', 'lvsALL', NULL, 'broad', 'habenula')
 p_values_lvsALL_broad_hab <- results_lvsALL_broad_hab[[1]]
+heatmap_pvals(p_values_lvsALL_broad_hab, 'habenula', '1vsALL-based habenula broad cell type markers',
+              'lvsALL_broad_hab', 6)
 ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 
 
