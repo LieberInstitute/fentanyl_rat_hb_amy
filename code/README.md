@@ -46,8 +46,8 @@ See more details in [06_GO_KEGG](06_GO_KEGG/).
 
 ## 08. Gene Set Enrichment Analysis (GSEA)
 
+The enrichment of habenula and amygdala DEGs among rat orthologs of cell type-specific marker genes in human epithalamus and amygdala, respectively, was assessed. 
 
-
-
+See more details of the human marker sets used and the analysis in [08_GSEA](08_GSEA/).
 
 

@@ -32,12 +32,3 @@ Cell type marker genes in human epithalamus and amygdala were obtained applying 
         
     * **2\. Cell type enrichment analysis for rat DEGs**: all, up-, and down-regulated rat habenula and amygdala DEGs were separately assessed for their enrichment among rat genes that have at least one human ortholog that is a marker gene for a given cell type in epithalamus or amygdala, respectively; these human cell type markers genes are provided in the sets described above. Only rat genes that were expressed and assessed for DGE were considered in the analysis (n=16,708). Results are presented with heatmaps for each set of cell type markers and group of DEGs.  
     
-    
-CHECAR CODIGO
-    README GLOBAL
-    README LOCAL
-    NOTAS
-    METHODS
-    
-    
-
