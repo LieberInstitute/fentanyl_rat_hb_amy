@@ -7,9 +7,11 @@ Cell type marker genes in human epithalamus and amygdala were obtained applying 
 
 * *A) MeanRatio-based cell type marker genes*
     * i) Markers for cell types in human epithalamus:
+    
             * Fine resolution cell type markers: the top 50 marker genes for fine cell types in human epithalamus. 
         
     * ii) Markers for cell types in human amygdala:
+    
             * Broad resolution cell type markers: top 100 marker genes for broad cell types in human amygdala. 
             * Fine resolution cell type markers: top 100 marker genes for fine cell types in human amygdala. 
             
@@ -18,16 +20,18 @@ Cell type marker genes in human epithalamus and amygdala were obtained applying 
 
 * *B) 1vsALL-based cell type marker genes in human*
     * i) Markers for cell types in human epithalamus:
+    
             * Broad resolution cell type markers: marker genes (DEGs with FDR<0.05) for broad cell types in human epithalamus.
             * Fine resolution cell type markers: marker genes (DEGs with FDR<0.05) for fine cell types in human epithalamus.
         
     * ii) Markers for cell types in human amygdala:
+    
             * Broad resolution cell type markers: marker genes (DEGs with FDR<0.05) for broad cell types in human amygdala.
             * Fine resolution cell type markers: marker genes (DEGs with FDR<0.05) for fine cell types in human amygdala.
 
 
 * [`01_enrich_DEGs_vs_cell_type_markers.R`](01_enrich_DEGs_vs_cell_type_markers.R): 
-:  
+
     * **1\. Obtain sets of orthologs of human marker genes in rat**: for the human marker genes in each of the sets previously described, their rat orthologs were obtained using ENSEMBL under the GRCh38 human genome version. 
         
     * **2\. Cell type enrichment analysis for rat DEGs**: all, up-, and down-regulated rat habenula and amygdala DEGs were separately assessed for their enrichment among rat genes that have at least one human ortholog that is a marker gene for a given cell type in epithalamus or amygdala, respectively; these human cell type markers genes are provided in the sets described above. Only rat genes that were expressed and assessed for DGE were considered in the analysis (n=16,708). Results are presented with heatmaps for each set of cell type markers and group of DEGs.  
