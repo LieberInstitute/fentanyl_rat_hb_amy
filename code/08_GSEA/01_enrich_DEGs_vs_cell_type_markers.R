@@ -5,6 +5,7 @@ library(biomaRt)
 library(rlang)
 library(readxl)
 library(ComplexHeatmap)
+library(ggplot2)
 library(sessioninfo)
 
 
@@ -51,6 +52,7 @@ obtain_rat_orthologs <- function(human_marker_genes){
 
 ## All ranked marker genes
 MeanRatio_genes <- as.data.frame(read_xlsx('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top50_MarkerGenes_hab.xlsx'))
+MeanRatio_top50_fine_hab_genes <- MeanRatio_genes
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -133,6 +135,7 @@ for (cell_type in cell_types){
 
 ## All ranked marker genes
 MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top100_broadMarkerGenes_amyg.csv'))
+MeanRatio_top100_broad_amy_genes <- MeanRatio_genes
 
 ## Broad cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -185,6 +188,7 @@ for (cell_type in cell_types){
 ####################  Fine resolution cell type markers  ######################
 
 MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top100_fineMarkerGenes_amyg.csv'))
+MeanRatio_top100_fine_amy_genes <- MeanRatio_genes
 
 ## Fine cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -338,7 +342,7 @@ for (cell_type in cell_types){
 ## (DEGs (FDR<0.05) based on the enrichment model for one cell type vs the rest were taken as markers)
 
 lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
-lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
+lvsALL_broad_hab_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_broad_genes_enrich_stats)[grep('fdr', colnames(lvsALL_broad_genes_enrich_stats))])
@@ -387,7 +391,7 @@ for (cell_type in cell_types){
 ####################  Fine resolution cell type markers  #######################
 
 lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_fine_MarkerGenes_hab.Rdata'))))
-lvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
+lvsALL_fine_hab_genes <- llvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_fine_genes_enrich_stats)[grep('fdr', colnames(lvsALL_fine_genes_enrich_stats))])
@@ -460,6 +464,8 @@ for (cell_type in cell_types){
 lvsALL_broad_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_amyg.csv')
 ## (DEGs (FDR<0.05) based on the enrichment model as marker genes)
 
+lvsALL_broad_amy_genes <- lvsALL_broad_genes
+
 ## Cell types
 cell_types <- names(table(lvsALL_broad_genes$cellType.target))
 cell_types
@@ -503,6 +509,7 @@ for (cell_type in cell_types){
 ####################  Fine resolution cell type markers  ######################
 
 lvsALL_fine_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_fine_MarkerGenes_amyg.csv')
+lvsALL_fine_amy_genes <- lvsALL_fine_genes
 
 ## Cell types
 cell_types <- names(table(lvsALL_fine_genes$cellType.target))
@@ -625,6 +632,247 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP ABI3BP marker genes in rat: 3955"
 # [1] "Number of Human_VIP NDNF human DEGs: 6878"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 5179"
+
+
+
+## -----------------------------------------------------------------------------
+##              1.1 Compare MeanRatio vs 1vsALL marker genes
+## -----------------------------------------------------------------------------
+
+compare_markers <- function(region, resolution_MR, resolution_lvsALL){
+
+    if(region== 'habenula'){
+        top_n <- 'top50'
+        region_name <- 'hab'
+    }
+    else{
+        top_n <- 'top100'
+        region_name <- 'amy'
+    }
+
+    ## Markers
+    MR_markers <- eval(parse_expr(paste('MeanRatio', top_n, resolution_MR, region_name, 'genes', sep='_')))
+    lvsALL_markers <- eval(parse_expr(paste('lvsALL', resolution_lvsALL, region_name, 'genes', sep='_')))
+
+    ## Define cell types per set
+    if(region == 'habenula'){
+        cell_types_MR <- unique(MR_markers$cellType.target)
+        cell_types_lvsALL <- gsub('fdr_', '', colnames(lvsALL_markers)[grep('fdr', colnames(lvsALL_markers))])
+    }
+    else{
+        cell_types_MR <- unique(MR_markers$cellType.target)
+        cell_types_lvsALL <- unique(lvsALL_markers$cellType.target)
+    }
+
+    ## Verify same cell types at same resolution
+    if(resolution_MR == resolution_lvsALL){
+        ## Different cell types?
+        stopifnot(length(setdiff(cell_types_MR, cell_types_lvsALL))==0)
+        cell_types <- cell_types_MR
+
+        resolution <- ifelse(resolution_MR=='fine', 'Fine', 'Broad')
+        ## Define needed column for plot
+        if(resolution_MR=='fine'){
+            MR_markers$cellType.target_fine <- MR_markers$cellType.target
+        }
+        else {
+            MR_markers$cellType.target_fine <- NA
+        }
+
+        cell_type_colors_res <- ifelse(resolution_MR=='fine', 'cellType.target_fine', 'cellType.target')
+    }
+
+    ## Correspondence between fine and broad cell types
+    else{
+        resolution <- 'Fine'
+        cell_type_colors_res <- 'cellType.target_fine'
+
+        ## Habenula markers
+        if(region=='habenula'){
+            if(resolution_MR=='fine' & resolution_lvsALL=='broad'){
+                MR_markers$cellType.target_fine <- MR_markers$cellType.target
+                MR_markers$cellType.target <- replace(replace(MR_markers$cellType.target, grep('LHb.', MR_markers$cellType.target), 'LHb'),
+                                        grep('MHb.', MR_markers$cellType.target), 'MHb')
+
+                ## Verify fine cell types have a broad type in the broad data
+                stopifnot(unique(MR_markers$cellType.target) %in% cell_types_lvsALL)
+                cell_types <- cell_types_lvsALL
+            }
+        }
+
+        ## Amygdala markers
+        else{
+            if(resolution_MR=='fine' & resolution_lvsALL=='broad'){
+                MR_markers$cellType.target_fine <- MR_markers$cellType.target
+                MR_markers$cellType.target <- MR_markers$broadCellType
+                stopifnot(unique(MR_markers$cellType.target) %in% lvsALL_markers$cellType.target)
+                cell_types <- cell_types_lvsALL
+            }
+            else if(resolution_MR=='broad' & resolution_lvsALL=='fine'){
+                lvsALL_markers$cellType.target_fine <- lvsALL_markers$cellType.target
+                lvsALL_markers$cellType.target <- lvsALL_markers$broadCellType
+                stopifnot(unique(lvsALL_markers$cellType.target) %in% MR_markers$cellType.target)
+                cell_types <- cell_types_MR
+            }
+        }
+    }
+
+
+    ## Subset to MeanRatio markers with 1vsALL logFC and add metrics per cell type
+    cell_types_metrics <- vector()
+
+    for (cell_type in cell_types){
+
+        if(region=='habenula'){
+            MR_markers_cell_type <- subset(MR_markers, cellType.target==cell_type)[,c("gene", "cellType.target", "ratio", "cellType.target_fine")]
+
+            ## Specific cell type logFC and p-val
+            data <- cbind(MR_markers_cell_type, lvsALL_markers[which(MR_markers_cell_type$gene %in% lvsALL_markers$gene),
+                                               c(paste0('logFC_', cell_type), paste0('fdr_', cell_type))])
+            data$logFC <- data[,paste0('logFC_', cell_type)]
+            data[,paste0('logFC_', cell_type)] <- NULL
+            data$FDR <- data[, paste0('fdr_', cell_type)]
+            data[, paste0('fdr_', cell_type)] <- NULL
+
+            ## Add if gene is MeanRatio marker and also lvsALL marker
+            data$lvsALL_marker <- apply(data, 1, function(x){if(as.numeric(x['FDR'])<0.05 & as.numeric(x['ratio'])>1){TRUE}
+                                                             else{FALSE}})
+        }
+
+        else if(region=='amygdala'){
+
+            MR_markers_cell_type <- subset(MR_markers, cellType.target==cell_type)
+            lvsALL_markers_cell_type <- subset(lvsALL_markers, cellType.target==cell_type)
+
+            if(resolution_MR=='broad' & resolution_lvsALL=='fine'){
+                data <- MR_markers_cell_type[which(MR_markers_cell_type$gene %in% lvsALL_markers_cell_type$gene),
+                                             c("gene", "cellType.target", "ratio")]
+                data$cellType.target_MR <- data$cellType.target
+                data$cellType.target <- NULL
+
+                ## Bind logFCs and adjusted p-values for fine cell types
+                data_complete <- vector()
+                for (marker in data$gene){
+                    data_complete <- rbind(data_complete, cbind(subset(data, gene==marker), subset(lvsALL_markers_cell_type, gene==marker)[c('logFC', 'log.FDR', 'cellType.target', 'cellType.target_fine')]))
+                }
+
+                ## Check same target cell type
+                print(length(which(data_complete$cellType.target_MR != data_complete$cellType.target)))
+
+                ## Define if genes are real markers (ratio >1 and FDR <0.05)
+                data_complete$lvsALL_marker <- apply(data_complete, 1, function(x){if(x['log.FDR']<log(0.05) & x['ratio']>1){TRUE}
+                    else{FALSE}})
+                data <- data_complete
+            }
+
+            else {
+                data <- MR_markers_cell_type[which(MR_markers_cell_type$gene %in% lvsALL_markers_cell_type$gene),
+                                             c("gene", "cellType.target", "cellType.target_fine", "ratio")]
+                data$cellType.target_MR <- data$cellType.target
+                data$cellType.target <- NULL
+
+                ## Bind logFCs and adjusted p-values
+                data <- cbind(data, lvsALL_markers_cell_type[match(data$gene, lvsALL_markers_cell_type$gene),
+                                                             c('logFC', 'log.FDR', 'cellType.target')])
+                ## Check same target cell type
+                print(length(which(data$cellType.target_MR != data$cellType.target)))
+
+                ## Define if genes are real markers (ratio >1 and FDR <0.05)
+                data$lvsALL_marker <- apply(data, 1, function(x){if(x['log.FDR']<log(0.05) & x['ratio']>1){TRUE}
+                    else{FALSE}})
+            }
+        }
+
+        cell_types_metrics <- rbind(cell_types_metrics, data)
+    }
+
+    ## % of MeanRatio markers that are also 1vsALL markers
+    percent <- signif(table(cell_types_metrics$lvsALL_marker)['TRUE'] / dim(cell_types_metrics)[1] *100, 4)
+
+    ## Plot ratio of MeanRatio markers per cell type vs their logFC for same cell type
+    p <- ggplot(cell_types_metrics, aes(x=ratio, y=logFC, color=get(cell_type_colors_res), alpha=lvsALL_marker)) +
+            geom_point(size = 2) +
+            theme_bw() +
+            labs(x=paste0("Ratio of MeanRatio marker genes for ", resolution_MR, " cell types"),
+                 y=paste0("1vsALL logFC for ", resolution_lvsALL, " cell types"),
+                 color=paste0(resolution, " cell types"),
+                 alpha="MeanRatio & 1vsALL marker", subtitle = paste0(percent, '% common markers')) +
+            theme(plot.margin = unit(c(0.3,0.3,0.3,0.3), "cm"),
+                  axis.title = element_text(size = 11),
+                  axis.text = element_text(size = (10)),
+                  legend.text = element_text(size=8.4),
+                  legend.title = element_text(size=10))
+    return(p)
+
+}
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#                  A)  MeanRatio vs 1vsALL markers in habenula
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+####################  Fine resolution cell type markers  #######################
+
+## Compare MeanRatio vs 1vsALL logFC for fine cell types
+region <- 'habenula'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'fine'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 7.5, height = 5.5)
+
+###############  Fine and broad resolution cell type markers  ##################
+
+## Compare MeanRatio for fine cell types vs 1vsALL logFC for the respective broad cell types
+region <- 'habenula'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'broad'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 7.5, height = 5.5)
+
+
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#                  B)  MeanRatio vs 1vsALL markers in amygdala
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+####################  Fine resolution cell type markers  #######################
+
+## Compare MeanRatio vs 1vsALL logFC for fine cell types
+region <- 'amygdala'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'fine'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 10.5, height = 5.5)
+
+####################  Broad resolution cell type markers  ######################
+
+## Compare MeanRatio vs 1vsALL logFC for broad cell types
+region <- 'amygdala'
+resolution_MR <- 'broad'
+resolution_lvsALL <- 'broad'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 7.5, height = 5.5)
+
+###############  Fine and broad resolution cell type markers  ##################
+
+## Compare MeanRatio for fine cell types vs 1vsALL logFC for the respective broad cell types
+region <- 'amygdala'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'broad'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 10.5, height = 5.5)
+
+## Compare 1vsALL logFC for fine cell types vs MeanRatio for the respective broad cell types
+region <- 'amygdala'
+resolution_MR <- 'broad'
+resolution_lvsALL <- 'fine'
+p <- compare_markers(region, resolution_MR, resolution_lvsALL)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '.pdf'), width = 10.5, height = 5.5)
 
 
 
