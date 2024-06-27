@@ -264,6 +264,8 @@ for (cell_type in cell_types){
 # [1] "Range of ratios of marker genes for Human_VIP ABI3BP: 0.98 - 3.2"
 # [1] "Range of ratios of marker genes for Human_VIP NDNF: 0.98 - 9.6"
 
+## Subset to markers with ratio>1
+MeanRatio_top100_fine_amy_genes <- subset(MeanRatio_top100_fine_amy_genes, ratio>1)
 
 ## Marker genes per cell type and obtain rat IDs
 MeanRatio_top100_fine_amyg_ratIDs <- list()
@@ -339,7 +341,7 @@ for (cell_type in cell_types){
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ####################  Broad resolution cell type markers  ######################
-## (DEGs (FDR<0.05) based on the enrichment model for one cell type vs the rest were taken as markers)
+## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
 
 lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
 lvsALL_broad_hab_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
@@ -356,7 +358,8 @@ for (cell_type in cell_types){
     ## Cell type data
     cell_type_stats <- lvsALL_broad_genes_enrich_stats[,  c(paste0(c('t_stat_', 'p_value_', 'fdr_', 'logFC_'), cell_type), 'gene')]
     ## DEGs symbols
-    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05)$gene
+    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05  &
+                                              eval(parse_expr(paste0('logFC_', cell_type)))>0)$gene
     print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
 
     ## Rat orthologs
@@ -368,22 +371,22 @@ for (cell_type in cell_types){
     lvsALL_broad_hab_ratIDs[[cell_type]] <- markers_rat_IDs
 }
 
-# [1] "Number of Astrocyte human DEGs: 763"
-# [1] "Number of Astrocyte marker genes in rat: 485"
-# [1] "Number of Endo human DEGs: 5125"
-# [1] "Number of Endo marker genes in rat: 3884"
-# [1] "Number of Excit.Thal human DEGs: 322"
-# [1] "Number of Excit.Thal marker genes in rat: 173"
-# [1] "Number of Inhib.Thal human DEGs: 512"
-# [1] "Number of Inhib.Thal marker genes in rat: 316"
-# [1] "Number of LHb human DEGs: 25"
-# [1] "Number of LHb marker genes in rat: 11"
-# [1] "Number of MHb human DEGs: 127"
-# [1] "Number of MHb marker genes in rat: 71"
-# [1] "Number of Microglia human DEGs: 5959"
-# [1] "Number of Microglia marker genes in rat: 4717"
-# [1] "Number of Oligo human DEGs: 269"
-# [1] "Number of Oligo marker genes in rat: 181"
+# [1] "Number of Astrocyte human DEGs: 669"
+# [1] "Number of Astrocyte marker genes in rat: 409"
+# [1] "Number of Endo human DEGs: 427"
+# [1] "Number of Endo marker genes in rat: 364"
+# [1] "Number of Excit.Thal human DEGs: 304"
+# [1] "Number of Excit.Thal marker genes in rat: 156"
+# [1] "Number of Inhib.Thal human DEGs: 443"
+# [1] "Number of Inhib.Thal marker genes in rat: 251"
+# [1] "Number of LHb human DEGs: 22"
+# [1] "Number of LHb marker genes in rat: 8"
+# [1] "Number of MHb human DEGs: 77"
+# [1] "Number of MHb marker genes in rat: 30"
+# [1] "Number of Microglia human DEGs: 994"
+# [1] "Number of Microglia marker genes in rat: 864"
+# [1] "Number of Oligo human DEGs: 252"
+# [1] "Number of Oligo marker genes in rat: 164"
 # [1] "Number of OPC human DEGs: 196"
 # [1] "Number of OPC marker genes in rat: 118"
 
@@ -391,7 +394,7 @@ for (cell_type in cell_types){
 ####################  Fine resolution cell type markers  #######################
 
 lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_fine_MarkerGenes_hab.Rdata'))))
-lvsALL_fine_hab_genes <- llvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
+lvsALL_fine_hab_genes <- lvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_fine_genes_enrich_stats)[grep('fdr', colnames(lvsALL_fine_genes_enrich_stats))])
@@ -405,7 +408,8 @@ for (cell_type in cell_types){
     ## Cell type data
     cell_type_stats <- lvsALL_fine_genes_enrich_stats[,  c(paste0(c('t_stat_', 'p_value_', 'fdr_', 'logFC_'), cell_type), 'gene')]
     ## DEGs symbols
-    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05)$gene
+    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05  &
+                                              eval(parse_expr(paste0('logFC_', cell_type)))>0)$gene
     print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
 
     ## Rat orthologs (if DEGs exist)
@@ -419,37 +423,37 @@ for (cell_type in cell_types){
     }
 }
 
-# [1] "Number of Astrocyte human DEGs: 1448"
-# [1] "Number of Astrocyte marker genes in rat: 1008"
-# [1] "Number of Endo human DEGs: 6602"
-# [1] "Number of Endo marker genes in rat: 4961"
-# [1] "Number of Excit.Thal human DEGs: 552"
-# [1] "Number of Excit.Thal marker genes in rat: 322"
-# [1] "Number of Inhib.Thal human DEGs: 1223"
-# [1] "Number of Inhib.Thal marker genes in rat: 821"
-# [1] "Number of LHb.1 human DEGs: 25"
-# [1] "Number of LHb.1 marker genes in rat: 10"
-# [1] "Number of LHb.2 human DEGs: 25"
-# [1] "Number of LHb.2 marker genes in rat: 15"
-# [1] "Number of LHb.3 human DEGs: 11"
-# [1] "Number of LHb.3 marker genes in rat: 4"
+# [1] "Number of Astrocyte human DEGs: 1193"
+# [1] "Number of Astrocyte marker genes in rat: 801"
+# [1] "Number of Endo human DEGs: 788"
+# [1] "Number of Endo marker genes in rat: 621"
+# [1] "Number of Excit.Thal human DEGs: 523"
+# [1] "Number of Excit.Thal marker genes in rat: 296"
+# [1] "Number of Inhib.Thal human DEGs: 1066"
+# [1] "Number of Inhib.Thal marker genes in rat: 693"
+# [1] "Number of LHb.1 human DEGs: 22"
+# [1] "Number of LHb.1 marker genes in rat: 7"
+# [1] "Number of LHb.2 human DEGs: 20"
+# [1] "Number of LHb.2 marker genes in rat: 11"
+# [1] "Number of LHb.3 human DEGs: 8"
+# [1] "Number of LHb.3 marker genes in rat: 1"
 # [1] "Number of LHb.4 human DEGs: 0"
-# [1] "Number of LHb.5 human DEGs: 2"
+# [1] "Number of LHb.5 human DEGs: 1"
 # [1] "Number of LHb.5 marker genes in rat: 1"
-# [1] "Number of LHb.6 human DEGs: 17"
-# [1] "Number of LHb.6 marker genes in rat: 7"
+# [1] "Number of LHb.6 human DEGs: 15"
+# [1] "Number of LHb.6 marker genes in rat: 6"
 # [1] "Number of LHb.7 human DEGs: 5"
 # [1] "Number of LHb.7 marker genes in rat: 2"
-# [1] "Number of MHb.1 human DEGs: 64"
-# [1] "Number of MHb.1 marker genes in rat: 29"
-# [1] "Number of MHb.2 human DEGs: 131"
-# [1] "Number of MHb.2 marker genes in rat: 94"
-# [1] "Number of MHb.3 human DEGs: 308"
-# [1] "Number of MHb.3 marker genes in rat: 271"
-# [1] "Number of Microglia human DEGs: 7440"
-# [1] "Number of Microglia marker genes in rat: 5888"
-# [1] "Number of Oligo human DEGs: 668"
-# [1] "Number of Oligo marker genes in rat: 460"
+# [1] "Number of MHb.1 human DEGs: 54"
+# [1] "Number of MHb.1 marker genes in rat: 20"
+# [1] "Number of MHb.2 human DEGs: 42"
+# [1] "Number of MHb.2 marker genes in rat: 10"
+# [1] "Number of MHb.3 human DEGs: 31"
+# [1] "Number of MHb.3 marker genes in rat: 6"
+# [1] "Number of Microglia human DEGs: 1757"
+# [1] "Number of Microglia marker genes in rat: 1499"
+# [1] "Number of Oligo human DEGs: 578"
+# [1] "Number of Oligo marker genes in rat: 387"
 # [1] "Number of OPC human DEGs: 440"
 # [1] "Number of OPC marker genes in rat: 295"
 
@@ -478,7 +482,7 @@ for (cell_type in cell_types){
     ## Cell type data
     cell_type_stats <- subset(lvsALL_broad_genes, cellType.target==cell_type)
     ## DEGs
-    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05))$gene
+    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05) & logFC>0)$gene
     print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
 
     ## Rat orthologs
@@ -530,7 +534,7 @@ for (cell_type in cell_types){
     ## Cell type data
     cell_type_stats <- subset(lvsALL_fine_genes, cellType.target==cell_type)
     ## DEGs
-    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05))$gene
+    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05) & logFC>0)$gene
     print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
 
     ## Rat orthologs
@@ -635,9 +639,11 @@ for (cell_type in cell_types){
 
 
 
-## -----------------------------------------------------------------------------
-##              1.1 Compare MeanRatio vs 1vsALL marker genes
-## -----------------------------------------------------------------------------
+
+
+############################################################################
+##             2. Compare MeanRatio vs 1vsALL marker genes
+############################################################################
 
 compare_markers <- function(region, resolution_MR, resolution_lvsALL){
 
@@ -653,6 +659,9 @@ compare_markers <- function(region, resolution_MR, resolution_lvsALL){
     ## Markers
     MR_markers <- eval(parse_expr(paste('MeanRatio', top_n, resolution_MR, region_name, 'genes', sep='_')))
     lvsALL_markers <- eval(parse_expr(paste('lvsALL', resolution_lvsALL, region_name, 'genes', sep='_')))
+
+    ## Confirm all MeanRatios are >1
+    stopifnot(length(which(MR_markers$ratio<=1))==0)
 
     ## Define cell types per set
     if(region == 'habenula'){
@@ -735,7 +744,9 @@ compare_markers <- function(region, resolution_MR, resolution_lvsALL){
             data[, paste0('fdr_', cell_type)] <- NULL
 
             ## Add if gene is MeanRatio marker and also lvsALL marker
-            data$lvsALL_marker <- apply(data, 1, function(x){if(as.numeric(x['FDR'])<0.05 & as.numeric(x['ratio'])>1){TRUE}
+            data$lvsALL_marker <- apply(data, 1, function(x){if(as.numeric(x['FDR'])<0.05 &
+                                                                as.numeric(x['logFC'])>0 &
+                                                                as.numeric(x['ratio'])>1){TRUE}
                                                              else{FALSE}})
         }
 
@@ -760,8 +771,10 @@ compare_markers <- function(region, resolution_MR, resolution_lvsALL){
                 print(length(which(data_complete$cellType.target_MR != data_complete$cellType.target)))
 
                 ## Define if genes are real markers (ratio >1 and FDR <0.05)
-                data_complete$lvsALL_marker <- apply(data_complete, 1, function(x){if(x['log.FDR']<log(0.05) & x['ratio']>1){TRUE}
-                    else{FALSE}})
+                data_complete$lvsALL_marker <- apply(data_complete, 1, function(x){if(x['log.FDR']<log(0.05) &
+                                                                                      x['logFC']>0 &
+                                                                                      x['ratio']>1){TRUE}
+                                                                                   else{FALSE}})
                 data <- data_complete
             }
 
@@ -778,8 +791,10 @@ compare_markers <- function(region, resolution_MR, resolution_lvsALL){
                 print(length(which(data$cellType.target_MR != data$cellType.target)))
 
                 ## Define if genes are real markers (ratio >1 and FDR <0.05)
-                data$lvsALL_marker <- apply(data, 1, function(x){if(x['log.FDR']<log(0.05) & x['ratio']>1){TRUE}
-                    else{FALSE}})
+                data$lvsALL_marker <- apply(data, 1, function(x){if(x['log.FDR']<log(0.05) &
+                                                                    x['logFC']>0 &
+                                                                    x['ratio']>1){TRUE}
+                                                                 else{FALSE}})
             }
         }
 
@@ -807,9 +822,9 @@ compare_markers <- function(region, resolution_MR, resolution_lvsALL){
 }
 
 
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#                  A)  MeanRatio vs 1vsALL markers in habenula
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## -----------------------------------------------------------------------------
+##                A) MeanRatio vs 1vsALL markers in habenula
+## -----------------------------------------------------------------------------
 
 ####################  Fine resolution cell type markers  #######################
 
@@ -832,9 +847,9 @@ ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_
                          resolution_lvsALL, '_', region, '.pdf'), width = 7.5, height = 5.5)
 
 
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#                  B)  MeanRatio vs 1vsALL markers in amygdala
-## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## -----------------------------------------------------------------------------
+##                B) MeanRatio vs 1vsALL markers in amygdala
+## -----------------------------------------------------------------------------
 
 ####################  Fine resolution cell type markers  #######################
 
@@ -879,7 +894,7 @@ ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_
 
 
 ############################################################################
-##             2. Cell type enrichment analysis for rat DEGs
+##             3. Cell type enrichment analysis for rat DEGs
 ############################################################################
 
 ## Enrichment analysis

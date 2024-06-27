@@ -388,7 +388,7 @@ cell types in human amygdala.</li>
 </ul>
 <p><strong><em>Note</em></strong>: only genes with mean expression
 ratios &gt;1 were considered markers as these are, by definition, more
-expressed in the target cell type.</p></li>
+expressed in the target cell type than in any other cell type.</p></li>
 <li><p><em>B) 1vsALL-based cell type marker genes in human</em></p>
 <ul>
 <li><ol style="list-style-type: lower-roman">
@@ -396,18 +396,20 @@ expressed in the target cell type.</p></li>
 </ol>
 <ul>
 <li>Broad resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05) for broad cell types in human epithalamus.</li>
+FDR&lt;0.05 and logFC&gt;0) for broad cell types in human
+epithalamus.</li>
 <li>Fine resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05) for fine cell types in human epithalamus.</li>
+FDR&lt;0.05 and logFC&gt;0) for fine cell types in human
+epithalamus.</li>
 </ul></li>
 <li><ol start="2" style="list-style-type: lower-roman">
 <li>Markers for cell types in human amygdala:</li>
 </ol>
 <ul>
 <li>Broad resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05) for broad cell types in human amygdala.</li>
+FDR&lt;0.05 and logFC&gt;0) for broad cell types in human amygdala.</li>
 <li>Fine resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05) for fine cell types in human amygdala.</li>
+FDR&lt;0.05 and logFC&gt;0) for fine cell types in human amygdala.</li>
 </ul></li>
 </ul></li>
 <li><p><a href="01_enrich_DEGs_vs_cell_type_markers.R"><code>01_enrich_DEGs_vs_cell_type_markers.R</code></a>:</p>
@@ -415,11 +417,13 @@ FDR&lt;0.05) for fine cell types in human amygdala.</li>
 <li><p><strong>1. Obtain sets of orthologs of human marker genes in
 rat</strong>: for the human marker genes in each of the sets previously
 described, their rat orthologs were obtained using ENSEMBL under the
-GRCh38 human genome version.</p>
-<ul>
-<li><em>1.1 Compare MeanRatio vs 1vsALL marker genes</em>:</li>
-</ul></li>
-<li><p><strong>2. Cell type enrichment analysis for rat DEGs</strong>:
+GRCh38 human genome version.</p></li>
+<li><p><strong>2. Compare <em>MeanRatio</em> vs <em>1vsALL</em> marker
+genes</strong>: the ratios of <em>MeanRatio</em> marker genes for broad
+and fine cell types were compared against their <em>1vsALL</em> logFCs
+for broad and fine cell types, identifying common markers with both
+methods, for both habenula and amygdala markers.</p></li>
+<li><p><strong>3. Cell type enrichment analysis for rat DEGs</strong>:
 all, up-, and down-regulated rat habenula and amygdala DEGs were
 separately assessed for their enrichment among rat genes that have at
 least one human ortholog that is a marker gene for a given cell type in
