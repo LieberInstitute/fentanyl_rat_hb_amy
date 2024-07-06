@@ -40,9 +40,11 @@ Analysis of overrepresentation of habenula and amygdala DEGs for substance among
 See more details in [06_GO_KEGG](06_GO_KEGG/).
 
 
-## 07. Multi-marker analysis of genomic annotation (MAGMA)
+## 07. Multi-marker Analysis of GenoMic Annotation (MAGMA)
 
+MAGMA analysis performed to find associations between the sets of DEGs with multiple substance use disorders (OUD and more broadly SUD) and mental disorders (MDD, panic, and schizophrenia) based on publicly available GWAS data. 
 
+See more details in [07_MAGMA](07_MAGMA/).
 
 ## 08. Gene Set Enrichment Analysis (GSEA)
 
