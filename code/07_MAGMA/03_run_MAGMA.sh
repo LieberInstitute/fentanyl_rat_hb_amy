@@ -6,7 +6,7 @@
 #SBATCH --mem=25GB
 
 ################################################################################
-##                                4. Run MAGMA
+##                                3. Run MAGMA
 ################################################################################
 
 echo "**** MAGMA running ****"
@@ -31,7 +31,7 @@ module list
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (with GRCh37 (h19) human genome reference build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
@@ -44,7 +44,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA
@@ -60,7 +60,7 @@ date
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/MDD_2019/MDD_PGC_UKB_depression_genome-wide"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (GRCh37 (h19) human build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
@@ -72,7 +72,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/MDD_2019/MDD_2019_MAGMA
@@ -88,7 +88,7 @@ date
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/Panic/Panic_PGC_panic2019"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/Panic/Panic_PGC_panic2019"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (GRCh37 (h19) human build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
@@ -100,7 +100,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/Panic/Panic_MAGMA
@@ -116,7 +116,7 @@ date
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/SUD/SUD_DEPvEXP_EUR.noAF"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/SUD/SUD_DEPvEXP_EUR.noAF"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (GRCh37 (h19) human build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38-ensembl93_to_hg19-lifted_30k-expressing-GENES.gene.loc\
@@ -128,7 +128,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/SUD/SUD_MAGMA
@@ -144,7 +144,7 @@ date
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/MDD/MDD.phs001672.pha005122"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (with GRCh38 human genome reference build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38_Ensembl-93_GENES_chr-x-y-mt.gene.loc\
@@ -156,7 +156,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/MDD/MDD_MAGMA
@@ -172,7 +172,7 @@ date
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/OUD/OUD.phs001672.pha004954"
 OUTPUT_PREFIX="../../processed-data/07_MAGMA/Output/OUD/OUD.phs001672.pha004954"
 
-## Step 1: Annotate SNPs onto genes 
+## Step 1: Annotate SNPs onto genes
 ## (with GRCh38 human genome reference build)
 magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 	--gene-loc ../../processed-data/07_MAGMA/geneloc/GRCh38_Ensembl-93_GENES_chr-x-y-mt.gene.loc\
@@ -184,7 +184,7 @@ magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Laye
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
-## Step 3 Gene Set Analysis 
+## Step 3 Gene Set Analysis
 magma --gene-results $OUTPUT_PREFIX.genes.raw\
 	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set\
 	--out ../../processed-data/07_MAGMA/Output/OUD/OUD_MAGMA

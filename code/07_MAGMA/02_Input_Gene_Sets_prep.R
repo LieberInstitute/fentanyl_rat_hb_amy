@@ -77,6 +77,7 @@ up_DEGs_amygdala_human_orthologs <- human_orthologs(de_genes_list = up_de_genes_
 up_DEGs_amygdala_human_orthologs <- up_DEGs_amygdala_human_orthologs[up_DEGs_amygdala_human_orthologs!='']
 up_DEGs_amygdala_human_orthologs <- up_DEGs_amygdala_human_orthologs[-which(duplicated(up_DEGs_amygdala_human_orthologs))]
 which(duplicated(up_DEGs_amygdala_human_orthologs))
+# integer(0)
 
 ##############  Downregulated DEGs  ##############
 down_de_genes_amygdala <- subset(de_genes_amygdala, logFC<0)
@@ -84,6 +85,7 @@ down_DEGs_amygdala_human_orthologs <- human_orthologs(de_genes_list = down_de_ge
 down_DEGs_amygdala_human_orthologs <- down_DEGs_amygdala_human_orthologs[down_DEGs_amygdala_human_orthologs!='']
 down_DEGs_amygdala_human_orthologs <- down_DEGs_amygdala_human_orthologs[-which(duplicated(down_DEGs_amygdala_human_orthologs))]
 which(duplicated(down_DEGs_amygdala_human_orthologs))
+# integer(0)
 
 
 ## Bind

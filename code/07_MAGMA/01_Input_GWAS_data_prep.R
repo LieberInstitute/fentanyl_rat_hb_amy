@@ -69,7 +69,7 @@ head(snploc_scz)
 # 5 rs28842593   8 103044620
 # 6  rs7014597   8 104152280
 
-## Confirm no repearted variant IDs
+## Confirm no repeated variant IDs
 which(duplicated(snploc_scz$ID))
 # integer(0)
 
