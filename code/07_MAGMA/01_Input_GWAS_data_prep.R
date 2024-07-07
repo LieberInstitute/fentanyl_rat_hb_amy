@@ -586,7 +586,7 @@ write.table(snp_pval_OUD, file=here('processed-data/07_MAGMA/Input_GWAS_data/OUD
 
 options(width = 120)
 session_info()
-#                    4.0.5     2022-11-15 [2] CRAN (R 4.3.1)
+# biomaRt          * 2.61.1    2024-06-12 [1] Bioconductor 3.20 (R 4.4.1)
 # bit64              4.0.5     2020-08-30 [2] CRAN (R 4.3.1)
 # bitops             1.0-7     2021-04-24 [2] CRAN (R 4.3.1)
 # blob               1.2.4     2023-03-17 [2] CRAN (R 4.3.1)

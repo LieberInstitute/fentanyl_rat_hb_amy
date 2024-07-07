@@ -11,6 +11,7 @@ library(sessioninfo)
 
 load(here('processed-data/05_DEA/de_genes_Substance_habenula.Rdata'), verbose = TRUE)
 load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = TRUE)
+load(here( here("dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data", "13_MAGMA", "gene_sets", "markerSets_broad_combo_ENSEMBL_FDR05.txt")), verbose=TRUE)
 
 
 ## Function to get orthologs genes of rat genes in human
@@ -22,11 +23,16 @@ human_orthologs <- function(de_genes_list){
     human_rat_ids <- getBM(values  = de_genes_list,
                            mart = mart,
                            attributes = c("ensembl_gene_id", "hsapiens_homolog_ensembl_gene", "hsapiens_homolog_associated_gene_name"),
-                           filters = "ensembl_gene_id")
+                           filters = "ensembl_gene_id", )
     return(human_rat_ids)
 }
 
-load(here( here("dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data", "13_MAGMA", "gene_sets", "markerSets_broad_combo_ENSEMBL_FDR05.txt")), verbose=TRUE)
+## Confirm rat genome version used
+ensembl <- useMart("ensembl")
+subset(listDatasets(ensembl), dataset=="rnorvegicus_gene_ensembl")
+#                      dataset            description     version
+#     rnorvegicus_gene_ensembl  Rat genes (mRatBN7.2)   mRatBN7.2
+
 
 
 ###################

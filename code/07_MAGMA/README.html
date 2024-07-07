@@ -354,9 +354,9 @@ display: none;
 
 <div id="multi-marker-analysis-of-genomic-annotation-magma" class="section level1">
 <h1>Multi-marker Analysis of GenoMic Annotation (MAGMA)</h1>
-<p>The association between human orthologs of rat habenula and amygdala
-DEGs with SUD and psychiatric disorders was assessed based on the
-association significance of human genes according to their annotated
+<p>The association between sets of human orthologs of rat habenula and
+amygdala DEGs with SUD and psychiatric disorders was assessed based on
+the association significance of human genes according to their annotated
 SNPs.</p>
 <div id="gwas-input-data-preparation" class="section level2">
 <h2>1. GWAS input data preparation</h2>
@@ -369,7 +369,7 @@ from 6 different studies previously formatted and prepared for MAGMA by
 Pilot LIBD project</a> were explored and further processed to use as
 input for MAGMA analysis:</p>
 <ul>
-<li><strong>GWAS SCZ data</strong>:</li>
+<li><strong>GWAS SCZ data</strong>: TODO</li>
 <li><strong>GWAS MDD data</strong>:</li>
 <li><strong>GWAS Panic data</strong>:</li>
 <li><strong>GWAS SUD data</strong>:</li>
@@ -390,9 +390,9 @@ from the analysis.</p></li>
 <ul>
 <li><a href="02_Input_Gene_Sets_prep.R"><code>02_Input_Gene_Sets_prep.R</code></a>:
 the gene sets of human orthologs of rat habenula and amygdala DEGs (all,
-up-, and down-regulated) were obtained using <a href="http://www.ensembl.org/info/data/biomart/index.html">Ensembl
-BioMart</a> and their Ensembl IDs were used for subsequent MAGMA gene
-set analysis (<code>gene_sets.txt</code> file).</li>
+up-, and down-regulated) were obtained using <a href="https://bioconductor.org/packages/release/bioc/html/biomaRt.html">Ensembl
+<em>biomaRt</em></a> and their Ensembl IDs were used for MAGMA gene set
+analysis (<code>gene_sets.txt</code> file).</li>
 </ul>
 </div>
 <div id="run-magma" class="section level2">
@@ -425,18 +425,19 @@ test-stats (<strong>mean Z SNP statistic</strong> default method) and
 then this <em>p</em>-value is converted into a <em>z</em>-score (<span class="math inline">\(z_g\)</span>).<br />
 As reference dataset the 1000 Genomes European panel data were used to
 obtain the SNP correlation matrix <span class="math inline">\(R\)</span>
-as most of the GWASes were conducted in Europeans. The sample size from
-each study is also provided (N). The output files
+as all/most individuals analyzed in the GWASes were Europeans. The
+sample size from each study is also provided (N). The output files
 <code>.genes.out</code> and <code>.genes.raw</code> have the gene-level
 association results.</p></li>
 <li><p><strong>Step 3: Gene Set Analysis</strong>: the human orthologs
 of rat DEGs in each gene set (in <code>gene_sets.txt</code>) are
 assessed for their joint association with the phenotype based on the
-<span class="math inline">\(z_g\)</span> of each gene in the set (in
-<code>.genes.raw</code>). Specifically, the default <strong>competitive
-analysis</strong> was implemented to analyze if the genes in each set
-were more associated than the rest of genes with SNPs. The output file
-<code>.gsa.out</code> contains the gene set results.</p></li>
+<span class="math inline">\(z_g\)</span> of each gene inside/outside the
+set (in <code>.genes.raw</code>). Specifically, the default
+<strong>competitive analysis</strong> was implemented to analyze if the
+genes in each set were more associated than the rest of genes with SNPs.
+The output file <code>.gsa.out</code> contains the gene set
+results.</p></li>
 </ul></li>
 </ul>
 </div>
