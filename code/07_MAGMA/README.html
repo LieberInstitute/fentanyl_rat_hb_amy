@@ -361,29 +361,28 @@ SNPs.</p>
 <div id="gwas-input-data-preparation" class="section level2">
 <h2>1. GWAS input data preparation</h2>
 <ul>
-<li><a href="01_Input_GWAS_data_prep.R"><code>01_Input_GWAS_data_prep.R</code></a>:
-<ul>
-<li><p><strong>1. GWAS input data preparation</strong>: GWAS results
-from 6 different studies previously formatted and prepared for MAGMA by
-<a href="https://lahuuki.github.io">Louise Huuki-Myers</a> in the <a href="https://github.com/LieberInstitute/Habenula_Pilot/tree/master">Habenula
+<li><p><a href="01_Input_GWAS_data_prep.R"><code>01_Input_GWAS_data_prep.R</code></a>:
+GWAS results from 6 different studies previously formatted and prepared
+for MAGMA by <a href="https://lahuuki.github.io">Louise Huuki-Myers</a>
+in the <a href="https://github.com/LieberInstitute/Habenula_Pilot/tree/master">Habenula
 Pilot LIBD project</a> were explored and further processed to use as
 input for MAGMA analysis:</p>
 <ul>
 <li><strong>Schizophrenia (SCZ) GWAS</strong>:
 <ul>
-<li>Trubetskoy et al., Nature, 2022 (doi: <a href="https://doi.org/10.1038/s41586-022-04434-5">10.1038/s41586-022-04434-5</a>).</li>
+<li>Trubetskoy, V. et al., <em>Nature</em>, 2022 (doi: <a href="https://doi.org/10.1038/s41586-022-04434-5">10.1038/s41586-022-04434-5</a>).</li>
 <li>This was a two-stage GWAS of up to 76,755 SCZ cases and 243,649
 controls from multiple cohorts. 74.3% of the individuals in the primary
 GWAS (175,799: 74,776 cases and 101,023 controls) were EUR. Sample size
 (N) used was the one provided in the dataset.</li>
 <li>In the primary GWAS a total of 7,585,078 SNPs were analyzed, of
-which 313 independent common SNPs were genome-wide significant, spanning
-263 loci. In the data 7,659,767 total SNPs are present.</li>
+which 313 independent common SNPs were genome-wide significant (GWS)
+spanning 263 loci. In the data 7,659,767 total SNPs are present.</li>
 <li>GRCh37 genome build used.</li>
 </ul></li>
 <li><strong>Panic Disorder (PD) GWAS</strong>:
 <ul>
-<li>Forstner, A. J., et al., Molecular Psychiatry, 2019 (doi: <a href="https://doi.org/10.1038/s41380-019-0590-2">10.1038/s41380-019-0590-2</a>).</li>
+<li>Forstner, A. J. et al., <em>Molecular Psychiatry</em>, 2019 (doi: <a href="https://doi.org/10.1038/s41380-019-0590-2">10.1038/s41380-019-0590-2</a>).</li>
 <li>The GWAS discovery meta-analysis comprised 2,248 PD patients and
 7,992 controls, all of European ancestry. 333 were excluded after QC,
 leading to N=9,907 total analyzed individuals: 2,147 PD patients and
@@ -395,16 +394,18 @@ detected.</li>
 </ul></li>
 <li><strong>Opioid Use Disorder (OUD) GWAS</strong>:
 <ul>
-<li>Deak, J. D., et al., Molecular Psychiatry, 2022 (doi: <a href="https://doi.org/10.1038/s41380-022-01709-1">10.1038/s41380-022-01709-1</a>).</li>
+<li>Deak, J. D. et al., <em>Molecular Psychiatry</em>, 2022 (doi: <a href="https://doi.org/10.1038/s41380-022-01709-1">10.1038/s41380-022-01709-1</a>).</li>
 <li>A total of N=639,063 individuals were analyzed: 20,686 cases and
 618,377 controls. 554,186 (&gt;86%) were EUR and the rest AFR.</li>
 <li>Data available for 1,322 SNPs. 3 GWS variants in EUR, none in
 AFR.</li>
-<li>Genome Build GRCh38 used here.</li>
+<li>Genome Build GRCh38 used here.<br />
+<strong><em>Note</em></strong>: N=1,154,267 was used in the first MAGMA
+run (current plots to 07-15-24).</li>
 </ul></li>
 <li><strong>Substance Use Disorder (SUD) GWAS</strong>:
 <ul>
-<li>Hatoum, A. S., et al., Nature Mental Health, 2023 (doi: <a href="https://doi.org/10.1038/s44220-023-00034-y">10.1038/s44220-023-00034-y</a>).</li>
+<li>Hatoum, A. S. et al., <em>Nature Mental Health</em>, 2023 (doi: <a href="https://doi.org/10.1038/s44220-023-00034-y">10.1038/s44220-023-00034-y</a>).</li>
 <li>Sample of 1,025,550 EUR and 92,630 AFR individuals. N used were the
 ones provided in the dataset.</li>
 <li>Data available for 4,187,212 SNPs. 19 independent SNPs were GWS for
@@ -413,7 +414,7 @@ general addition; other SNPs for specific substances.</li>
 </ul></li>
 <li><strong>Major Depressive Disorder (MDD) GWAS I</strong>:
 <ul>
-<li>Howard, D. M., et al., Nature neuroscience, 2019 (doi: <a href="https://doi.org/10.1038/s41593-018-0326-7">10.1038/s41593-018-0326-7</a>).</li>
+<li>Howard, D. M. et al., <em>Nature neuroscience</em>, 2019 (doi: <a href="https://doi.org/10.1038/s41593-018-0326-7">10.1038/s41593-018-0326-7</a>).</li>
 <li>N=807,553 individuals (246,363 cases and 561,190 controls) from
 three previous studies of depression were used (one on UK Biobank
 individuals, the second from 23andMe, and the third using
@@ -424,13 +425,12 @@ independent genetic variants in 101 loci were GWS.</li>
 </ul></li>
 <li><strong>Major Depressive Disorder GWAS II</strong>:
 <ul>
-<li>Levey, D. F., et al., Nature neuroscience, 2021 (doi: <a href="https://doi.org/10.1038/s41593-021-00860-2">10.1038/s41593-021-00860-2</a>).</li>
+<li>Levey, D. F. et al., <em>Nature neuroscience</em>, 2021 (doi: <a href="https://doi.org/10.1038/s41593-021-00860-2">10.1038/s41593-021-00860-2</a>).</li>
 <li>N=1,154,267 EUR individuals (340,591 cases; primary analysis) and
 59,600 AFR individuals (25,843 cases).</li>
 <li>Data for 11,700 SNPs. 178 genetic risk loci and 223 independently
 significant SNPs were identified.</li>
 <li>GRCh38 genome build used here.</li>
-</ul></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -447,8 +447,8 @@ from the analysis.</p>
 <li><a href="02_Input_Gene_Sets_prep.R"><code>02_Input_Gene_Sets_prep.R</code></a>:
 the gene sets of human orthologs of rat habenula and amygdala DEGs (all,
 up-, and down-regulated) were obtained using <a href="https://bioconductor.org/packages/release/bioc/html/biomaRt.html">Ensembl
-<em>biomaRt</em></a> and their Ensembl IDs were used for MAGMA gene set
-analysis (<code>gene_sets.txt</code> file).</li>
+<em>biomaRt</em></a> and their Ensembl IDs (<code>gene_sets.txt</code>
+file) were used for MAGMA gene set analysis.</li>
 </ul>
 </div>
 <div id="run-magma" class="section level2">
@@ -459,17 +459,17 @@ script to run MAGMA on SNP <em>p</em>-values for each one of the
 previous GWASes:</p>
 <ul>
 <li><p><strong>Step 1: Annotate SNPs onto genes</strong>: the human gene
-data in the GRCh37/GRCh38* human genome assembly in the
-<code>.gene.loc</code> file were used for the annotation step in which
+data in either the GRCh37/GRCh38* human genome assembly (in the
+<code>.gene.loc</code> file) were used for the annotation step in which
 SNPs from each GWAS are mapped onto genes according to their positions
 in the same genome build (in the <code>.snploc</code> file). The output
 is the <code>.annot</code> file containing the list of gene-wise
 SNPs.</p>
-<p>* GRCh37 (h19) human genome reference build was used for the SCZ
-(Trubetskoy et al., 2022), MDD (Howard et al., 2019), Panic (Forstner et
-al., 2019), and SUD (Hatoum et al., 2023) SNPs, whereas GRCh38 (h38)
-build was used for the MDD (Levey et al., 2021) and OUD (Deak et al.,
-2022) SNPs.<br />
+<p><span style="color: gray;  font-size: 1"> * GRCh37 (h19) human genome
+reference build was used for the SCZ (Trubetskoy et al., 2022), MDD
+(Howard et al., 2019), Panic (Forstner et al., 2019), and SUD (Hatoum et
+al., 2023) SNPs, whereas GRCh38 (h38) build was used for the MDD (Levey
+et al., 2021) and OUD (Deak et al., 2022) SNPs. </span><br />
 </p></li>
 <li><p><strong>Step 2: Gene Analysis - SNP <em>p</em>-values (model SNP
 wise-mean)</strong>: the SNP <em>p</em>-values (in the
@@ -492,9 +492,9 @@ assessed for their joint association with the phenotype based on the
 <span class="math inline">\(z_g\)</span> of each gene inside/outside the
 set (in <code>.genes.raw</code>). Specifically, the default
 <strong>competitive analysis</strong> was implemented to analyze if the
-genes in each set were more associated than the rest of genes with SNPs.
-The output file <code>.gsa.out</code> contains the gene set
-results.</p></li>
+genes in each set were more associated than the rest of genes (that also
+have mapped SNPs). The output file <code>.gsa.out</code> contains the
+gene set results.</p></li>
 </ul></li>
 </ul>
 </div>
@@ -502,8 +502,8 @@ results.</p></li>
 <h2>4. MAGMA results visualization</h2>
 <ul>
 <li><a href="04_Results_visualization.R"><code>04_Results_visualization.R</code></a>:
-the resulting <em>p</em>-values for the Gene Set Analyses in the six
-GWAS were plotted in a heatmap.</li>
+the resulting <em>p</em>-values from the Gene Set Analyses using the six
+GWASes were plotted in a heatmap.</li>
 </ul>
 </div>
 </div>
