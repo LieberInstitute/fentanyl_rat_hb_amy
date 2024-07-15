@@ -459,7 +459,7 @@ write.table(snploc_MDD, file=here('processed-data/07_MAGMA/Input_GWAS_data/MDD/M
 snp_pval_MDD = fread(here("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/13_MAGMA/GWAS/MDD/MDD.phs001672.pha005122.pval"))
 
 dim(snp_pval_MDD)
-# [1] 1700     2
+# [1] 11700     2
 
 head(snp_pval_MDD)
 #          SNP         P
