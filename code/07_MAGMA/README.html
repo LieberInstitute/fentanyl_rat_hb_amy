@@ -369,21 +369,77 @@ from 6 different studies previously formatted and prepared for MAGMA by
 Pilot LIBD project</a> were explored and further processed to use as
 input for MAGMA analysis:</p>
 <ul>
-<li><strong>GWAS SCZ data</strong>: TODO</li>
-<li><strong>GWAS MDD data</strong>:</li>
-<li><strong>GWAS Panic data</strong>:</li>
-<li><strong>GWAS SUD data</strong>:</li>
-<li><strong>GWAS MDD data (2)</strong>:</li>
-<li><strong>GWAS OUD data</strong>:</li>
+<li><strong>Schizophrenia (SCZ) GWAS</strong>:
+<ul>
+<li>Trubetskoy et al., Nature, 2022 (doi: <a href="https://doi.org/10.1038/s41586-022-04434-5">10.1038/s41586-022-04434-5</a>).</li>
+<li>This was a two-stage GWAS of up to 76,755 SCZ cases and 243,649
+controls from multiple cohorts. 74.3% of the individuals in the primary
+GWAS (175,799: 74,776 cases and 101,023 controls) were EUR. Sample size
+(N) used was the one provided in the dataset.</li>
+<li>In the primary GWAS a total of 7,585,078 SNPs were analyzed, of
+which 313 independent common SNPs were genome-wide significant, spanning
+263 loci. In the data 7,659,767 total SNPs are present.</li>
+<li>GRCh37 genome build used.</li>
+</ul></li>
+<li><strong>Panic Disorder (PD) GWAS</strong>:
+<ul>
+<li>Forstner, A. J., et al., Molecular Psychiatry, 2019 (doi: <a href="https://doi.org/10.1038/s41380-019-0590-2">10.1038/s41380-019-0590-2</a>).</li>
+<li>The GWAS discovery meta-analysis comprised 2,248 PD patients and
+7,992 controls, all of European ancestry. 333 were excluded after QC,
+leading to N=9,907 total analyzed individuals: 2,147 PD patients and
+7,760 controls.</li>
+<li>In the data 10,151,300 total SNPs are provided but in the analysis
+only 8,757,275 SNPs that passed QC were included. No significant SNPs
+detected.</li>
+<li>GRCh37 genome build used here.</li>
+</ul></li>
+<li><strong>Opioid Use Disorder (OUD) GWAS</strong>:
+<ul>
+<li>Deak, J. D., et al., Molecular Psychiatry, 2022 (doi: <a href="https://doi.org/10.1038/s41380-022-01709-1">10.1038/s41380-022-01709-1</a>).</li>
+<li>A total of N=639,063 individuals were analyzed: 20,686 cases and
+618,377 controls. 554,186 (&gt;86%) were EUR and the rest AFR.</li>
+<li>Data available for 1,322 SNPs. 3 GWS variants in EUR, none in
+AFR.</li>
+<li>Genome Build GRCh38 used here.</li>
+</ul></li>
+<li><strong>Substance Use Disorder (SUD) GWAS</strong>:
+<ul>
+<li>Hatoum, A. S., et al., Nature Mental Health, 2023 (doi: <a href="https://doi.org/10.1038/s44220-023-00034-y">10.1038/s44220-023-00034-y</a>).</li>
+<li>Sample of 1,025,550 EUR and 92,630 AFR individuals. N used were the
+ones provided in the dataset.</li>
+<li>Data available for 4,187,212 SNPs. 19 independent SNPs were GWS for
+general addition; other SNPs for specific substances.</li>
+<li>GRCh37 genome build used here.</li>
+</ul></li>
+<li><strong>Major Depressive Disorder (MDD) GWAS I</strong>:
+<ul>
+<li>Howard, D. M., et al., Nature neuroscience, 2019 (doi: <a href="https://doi.org/10.1038/s41593-018-0326-7">10.1038/s41593-018-0326-7</a>).</li>
+<li>N=807,553 individuals (246,363 cases and 561,190 controls) from
+three previous studies of depression were used (one on UK Biobank
+individuals, the second from 23andMe, and the third using
+European-ancestry PGC cohorts).</li>
+<li>Data provided for 8,481,694 SNPs but only 8,098,588 were tested. 102
+independent genetic variants in 101 loci were GWS.</li>
+<li>GRCh37 genome build used here.</li>
+</ul></li>
+<li><strong>Major Depressive Disorder GWAS II</strong>:
+<ul>
+<li>Levey, D. F., et al., Nature neuroscience, 2021 (doi: <a href="https://doi.org/10.1038/s41593-021-00860-2">10.1038/s41593-021-00860-2</a>).</li>
+<li>N=1,154,267 EUR individuals (340,591 cases; primary analysis) and
+59,600 AFR individuals (25,843 cases).</li>
+<li>Data for 11,700 SNPs. 178 genetic risk loci and 223 independently
+significant SNPs were identified.</li>
+<li>GRCh38 genome build used here.</li>
+</ul></li>
+</ul></li>
+</ul></li>
 </ul>
 <p>For each GWAS dataset, the <code>.snploc</code> file with the
 position of the SNPs was generated, as well as the <code>.pval</code>
 file containing the <em>p</em>-values of the same SNPs for their
 association with the phenotype.<br />
 <strong><em>Note</em></strong>: SNPs in sexual chromosomes were excluded
-from the analysis.</p></li>
-</ul></li>
-</ul>
+from the analysis.</p>
 </div>
 <div id="input-deg-sets-preparation" class="section level2">
 <h2>2. Input DEG sets preparation</h2>
@@ -410,9 +466,10 @@ in the same genome build (in the <code>.snploc</code> file). The output
 is the <code>.annot</code> file containing the list of gene-wise
 SNPs.</p>
 <p>* GRCh37 (h19) human genome reference build was used for the SCZ
-(Trubetskoy et al., 2022), MDD (2019), Panic (2019), and SUD (Hatoum et
-al., 2023) SNPs, whereas GRCh38 (h38) build was used for the MDD (Levey
-et al., 2021) and OUD (Deak et al., 2022) SNPs.<br />
+(Trubetskoy et al., 2022), MDD (Howard et al., 2019), Panic (Forstner et
+al., 2019), and SUD (Hatoum et al., 2023) SNPs, whereas GRCh38 (h38)
+build was used for the MDD (Levey et al., 2021) and OUD (Deak et al.,
+2022) SNPs.<br />
 </p></li>
 <li><p><strong>Step 2: Gene Analysis - SNP <em>p</em>-values (model SNP
 wise-mean)</strong>: the SNP <em>p</em>-values (in the

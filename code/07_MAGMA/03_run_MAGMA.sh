@@ -54,7 +54,7 @@ date
 
 
 # ------------------------------------------------------------------------------
-#                                 GWAS MDD data
+#                                GWAS MDD data I
 # ------------------------------------------------------------------------------
 
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/MDD_2019/MDD_PGC_UKB_depression_genome-wide"
@@ -138,7 +138,7 @@ date
 
 
 # ------------------------------------------------------------------------------
-#                                 GWAS MDD data
+#                                GWAS MDD data II
 # ------------------------------------------------------------------------------
 
 ANNOT_PREFIX="../../processed-data/07_MAGMA/Input_GWAS_data/MDD/MDD.phs001672.pha005122"
@@ -180,7 +180,7 @@ magma --annotate --snp-loc $ANNOT_PREFIX.snploc\
 
 ## Step 2 Gene Analysis - SNP p-values (model SNPwise-mean)
 magma --bfile /dcs04/lieber/lcolladotor/with10x_LIBD001/HumanPilot/Analysis/Layer_Guesses/MAGMA/g1000_eur\
-	--pval $ANNOT_PREFIX.pval N=1154267\
+	--pval $ANNOT_PREFIX.pval N=639063\
 	--gene-annot $OUTPUT_PREFIX.genes.annot\
 	--out $OUTPUT_PREFIX
 
