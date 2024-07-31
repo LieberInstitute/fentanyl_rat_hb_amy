@@ -1,0 +1,11 @@
+# MEAN_SAMPLE_SIZE = 5692
+# TOTAL_GENES = 24906
+# TEST_DIRECTION = one-sided, positive (set), two-sided (covar)
+# CONDITIONED_INTERNAL = gene size, gene density, sample size, inverse mac, log(gene size), log(gene density), log(sample size), log(inverse mac)
+VARIABLE                TYPE  NGENES         BETA     BETA_STD           SE            P
+All_DEGs_amygdala        SET    2411   -0.0014986  -0.00044314      0.01795      0.53327
+All_DEGs_habenula        SET     372     0.028058    0.0034034     0.043262      0.25832
+Down_DEGs_amygdala       SET     814     0.050215    0.0089286     0.030002     0.047099
+Down_DEGs_habenula       SET     147     0.051234    0.0039245     0.067985      0.22555
+Up_DEGs_amygdala         SET    1599    -0.028345   -0.0069479     0.021576      0.90552
+Up_DEGs_habenula         SET     225      0.01214    0.0011486     0.055747      0.41381

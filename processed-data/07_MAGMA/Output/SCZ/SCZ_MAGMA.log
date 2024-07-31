@@ -1,0 +1,39 @@
+Welcome to MAGMA v1.10 (linux/s)
+Using flags:
+	--gene-results ../../processed-data/07_MAGMA/Output/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.genes.raw
+	--set-annot ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt gene-col=Gene set-col=Set
+	--out ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA
+
+Start time is 23:20:47, Tuesday 30 Jul 2024
+
+Reading file ../../processed-data/07_MAGMA/Output/SCZ/SCZ_PGC3_wave3.european.autosome.public.v3.genes.raw... 
+	28129 genes read from file
+Loading gene-set annotation...
+Reading file ../../processed-data/07_MAGMA/Input_Gene_Sets/gene_sets.txt... 
+	detected 2 variables in file
+	using variable: Gene (gene ID)
+	using variable: Set (set ID)
+	6 gene-set definitions read from file
+	found 6 gene sets containing genes defined in genotype data (containing a total of 2856 unique genes)
+Preparing variables for analysis...
+	truncating Z-scores 3 points below zero or 6 standard deviations above the mean
+	truncating covariate values more than 5 standard deviations from the mean
+	total variables available for analysis: 6 gene sets
+
+Parsing model specifications...
+Inverting gene-gene correlation matrix...
+Performing regression analysis...
+	testing direction: one-sided, positive (sets), two-sided (covar)
+	conditioning on internal variables:
+		gene size, log(gene size)
+		gene density, log(gene density)
+		sample size, log(sample size)
+		inverse mac, log(inverse mac)
+	analysing individual variables
+
+	analysing single-variable models (number of models: 6)
+	writing results to file ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA.gsa.out
+	writing gene information to file ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA.gsa.genes.out
+	writing gene analysis results per significant result (after multiple testing correction, at alpha = 0.05) to file ../../processed-data/07_MAGMA/Output/SCZ/SCZ_MAGMA.gsa.sets.genes.out
+
+End time is 23:21:49, Tuesday 30 Jul 2024 (elapsed: 00:01:02)
