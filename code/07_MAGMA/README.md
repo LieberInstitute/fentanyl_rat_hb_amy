@@ -24,7 +24,6 @@ The association between sets of human orthologs of rat habenula and amygdala DEG
         * A total of N=639,063 individuals were analyzed: 20,686 cases and 618,377 controls. 554,186 (>86%) were EUR and the rest AFR. 
         * Data available for 1,322 SNPs. 3 GWS variants in EUR, none in AFR.
         * Genome Build GRCh38 used here.                                                                                       
-            ***Note***: N=1,154,267 was used in the first MAGMA run (current plots to 07-15-24).
      * **Substance Use Disorder (SUD) GWAS**:
         * Hatoum, A. S. et al., *Nature Mental Health*, 2023 (doi: [10.1038/s44220-023-00034-y](https://doi.org/10.1038/s44220-023-00034-y)).
         * Sample of 1,025,550 EUR and 92,630 AFR individuals. N used were the ones provided in the dataset.

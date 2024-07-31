@@ -106,39 +106,57 @@ options(width = 120)
 session_info()
 # ─ Session info ───────────────────────────────────────────────────────────────
 # setting  value
-# version  R version 4.3.1 Patched (2023-07-19 r84711)
-# os       Rocky Linux 9.2 (Blue Onyx)
-# system   x86_64, linux-gnu
-# ui       X11
+# version  R version 4.4.0 (2024-04-24)
+# os       macOS Monterey 12.5.1
+# system   aarch64, darwin20
+# ui       RStudio
 # language (EN)
 # collate  en_US.UTF-8
 # ctype    en_US.UTF-8
-# tz       US/Eastern
-# date     2024-05-07
-# pandoc   3.1.3 @ /jhpce/shared/community/core/conda_R/4.3/bin/pandoc
+# tz       America/Monterrey
+# date     2024-07-30
+# rstudio  2024.04.2+764 Chocolate Cosmos (desktop)
+# pandoc   3.1.11 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
 #
 # ─ Packages ───────────────────────────────────────────────────────────────────
 # package        * version date (UTC) lib source
-# abind            1.4-5   2016-07-21 [2] CRAN (R 4.3.1)
-# berryFunctions * 1.22.5  2024-02-16 [1] CRAN (R 4.3.1)
-# BiocGenerics     0.46.0  2023-04-25 [2] Bioconductor
-# Cairo            1.6-1   2023-08-18 [2] CRAN (R 4.3.1)
-# circlize         0.4.15  2022-05-10 [2] CRAN (R 4.3.1)
-# cli              3.6.1   2023-03-23 [2] CRAN (R 4.3.1)
-# clue             0.3-64  2023-01-31 [2] CRAN (R 4.3.1)
-# cluster          2.1.4   2022-08-22 [3] CRAN (R 4.3.1)
-# codetools        0.2-19  2023-02-01 [3] CRAN (R 4.3.1)
-# colorspace       2.1-0   2023-01-23 [2] CRAN (R 4.3.1)
-# ComplexHeatmap * 2.16.0  2023-04-25 [2] Bioconductor
-# crayon           1.5.2   2022-09-29 [2] CRAN (R 4.3.1)
-# digest           0.6.33  2023-07-07 [2] CRAN (R 4.3.1)
-# doParallel       1.0.17  2022-02-07 [2] CRAN (R 4.3.1)
-# foreach          1.5.2   2022-02-02 [2] CRAN (R 4.3.1)
-# GetoptLong       1.0.5   2020-12-15 [2] CRAN (R 4.3.1)
-# GlobalOptions    0.1.2   2020-06-10 [2] CRAN (R 4.3.1)
-# here           * 1.0.1   2020-12-13 [2] CRAN (R 4.3.1)
-# IRanges          2.34.1  2023-06-22 [2] Bioconductor
-# iterators        1.0.14  2022-02-05 [2] CRAN (R 4.3.1)
-# magick           2.7.5   2023-08-07 [2] CRAN (R 4.3.1)
-# magrittr         2.0.3   2022-03-30 [2] CRAN (R 4.3.1)
-# matrixStats      1.0.0   2023-06-02 [2] C
+# abind            1.4-5   2016-07-21 [1] CRAN (R 4.4.0)
+# berryFunctions   1.22.5  2024-02-16 [1] CRAN (R 4.4.0)
+# BiocGenerics     0.50.0  2024-04-30 [1] Bioconductor 3.19 (R 4.4.0)
+# circlize         0.4.16  2024-02-20 [1] CRAN (R 4.4.0)
+# cli              3.6.3   2024-06-21 [1] CRAN (R 4.4.0)
+# clue             0.3-65  2023-09-23 [1] CRAN (R 4.4.0)
+# cluster          2.1.6   2023-12-01 [1] CRAN (R 4.4.0)
+# codetools        0.2-20  2024-03-31 [1] CRAN (R 4.4.0)
+# colorspace       2.1-1   2024-07-26 [1] CRAN (R 4.4.0)
+# ComplexHeatmap * 2.20.0  2024-04-30 [1] Bioconductor 3.19 (R 4.4.0)
+# crayon           1.5.3   2024-06-20 [1] CRAN (R 4.4.0)
+# digest           0.6.36  2024-06-23 [1] CRAN (R 4.4.0)
+# doParallel       1.0.17  2022-02-07 [1] CRAN (R 4.4.0)
+# evaluate         0.24.0  2024-06-10 [1] CRAN (R 4.4.0)
+# fastmap          1.2.0   2024-05-15 [1] CRAN (R 4.4.0)
+# foreach          1.5.2   2022-02-02 [1] CRAN (R 4.4.0)
+# GetoptLong       1.0.5   2020-12-15 [1] CRAN (R 4.4.0)
+# GlobalOptions    0.1.2   2020-06-10 [1] CRAN (R 4.4.0)
+# here           * 1.0.1   2020-12-13 [1] CRAN (R 4.4.0)
+# htmltools        0.5.8.1 2024-04-04 [1] CRAN (R 4.4.0)
+# IRanges          2.38.1  2024-07-03 [1] Bioconductor 3.19 (R 4.4.1)
+# iterators        1.0.14  2022-02-05 [1] CRAN (R 4.4.0)
+# knitr            1.48    2024-07-07 [1] CRAN (R 4.4.0)
+# limma            3.60.4  2024-07-17 [1] Bioconductor 3.19 (R 4.4.1)
+# matrixStats      1.3.0   2024-04-11 [1] CRAN (R 4.4.0)
+# png              0.1-8   2022-11-29 [1] CRAN (R 4.4.0)
+# RColorBrewer     1.1-3   2022-04-03 [1] CRAN (R 4.4.0)
+# rjson            0.2.21  2022-01-09 [1] CRAN (R 4.4.0)
+# rlang            1.1.4   2024-06-04 [1] CRAN (R 4.4.0)
+# rmarkdown        2.27    2024-05-17 [1] CRAN (R 4.4.0)
+# rprojroot        2.0.4   2023-11-05 [1] CRAN (R 4.4.0)
+# S4Vectors        0.42.1  2024-07-03 [1] Bioconductor 3.19 (R 4.4.1)
+# sessioninfo    * 1.2.2   2021-12-06 [1] CRAN (R 4.4.0)
+# shape            1.4.6.1 2024-02-23 [1] CRAN (R 4.4.0)
+# statmod          1.5.0   2023-01-06 [1] CRAN (R 4.4.0)
+# xfun             0.46    2024-07-18 [1] CRAN (R 4.4.0)
+#
+# [1] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
+#
+# ──────────────────────────────────────────────────────────────────────────────
