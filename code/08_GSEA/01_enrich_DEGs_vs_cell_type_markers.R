@@ -308,11 +308,12 @@ obtain_rat_orthologs_human <- function(human_marker_genes){
     return(human_rat_ids)
 }
 
-## Obtain rat orthologs of mouse marker genes (TODO)
+## Obtain rat orthologs of mouse marker genes
 obtain_rat_orthologs_in_mouse <- function(mouse_marker_genes){
     mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
                        dataset = "mmusculus_gene_ensembl",
-                       version =  )
+                       ## Use Ensembl release 112 (GRCm39)
+                       version = "112")
 
     mouse_rat_ids <- getBM(values = mouse_marker_genes,
                            mart = mart,
@@ -649,27 +650,36 @@ for (cell_type in cell_types){
     print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
 }
 
-# [1] "Range of ratios of marker genes for Astrocyte1: 0.012 - 1.1"
-# [1] "Range of ratios of marker genes for Astrocyte2: 0.38 - 39"
-# [1] "Range of ratios of marker genes for Endothelial: 0.48 - 440"
-# [1] "Range of ratios of marker genes for Microglia: 0.43 - 160"
-# [1] "Range of ratios of marker genes for Mural: 0.19 - 16"
-# [1] "Range of ratios of marker genes for Neuron1: 1.2 - 6"
-# [1] "Range of ratios of marker genes for Neuron2: 0.58 - 0.98"
-# [1] "Range of ratios of marker genes for Neuron3: 0.67 - 1.5"
-# [1] "Range of ratios of marker genes for Neuron4: 0.15 - 0.8"
-# [1] "Range of ratios of marker genes for Neuron5: 0.65 - 2.1"
-# [1] "Range of ratios of marker genes for Neuron6: 0.84 - 2.1"
-# [1] "Range of ratios of marker genes for Neuron7: 0.11 - 0.75"
-# [1] "Range of ratios of marker genes for Neuron8: 2.7 - 6.3"
-# [1] "Range of ratios of marker genes for Oligo1: 0.48 - 1.3"
-# [1] "Range of ratios of marker genes for Oligo2: 0.24 - 0.87"
-# [1] "Range of ratios of marker genes for Oligo3: 2 - 6.5"
-# [1] "Range of ratios of marker genes for OPC2: 0.088 - 5.8"
-# [1] "Range of ratios of marker genes for OPC3: 0.94 - 26"
+# [1] "Range of ratios of marker genes for Astrocyte1: 0.19 - 1.5"
+# [1] "Range of ratios of marker genes for Astrocyte2: 0.85 - 21"
+# [1] "Range of ratios of marker genes for Endothelial: 0.88 - 430"
+# [1] "Range of ratios of marker genes for Microglia: 1.1 - 390"
+# [1] "Range of ratios of marker genes for Mural: 0.66 - 16"
+# [1] "Range of ratios of marker genes for Neuron1: 1.3 - 4.1"
+# [1] "Range of ratios of marker genes for Neuron2: 0.97 - 1.5"
+# [1] "Range of ratios of marker genes for Neuron3: 0.97 - 2.1"
+# [1] "Range of ratios of marker genes for Neuron4: 0.64 - 1.6"
+# [1] "Range of ratios of marker genes for Neuron5: 0.91 - 2.6"
+# [1] "Range of ratios of marker genes for Neuron6: 1 - 1.7"
+# [1] "Range of ratios of marker genes for Neuron7: 0.35 - 1.3"
+# [1] "Range of ratios of marker genes for Neuron8: 1.4 - 1.9"
+# [1] "Range of ratios of marker genes for Oligo1: 0.92 - 1.6"
+# [1] "Range of ratios of marker genes for Oligo2: 0.7 - 2"
+# [1] "Range of ratios of marker genes for Oligo3: 1.2 - 3.7"
+# [1] "Range of ratios of marker genes for OPC2: 0.45 - 5"
+# [1] "Range of ratios of marker genes for OPC3: 1.3 - 18"
 
 ## Subset to markers with ratio>1
 MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_top100_all_hab_mouse_genes, ratio>1)
+
+## Number of markers per cell type with ratio>1
+table(MeanRatio_top100_all_hab_mouse_genes$cellType.target)
+# Astrocyte1  Astrocyte2 Endothelial   Microglia       Mural     Neuron1
+#          7          80          76         100          27         100
+# Neuron2     Neuron3     Neuron4     Neuron5     Neuron6     Neuron7
+#      61          81          44          41         100          24
+# Neuron8      Oligo1      Oligo2      Oligo3        OPC2        OPC3
+#     100          63           3         100          22         100
 
 ## Obtain rat IDs per cell type
 MeanRatio_top100_all_hab_ratIDs<- list()
@@ -687,25 +697,25 @@ for (cell_type in cell_types){
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
 
     MeanRatio_top100_all_hab_ratIDs[[cell_type]] <- markers_rat_IDs
-
 }
-# [1] "Number of Astrocyte marker genes in rat: 40"
-# [1] "Number of Endo marker genes in rat: 54"
-# [1] "Number of Excit.Thal marker genes in rat: 36"
-# [1] "Number of Inhib.Thal marker genes in rat: 35"
-# [1] "Number of LHb.1 marker genes in rat: 32"
-# [1] "Number of LHb.2 marker genes in rat: 43"
-# [1] "Number of LHb.3 marker genes in rat: 28"
-# [1] "Number of LHb.4 marker genes in rat: 43"
-# [1] "Number of LHb.5 marker genes in rat: 38"
-# [1] "Number of LHb.6 marker genes in rat: 37"
-# [1] "Number of LHb.7 marker genes in rat: 39"
-# [1] "Number of MHb.1 marker genes in rat: 33"
-# [1] "Number of MHb.2 marker genes in rat: 37"
-# [1] "Number of MHb.3 marker genes in rat: 38"
-# [1] "Number of Microglia marker genes in rat: 37"
-# [1] "Number of Oligo marker genes in rat: 40"
-# [1] "Number of OPC marker genes in rat: 47"
+# [1] "Number of Astrocyte1 marker genes in rat: 4"
+# [1] "Number of Astrocyte2 marker genes in rat: 85"
+# [1] "Number of Endothelial marker genes in rat: 78"
+# [1] "Number of Microglia marker genes in rat: 123"
+# [1] "Number of Mural marker genes in rat: 24"
+# [1] "Number of Neuron1 marker genes in rat: 89"
+# [1] "Number of Neuron2 marker genes in rat: 60"
+# [1] "Number of Neuron3 marker genes in rat: 89"
+# [1] "Number of Neuron4 marker genes in rat: 46"
+# [1] "Number of Neuron5 marker genes in rat: 38"
+# [1] "Number of Neuron6 marker genes in rat: 107"
+# [1] "Number of Neuron7 marker genes in rat: 24"
+# [1] "Number of Neuron8 marker genes in rat: 99"
+# [1] "Number of Oligo1 marker genes in rat: 65"
+# [1] "Number of Oligo2 marker genes in rat: 3"
+# [1] "Number of Oligo3 marker genes in rat: 90"
+# [1] "Number of OPC2 marker genes in rat: 22"
+# [1] "Number of OPC3 marker genes in rat: 94"
 
 
 ####################  Neuronal cell subpopulations markers  ######################
@@ -716,9 +726,72 @@ MeanRatio_genes <- MeanRatio_top100_neu_hab_mouse_genes
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
 cell_types
+# [1] "LHb1" "LHb2" "LHb3" "LHb4" "LHb5" "LHb6" "MHb1" "MHb2" "MHb3" "MHb4"
+# [11] "MHb5" "MHb6"
+
+## Number of top markers per cell type
+table(MeanRatio_genes$cellType.target)
+# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
+# 100  100  100  100  100  100  100  100  100  100  100  100
+
+## Range of expression ratios of marker genes per cell type
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+# [1] "Range of ratios of marker genes for LHb1: 1.2 - 2.3"
+# [1] "Range of ratios of marker genes for LHb2: 0.5 - 1.9"
+# [1] "Range of ratios of marker genes for LHb3: 1 - 2"
+# [1] "Range of ratios of marker genes for LHb4: 0.67 - 1.3"
+# [1] "Range of ratios of marker genes for LHb5: 0.98 - 1.7"
+# [1] "Range of ratios of marker genes for LHb6: 1.2 - 2.3"
+# [1] "Range of ratios of marker genes for MHb1: 1 - 1.9"
+# [1] "Range of ratios of marker genes for MHb2: 0.99 - 1.4"
+# [1] "Range of ratios of marker genes for MHb3: 1.3 - 4.2"
+# [1] "Range of ratios of marker genes for MHb4: 0.9 - 3"
+# [1] "Range of ratios of marker genes for MHb5: 1 - 5.3"
+# [1] "Range of ratios of marker genes for MHb6: 0.39 - 1.5"
+
+## Subset to markers with ratio>1
+MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_top100_neu_hab_mouse_genes, ratio>1)
+
+## Number of markers per cell type with ratio>1
+table(MeanRatio_top100_neu_hab_mouse_genes$cellType.target)
+# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
+#  100   34  100   22   65  100  100   74  100   49  100   28
+
+## Obtain rat IDs per cell type
+MeanRatio_top100_neu_hab_ratIDs<- list()
+for (cell_type in cell_types){
+    markers <- subset(MeanRatio_genes, cellType.target==cell_type)
+
+    ## Remove markers with ratio =<1
+    markers <- markers[markers$ratio>1, ]
+
+    ## Find rat orthologs
+    markers_rat_IDs <- obtain_rat_orthologs_in_mouse(markers$gene)
+    ## Take unique rat ensembl IDs: rat genes with at least one mouse ortholog marker gene
+    markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
+    markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
+    print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
+
+    MeanRatio_top100_neu_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+}
+# [1] "Number of LHb1 marker genes in rat: 96"
+# [1] "Number of LHb2 marker genes in rat: 30"
+# [1] "Number of LHb3 marker genes in rat: 99"
+# [1] "Number of LHb4 marker genes in rat: 27"
+# [1] "Number of LHb5 marker genes in rat: 63"
+# [1] "Number of LHb6 marker genes in rat: 97"
+# [1] "Number of MHb1 marker genes in rat: 86"
+# [1] "Number of MHb2 marker genes in rat: 90"
+# [1] "Number of MHb3 marker genes in rat: 95"
+# [1] "Number of MHb4 marker genes in rat: 52"
+# [1] "Number of MHb5 marker genes in rat: 121"
+# [1] "Number of MHb6 marker genes in rat: 26"
 
 
-# Pasas 3
+
 ## -----------------------------------------------------------------------------
 ##             B) 1vsALL-based cell type marker genes in human
 ## -----------------------------------------------------------------------------
@@ -1026,13 +1099,47 @@ for (cell_type in cell_types){
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#             iii)  Markers for cell types in mouse ------*
+#             iii)  Markers for cell types in mouse habenula
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+####################  Broad resolution cell type markers  ######################
+## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
+
+lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
+lvsALL_broad_hab_human_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
+
+## Cell types
+cell_types <- gsub('fdr_', '', colnames(lvsALL_broad_genes_enrich_stats)[grep('fdr', colnames(lvsALL_broad_genes_enrich_stats))])
+cell_types
+# [1] "Astrocyte"   "Endo"   "Excit.Thal"  "Inhib.Thal"  "LHb"   "MHb"   "Microglia"  "Oligo"   "OPC"
+
+## Cell type-specific DEGs and corresponding orthologs in rat
+lvsALL_broad_hab_ratIDs <- list()
+for (cell_type in cell_types){
+
+    ## Cell type data
+    cell_type_stats <- lvsALL_broad_genes_enrich_stats[,  c(paste0(c('t_stat_', 'p_value_', 'fdr_', 'logFC_'), cell_type), 'gene')]
+    ## DEGs symbols
+    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05  &
+                                 eval(parse_expr(paste0('logFC_', cell_type)))>0)$gene
+    print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
+
+    ## Rat orthologs
+    cell_type_DEGs_rat_IDs <- obtain_rat_orthologs_human(cell_type_DEGs)
+    markers_rat_IDs <- unique(cell_type_DEGs_rat_IDs$rnorvegicus_homolog_ensembl_gene)
+    markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
+
+    print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
+    lvsALL_broad_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+}
 
 
 
 
+
+
+
+# Pasas 5
 ############################################################################
 ##             3. Compare MeanRatio vs 1vsALL marker genes
 ############################################################################
