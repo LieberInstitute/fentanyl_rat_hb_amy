@@ -131,7 +131,7 @@ sce_mouse_hab <- SingleCellExperiment(
                     assays = list(counts = as(hab_counts, "sparseMatrix")))
 
 
-## Compute log-transformed normalized expression values
+## Log-transform and normalize expression values
 
 ## Compute library size factors per cell
 lib.sf_mouse_all <- librarySizeFactors(sce_mouse_all)
@@ -150,10 +150,9 @@ summary(lib.sf_mouse_hab)
 # 0.1912  0.5623  1.0002  1.0000  1.2895  4.0759
 
 ## Log-normalize counts in a separate assay: log2(gene count/cell size factor)
-sce_mouse_all_lognorm <- logNormCounts(sce_mouse_all, size.factors=lib.sf_mouse_all)
-assays(sce_mouse_all_lognorm)
-# names(2): counts logcounts
-assays(sce_mouse_all_lognorm)$logcounts[1:5, 1:5]
+## Provided size factors are the same computed internally by logNormCounts()
+sce_mouse_all <- logNormCounts(sce_mouse_all, size.factors=lib.sf_mouse_all)
+assays(sce_mouse_all)$logcounts[1:5, 1:5]
 #        AAACCTGAGGCCCTCAcntl AAACCTGAGTTTGCGTcntl AAACCTGTCGTAGGTTcntl
 # Xkr4                      .                    .                    .
 # Sox17                     .                    .                    .
@@ -167,10 +166,20 @@ assays(sce_mouse_all_lognorm)$logcounts[1:5, 1:5]
 # Lypla1                    .             3.103901
 # Tcea1                     .             .
 
-
-sce_mouse_hab_lognorm <- logNormCounts(sce_mouse_hab, size.factors=lib.sf_mouse_hab)
-assayNames(sce_mouse_hab_lognorm)
-
+sce_mouse_hab <- logNormCounts(sce_mouse_hab, size.factors=lib.sf_mouse_hab)
+assays(sce_mouse_hab)$logcounts[1:5, 1:5]
+#        AACACGTGTGGCAAACcntl AACCGCGGTAGGCATGcntl AACCGCGTCGACCAGCcntl
+# Xkr4                      .                    .             .
+# Sox17                     .                    .             .
+# Mrpl15                    .                    .             .
+# Lypla1                    .                    .             .
+# Tcea1                     .                    .             1.134619
+# AACTCCCCAAAGCAATcntl AACTCCCGTCTAACGTcntl
+# Xkr4                      .                    .
+# Sox17                     .                    .
+# Mrpl15                    .                    .
+# Lypla1                    .                    .
+# Tcea1                     .                    .
 
 
 ## Number of cells of each type from naive and exposed mice:
@@ -192,8 +201,7 @@ table(colData(sce_mouse_all)[, c('stim', 'celltype')])
 sum(table(colData(sce_mouse_all)[, c('stim', 'celltype')])['cntl',])
 # [1] 5942
 
-
-##  Habenula subtypes
+##  Cells from habenula subtypes
 table(colData(sce_mouse_hab)[, c('stim', 'celltype')])
 #        celltype
 # stim   LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
@@ -222,7 +230,7 @@ sce_mouse_hab_ctrl_filt <- sce_mouse_hab_ctrl[, which(!sce_mouse_hab_ctrl$cellty
 MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_all_ctrl_filt,
                                                 cellType_col = "celltype",
-                                                assay_name = "counts"))
+                                                assay_name = "logcounts"))
 
 ## Subset to top100 markers per cell type
 MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
@@ -232,7 +240,7 @@ MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, Me
 MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_hab_ctrl_filt,
                                                 cellType_col = "celltype",
-                                                assay_name = "counts"))
+                                                assay_name = "logcounts"))
 ## Top100 only
 MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
 
@@ -244,7 +252,7 @@ MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, Me
 ########################  All habenula subpopulations  #########################
 lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 sce_mouse_all_ctrl_filt,
-                                                assay_name = "counts",
+                                                assay_name = "logcounts",
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
@@ -255,17 +263,17 @@ lvsALL_all_hab_mouse_genes <- subset(lvsALL_all_hab_mouse_genes, logFC>0 & log.F
 ## Number of marker genes (DEGs) per cell subpopulation
 table(lvsALL_all_hab_mouse_genes$cellType.target)
 # Astrocyte1  Astrocyte2 Endothelial   Microglia       Mural     Neuron1
-#        544         194         584         497         201        7445
+#       1086         286         746         713         356        4788
 # Neuron2     Neuron3     Neuron4     Neuron5     Neuron6     Neuron7
-#   8307        2265         226        5599        5435          23
+#    5663        2376        1497        3182        3320         279
 # Neuron8      Oligo1      Oligo2      Oligo3        OPC2        OPC3
-#   10872        1079         316        1247         283         559
+#    6665        1592         605         802         646         615
 
 
 ######################  Habenula neuronal subpopulations  ######################
 lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 sce_mouse_hab_ctrl_filt,
-                                                assay_name = "counts",
+                                                assay_name = "logcounts",
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
@@ -273,8 +281,9 @@ lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
 lvsALL_neu_hab_mouse_genes <- subset(lvsALL_neu_hab_mouse_genes, logFC>0 & log.FDR<log(0.05))
 
 ## Number of marker genes (DEGs) per cell subpopulation
-# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5
-# 8144   13 2638    6  311 5697  606 1498 4729   66  310
+table(lvsALL_neu_hab_mouse_genes$cellType.target)
+# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
+# 4332  354 1728  231  412 2246  903 1381 2951  264  453   85
 
 
 
@@ -303,7 +312,7 @@ obtain_rat_orthologs_human <- function(human_marker_genes){
 obtain_rat_orthologs_in_mouse <- function(mouse_marker_genes){
     mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
                        dataset = "mmusculus_gene_ensembl",
-                       GRCh = "GRCm39")
+                       version =  )
 
     mouse_rat_ids <- getBM(values = mouse_marker_genes,
                            mart = mart,
