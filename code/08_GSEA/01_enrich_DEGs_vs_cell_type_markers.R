@@ -1,6 +1,9 @@
 
 library(here)
+library(SingleCellExperiment)
 library(SummarizedExperiment)
+library(scater)
+library(DeconvoBuddies)
 library(biomaRt)
 library(rlang)
 library(readxl)
@@ -22,22 +25,256 @@ length(all_genes)
 load(here('processed-data/05_DEA/de_genes_Substance_habenula.Rdata'), verbose = TRUE)
 load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = TRUE)
 
+
 ############################################################################
-##           1. Obtain brain cell type marker genes in mouse*
+##           1. Obtain cell type marker genes in mouse habenula*
 ############################################################################
 # *From doi: 10.1016/j.neuron.2020.03.011
 
-## Load single cell mouse data
+## Load single cell mouse data (internal LIBD paths)
+
+## Count data for all cell subpopulations
+all_counts <- read.csv("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/09_cross_species_analysis/Hashikawa_data/count.csv", row.names = 1)
+## Count data for habenula neuronal subpopulations
+hab_counts <- read.csv("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/09_cross_species_analysis/Hashikawa_data/count_neuron.csv", row.names = 1)
+
+## colData for all subpopulations
+all_meta <- read.csv("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/09_cross_species_analysis/Hashikawa_data/meta.csv")
+## colData for hab subpopulations
+hab_meta <- read.csv("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/09_cross_species_analysis/Hashikawa_data/meta_neuron.csv")
+
+
+## Explore count data for all subpops
+dim(all_counts)
+# [1] 17726 11878
+
+all_counts[1:5, 1:5]
+#        AAACCTGAGGCCCTCAcntl AAACCTGAGTTTGCGTcntl AAACCTGTCGTAGGTTcntl
+# Xkr4                      0                    0                    0
+# Sox17                     0                    0                    0
+# Mrpl15                    0                    0                    0
+# Lypla1                    0                    0                    0
+# Tcea1                     0                    0                    0
+#        AAACGGGCAGCTCGCAcntl AAACGGGTCGCTGATAcntl
+# Xkr4                      0                    0
+# Sox17                     0                    0
+# Mrpl15                    0                    0
+# Lypla1                    0                    2
+# Tcea1                     0                    0
+
+dim(all_meta)
+# [1] 11878    10
+
+head(all_meta)
+#                      X orig.ident nCount_RNA nFeature_RNA stim percent.mito
+# 1 AAACCTGAGGCCCTCAcntl    10X_LHb       1138          609 cntl   0.10456942
+# 2 AAACCTGAGTTTGCGTcntl    10X_LHb       1358          678 cntl   0.03681885
+# 3 AAACCTGTCGTAGGTTcntl    10X_LHb       1292          669 cntl   0.07120743
+# 4 AAACGGGCAGCTCGCAcntl    10X_LHb       1001          594 cntl   0.04995005
+# 5 AAACGGGTCGCTGATAcntl    10X_LHb        712          400 cntl   0.03089888
+# 6 AAAGATGAGACCGGATcntl    10X_LHb        840          493 cntl   0.04404762
+#   nCount_integrated nFeature_integrated integrated_snn_res.0.8   celltype
+# 1                NA                  NA                      0 Astrocyte1
+# 2                NA                  NA                      0 Astrocyte1
+# 3                NA                  NA                      0 Astrocyte1
+# 4                NA                  NA                      0 Astrocyte1
+# 5                NA                  NA                      0 Astrocyte1
+# 6                NA                  NA                      0 Astrocyte1
+
+
+## Explore count data for habenula subpops
+dim(hab_counts)
+# [1] 17726  5558
+
+hab_counts[1:5, 1:5]
+#        AACACGTGTGGCAAACcntl AACCGCGGTAGGCATGcntl AACCGCGTCGACCAGCcntl
+# Xkr4                      0                    0                    0
+# Sox17                     0                    0                    0
+# Mrpl15                    0                    0                    0
+# Lypla1                    0                    0                    0
+# Tcea1                     0                    0                    1
+#        AACTCCCCAAAGCAATcntl AACTCCCGTCTAACGTcntl
+# Xkr4                      0                    0
+# Sox17                     0                    0
+# Mrpl15                    0                    0
+# Lypla1                    0                    0
+# Tcea1                     0                    0
+
+dim(hab_meta)
+# [1] 5558   10
+
+head(hab_meta)
+#                      X orig.ident nCount_RNA nFeature_RNA stim percent.mito
+# 1 AACACGTGTGGCAAACcntl    10X_LHb       3809         1897 cntl   0.04988186
+# 2 AACCGCGGTAGGCATGcntl    10X_LHb       4058         1801 cntl   0.04706752
+# 3 AACCGCGTCGACCAGCcntl    10X_LHb       3066         1580 cntl   0.05120678
+# 4 AACTCCCCAAAGCAATcntl    10X_LHb       3206         1690 cntl   0.03867748
+# 5 AACTCCCGTCTAACGTcntl    10X_LHb       4712         2171 cntl   0.05369270
+# 6 AACTGGTAGACTTTCGcntl    10X_LHb       4119         1884 cntl   0.03957271
+#   nCount_integrated nFeature_integrated integrated_snn_res.0.8 celltype
+# 1                NA                  NA                      0     MHb1
+# 2                NA                  NA                      0     MHb1
+# 3                NA                  NA                      0     MHb1
+# 4                NA                  NA                      0     MHb1
+# 5                NA                  NA                      0     MHb1
+# 6                NA                  NA                      0     MHb1
+
+
+## Create SingleCellExperiment objects
+sce_mouse_all <- SingleCellExperiment(
+                    rowData=DataFrame(gene_name=rownames(all_counts)),
+                    colData=DataFrame(all_meta),
+                    assays = list(counts = as(all_counts, "sparseMatrix")))
+sce_mouse_hab <- SingleCellExperiment(
+                    rowData=DataFrame(gene_name=rownames(hab_counts)),
+                    colData=DataFrame(hab_meta),
+                    assays = list(counts = as(hab_counts, "sparseMatrix")))
+
+
+## Compute log-transformed normalized expression values
+
+## Compute library size factors per cell
+lib.sf_mouse_all <- librarySizeFactors(sce_mouse_all)
+lib.sf_mouse_hab <- librarySizeFactors(sce_mouse_hab)
+length(lib.sf_mouse_all)
+# [1] 11878
+length(lib.sf_mouse_hab)
+# [1] 5558
+
+## Mean of size factors is 1
+summary(lib.sf_mouse_all)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+# 0.2592  0.4171  0.7504  1.0000  1.4278  5.5241
+summary(lib.sf_mouse_hab)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+# 0.1912  0.5623  1.0002  1.0000  1.2895  4.0759
+
+## Log-normalize counts in a separate assay: log2(gene count/cell size factor)
+sce_mouse_all_lognorm <- logNormCounts(sce_mouse_all, size.factors=lib.sf_mouse_all)
+assays(sce_mouse_all_lognorm)
+# names(2): counts logcounts
+assays(sce_mouse_all_lognorm)$logcounts[1:5, 1:5]
+#        AAACCTGAGGCCCTCAcntl AAACCTGAGTTTGCGTcntl AAACCTGTCGTAGGTTcntl
+# Xkr4                      .                    .                    .
+# Sox17                     .                    .                    .
+# Mrpl15                    .                    .                    .
+# Lypla1                    .                    .                    .
+# Tcea1                     .                    .                    .
+#        AAACGGGCAGCTCGCAcntl AAACGGGTCGCTGATAcntl
+# Xkr4                      .             .
+# Sox17                     .             .
+# Mrpl15                    .             .
+# Lypla1                    .             3.103901
+# Tcea1                     .             .
+
+
+sce_mouse_hab_lognorm <- logNormCounts(sce_mouse_hab, size.factors=lib.sf_mouse_hab)
+assayNames(sce_mouse_hab_lognorm)
+
+
+
+## Number of cells of each type from naive and exposed mice:
+##  All cell types
+table(colData(sce_mouse_all)[, c('stim', 'celltype')])
+#        celltype
+# stim   Astrocyte1 Astrocyte2 Endothelial Epen Microglia Mural Neuron1 Neuron2
+# cntl        969         72          93    6       156    94     429     541
+# stim        637         40          69   36       147   152     631     502
+#
+# stim   Neuron3 Neuron4 Neuron5 Neuron6 Neuron7 Neuron8 Oligo1 Oligo2 Oligo3
+# cntl     395     461     372     344     181     225    782    304     77
+# stim     620     326     399     377     130      61    685    210     50
+
+# stim   OPC1 OPC2 OPC3
+# cntl      9  359   73
+# stim    581  226   57
+
+sum(table(colData(sce_mouse_all)[, c('stim', 'celltype')])['cntl',])
+# [1] 5942
+
+
+##  Habenula subtypes
+table(colData(sce_mouse_hab)[, c('stim', 'celltype')])
+#        celltype
+# stim   LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
+# cntl    329  279  217  214  150  174  315  264  270  148  165  142
+# stim    229  178  222  185  210  185  351  398  351  264  229   89
+
+sum(table(colData(sce_mouse_hab)[, c('stim', 'celltype')])['cntl',])
+# [1] 2667
+
+
+## Subset to naive mice samples
+sce_mouse_all_ctrl <- sce_mouse_all[, which(sce_mouse_all$stim=='cntl')]
+sce_mouse_hab_ctrl <- sce_mouse_hab[, which(sce_mouse_hab$stim=='cntl')]
+
+## Remove cell groups with <10 cells
+sce_mouse_all_ctrl_filt <- sce_mouse_all_ctrl[, which(!sce_mouse_all_ctrl$celltype %in% names(which(table(sce_mouse_all_ctrl$celltype)<10)))]
+## None in habenula subpops
+sce_mouse_hab_ctrl_filt <- sce_mouse_hab_ctrl[, which(!sce_mouse_hab_ctrl$celltype %in% names(which(table(sce_mouse_hab_ctrl$celltype)<10)))]
 
 
 ## -----------------------------------------------------------------------------
 ##                    A) MeanRatio cell type marker genes
 ## -----------------------------------------------------------------------------
 
+########################  All habenula subpopulations  #########################
+MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
+                                                sce_mouse_all_ctrl_filt,
+                                                cellType_col = "celltype",
+                                                assay_name = "counts"))
+
+## Subset to top100 markers per cell type
+MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
+
+
+######################  Habenula neuronal subpopulations  ######################
+MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
+                                                sce_mouse_hab_ctrl_filt,
+                                                cellType_col = "celltype",
+                                                assay_name = "counts"))
+## Top100 only
+MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
+
 
 ## -----------------------------------------------------------------------------
 ##                     B) 1vsALL cell type marker genes
 ## -----------------------------------------------------------------------------
+
+########################  All habenula subpopulations  #########################
+lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
+                                                sce_mouse_all_ctrl_filt,
+                                                assay_name = "counts",
+                                                cellType_col = "celltype",
+                                                mod = NULL,
+                                                verbose = TRUE))
+
+## Subset to DEGs with logFC>0 and FDR<0.05
+lvsALL_all_hab_mouse_genes <- subset(lvsALL_all_hab_mouse_genes, logFC>0 & log.FDR<log(0.05))
+
+## Number of marker genes (DEGs) per cell subpopulation
+table(lvsALL_all_hab_mouse_genes$cellType.target)
+# Astrocyte1  Astrocyte2 Endothelial   Microglia       Mural     Neuron1
+#        544         194         584         497         201        7445
+# Neuron2     Neuron3     Neuron4     Neuron5     Neuron6     Neuron7
+#   8307        2265         226        5599        5435          23
+# Neuron8      Oligo1      Oligo2      Oligo3        OPC2        OPC3
+#   10872        1079         316        1247         283         559
+
+
+######################  Habenula neuronal subpopulations  ######################
+lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
+                                                sce_mouse_hab_ctrl_filt,
+                                                assay_name = "counts",
+                                                cellType_col = "celltype",
+                                                mod = NULL,
+                                                verbose = TRUE))
+
+lvsALL_neu_hab_mouse_genes <- subset(lvsALL_neu_hab_mouse_genes, logFC>0 & log.FDR<log(0.05))
+
+## Number of marker genes (DEGs) per cell subpopulation
+# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5
+# 8144   13 2638    6  311 5697  606 1498 4729   66  310
 
 
 
@@ -53,23 +290,27 @@ obtain_rat_orthologs_human <- function(human_marker_genes){
                        dataset="hsapiens_gene_ensembl",
                        GRCh = "GRCh38")
 
-    human_rat_ids <- getBM(values  = human_marker_genes,
-                           mart  = mart,
-                           attributes = c("external_gene_name", "rnorvegicus_homolog_ensembl_gene", "rnorvegicus_homolog_associated_gene_name"),
-                           filters    = "external_gene_name")
+    human_rat_ids <- getBM(values = human_marker_genes,
+                           mart = mart,
+                           attributes = c("external_gene_name",
+                                          "rnorvegicus_homolog_ensembl_gene",
+                                          "rnorvegicus_homolog_associated_gene_name"),
+                           filters = "external_gene_name")
     return(human_rat_ids)
 }
 
 ## Obtain rat orthologs of mouse marker genes (TODO)
 obtain_rat_orthologs_in_mouse <- function(mouse_marker_genes){
-    mart <- useEnsembl(biomart="ENSEMBL_MART_ENSEMBL",
-                       dataset="mmus...",
-                       GRCh = "mR...")
+    mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
+                       dataset = "mmusculus_gene_ensembl",
+                       GRCh = "GRCm39")
 
-    mouse_rat_ids <- getBM(values  = mouse_marker_genes,
-                           mart  = mart,
-                           attributes = c("external_gene_name", "rnorvegicus_homolog_ensembl_gene", "rnorvegicus_homolog_associated_gene_name"),
-                           filters    = "external_gene_name")
+    mouse_rat_ids <- getBM(values = mouse_marker_genes,
+                           mart = mart,
+                           attributes = c("external_gene_name",
+                                          "rnorvegicus_homolog_ensembl_gene",
+                                          "rnorvegicus_homolog_associated_gene_name"),
+                           filters = "external_gene_name")
     return(mouse_rat_ids)
 }
 
@@ -367,12 +608,108 @@ for (cell_type in cell_types){
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#             iii)  Markers for cell types in mouse ------*
+#             iii)  Markers for cell types in mouse habenula*
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # *From doi: 10.1016/j.neuron.2020.03.011
 
+####################  All cell subpopulations markers  ######################
+
+MeanRatio_top100_all_hab_mouse_genes$ratio <- MeanRatio_top100_all_hab_mouse_genes$MeanRatio
+MeanRatio_genes <- MeanRatio_top100_all_hab_mouse_genes
+
+## Cell types/clusters included
+cell_types <- names(table(MeanRatio_genes$cellType.target))
+cell_types
+# [1] "Astrocyte1"  "Astrocyte2"  "Endothelial" "Microglia"   "Mural"
+# [6] "Neuron1"     "Neuron2"     "Neuron3"     "Neuron4"     "Neuron5"
+# [11] "Neuron6"     "Neuron7"     "Neuron8"     "Oligo1"      "Oligo2"
+# [16] "Oligo3"      "OPC2"        "OPC3"
+
+## Number of top markers per cell type
+table(MeanRatio_genes$cellType.target)
+# Astrocyte1  Astrocyte2 Endothelial   Microglia       Mural     Neuron1
+#         78         100         100         100         100         100
+# Neuron2     Neuron3     Neuron4     Neuron5     Neuron6     Neuron7
+#     100         100         100         100         100         100
+# Neuron8      Oligo1      Oligo2      Oligo3        OPC2        OPC3
+#     100         100         100         100         100         100
+
+## Range of expression ratios of marker genes per cell type
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+
+# [1] "Range of ratios of marker genes for Astrocyte1: 0.012 - 1.1"
+# [1] "Range of ratios of marker genes for Astrocyte2: 0.38 - 39"
+# [1] "Range of ratios of marker genes for Endothelial: 0.48 - 440"
+# [1] "Range of ratios of marker genes for Microglia: 0.43 - 160"
+# [1] "Range of ratios of marker genes for Mural: 0.19 - 16"
+# [1] "Range of ratios of marker genes for Neuron1: 1.2 - 6"
+# [1] "Range of ratios of marker genes for Neuron2: 0.58 - 0.98"
+# [1] "Range of ratios of marker genes for Neuron3: 0.67 - 1.5"
+# [1] "Range of ratios of marker genes for Neuron4: 0.15 - 0.8"
+# [1] "Range of ratios of marker genes for Neuron5: 0.65 - 2.1"
+# [1] "Range of ratios of marker genes for Neuron6: 0.84 - 2.1"
+# [1] "Range of ratios of marker genes for Neuron7: 0.11 - 0.75"
+# [1] "Range of ratios of marker genes for Neuron8: 2.7 - 6.3"
+# [1] "Range of ratios of marker genes for Oligo1: 0.48 - 1.3"
+# [1] "Range of ratios of marker genes for Oligo2: 0.24 - 0.87"
+# [1] "Range of ratios of marker genes for Oligo3: 2 - 6.5"
+# [1] "Range of ratios of marker genes for OPC2: 0.088 - 5.8"
+# [1] "Range of ratios of marker genes for OPC3: 0.94 - 26"
+
+## Subset to markers with ratio>1
+MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_top100_all_hab_mouse_genes, ratio>1)
+
+## Obtain rat IDs per cell type
+MeanRatio_top100_all_hab_ratIDs<- list()
+for (cell_type in cell_types){
+    markers <- subset(MeanRatio_genes, cellType.target==cell_type)
+
+    ## Remove markers with ratio =<1
+    markers <- markers[markers$ratio>1, ]
+
+    ## Find rat orthologs
+    markers_rat_IDs <- obtain_rat_orthologs_in_mouse(markers$gene)
+    ## Take unique rat ensembl IDs: rat genes with at least one mouse ortholog marker gene
+    markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
+    markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
+    print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
+
+    MeanRatio_top100_all_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+
+}
+# [1] "Number of Astrocyte marker genes in rat: 40"
+# [1] "Number of Endo marker genes in rat: 54"
+# [1] "Number of Excit.Thal marker genes in rat: 36"
+# [1] "Number of Inhib.Thal marker genes in rat: 35"
+# [1] "Number of LHb.1 marker genes in rat: 32"
+# [1] "Number of LHb.2 marker genes in rat: 43"
+# [1] "Number of LHb.3 marker genes in rat: 28"
+# [1] "Number of LHb.4 marker genes in rat: 43"
+# [1] "Number of LHb.5 marker genes in rat: 38"
+# [1] "Number of LHb.6 marker genes in rat: 37"
+# [1] "Number of LHb.7 marker genes in rat: 39"
+# [1] "Number of MHb.1 marker genes in rat: 33"
+# [1] "Number of MHb.2 marker genes in rat: 37"
+# [1] "Number of MHb.3 marker genes in rat: 38"
+# [1] "Number of Microglia marker genes in rat: 37"
+# [1] "Number of Oligo marker genes in rat: 40"
+# [1] "Number of OPC marker genes in rat: 47"
 
 
+####################  Neuronal cell subpopulations markers  ######################
+
+MeanRatio_top100_neu_hab_mouse_genes$ratio <- MeanRatio_top100_neu_hab_mouse_genes$MeanRatio
+MeanRatio_genes <- MeanRatio_top100_neu_hab_mouse_genes
+
+## Cell types/clusters included
+cell_types <- names(table(MeanRatio_genes$cellType.target))
+cell_types
+
+
+# Pasas 3
 ## -----------------------------------------------------------------------------
 ##             B) 1vsALL-based cell type marker genes in human
 ## -----------------------------------------------------------------------------
