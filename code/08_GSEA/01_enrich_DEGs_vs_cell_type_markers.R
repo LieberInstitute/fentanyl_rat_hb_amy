@@ -152,6 +152,7 @@ summary(lib.sf_mouse_hab)
 ## Log-normalize counts in a separate assay: log2(gene count/cell size factor)
 ## Provided size factors are the same computed internally by logNormCounts()
 sce_mouse_all <- logNormCounts(sce_mouse_all, size.factors=lib.sf_mouse_all)
+save(sce_mouse_all, file = here('processed-data/08_GSEA/sce_mouse_all.Rdata'))
 assays(sce_mouse_all)$logcounts[1:5, 1:5]
 #        AAACCTGAGGCCCTCAcntl AAACCTGAGTTTGCGTcntl AAACCTGTCGTAGGTTcntl
 # Xkr4                      .                    .                    .
@@ -167,6 +168,7 @@ assays(sce_mouse_all)$logcounts[1:5, 1:5]
 # Tcea1                     .             .
 
 sce_mouse_hab <- logNormCounts(sce_mouse_hab, size.factors=lib.sf_mouse_hab)
+save(sce_mouse_hab, file = here('processed-data/08_GSEA/sce_mouse_hab.Rdata'))
 assays(sce_mouse_hab)$logcounts[1:5, 1:5]
 #        AACACGTGTGGCAAACcntl AACCGCGGTAGGCATGcntl AACCGCGTCGACCAGCcntl
 # Xkr4                      .                    .             .
@@ -215,11 +217,15 @@ sum(table(colData(sce_mouse_hab)[, c('stim', 'celltype')])['cntl',])
 ## Subset to naive mice samples
 sce_mouse_all_ctrl <- sce_mouse_all[, which(sce_mouse_all$stim=='cntl')]
 sce_mouse_hab_ctrl <- sce_mouse_hab[, which(sce_mouse_hab$stim=='cntl')]
+save(sce_mouse_all_ctrl, file = here('processed-data/08_GSEA/sce_mouse_all_ctrl.Rdata'))
+save(sce_mouse_hab_ctrl, file = here('processed-data/08_GSEA/sce_mouse_hab_ctrl.Rdata'))
 
 ## Remove cell groups with <10 cells
 sce_mouse_all_ctrl_filt <- sce_mouse_all_ctrl[, which(!sce_mouse_all_ctrl$celltype %in% names(which(table(sce_mouse_all_ctrl$celltype)<10)))]
+save(sce_mouse_all_ctrl_filt, file = here('processed-data/08_GSEA/sce_mouse_all_ctrl_filt.Rdata'))
 ## None in habenula subpops
 sce_mouse_hab_ctrl_filt <- sce_mouse_hab_ctrl[, which(!sce_mouse_hab_ctrl$celltype %in% names(which(table(sce_mouse_hab_ctrl$celltype)<10)))]
+save(sce_mouse_hab_ctrl_filt, file = here('processed-data/08_GSEA/sce_mouse_hab_ctrl_filt.Rdata'))
 
 
 ## -----------------------------------------------------------------------------
@@ -231,9 +237,11 @@ MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_all_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
+save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_all_hab_mouse_genes.Rdata'))
 
 ## Subset to top100 markers per cell type
 MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
 
 
 ######################  Habenula neuronal subpopulations  ######################
@@ -241,8 +249,11 @@ MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_hab_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
+save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_neu_hab_mouse_genes.Rdata'))
+
 ## Top100 only
 MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 
 ## -----------------------------------------------------------------------------
@@ -256,19 +267,11 @@ lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
+save(lvsALL_all_hab_mouse_genes, file = here('processed-data/08_GSEA/lvsALL_all_hab_mouse_genes.Rdata'))
 
-## Subset to DEGs with logFC>0 and FDR<0.05
-lvsALL_all_hab_mouse_genes <- subset(lvsALL_all_hab_mouse_genes, logFC>0 & log.FDR<log(0.05))
-
-## Number of marker genes (DEGs) per cell subpopulation
-table(lvsALL_all_hab_mouse_genes$cellType.target)
-# Astrocyte1  Astrocyte2 Endothelial   Microglia       Mural     Neuron1
-#       1086         286         746         713         356        4788
-# Neuron2     Neuron3     Neuron4     Neuron5     Neuron6     Neuron7
-#    5663        2376        1497        3182        3320         279
-# Neuron8      Oligo1      Oligo2      Oligo3        OPC2        OPC3
-#    6665        1592         605         802         646         615
-
+## Number of genes with stats per cell subpopulation
+unique(table(lvsALL_all_hab_mouse_genes$cellType.target))
+# [1] 17726
 
 ######################  Habenula neuronal subpopulations  ######################
 lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
@@ -277,13 +280,10 @@ lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
+save(lvsALL_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/lvsALL_neu_hab_mouse_genes.Rdata'))
 
-lvsALL_neu_hab_mouse_genes <- subset(lvsALL_neu_hab_mouse_genes, logFC>0 & log.FDR<log(0.05))
-
-## Number of marker genes (DEGs) per cell subpopulation
-table(lvsALL_neu_hab_mouse_genes$cellType.target)
-# LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
-# 4332  354 1728  231  412 2246  903 1381 2951  264  453   85
+unique(table(lvsALL_neu_hab_mouse_genes$cellType.target))
+# [1] 17726
 
 
 
@@ -309,7 +309,7 @@ obtain_rat_orthologs_human <- function(human_marker_genes){
 }
 
 ## Obtain rat orthologs of mouse marker genes
-obtain_rat_orthologs_in_mouse <- function(mouse_marker_genes){
+obtain_rat_orthologs_mouse <- function(mouse_marker_genes){
     mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
                        dataset = "mmusculus_gene_ensembl",
                        ## Use Ensembl release 112 (GRCm39)
@@ -690,7 +690,7 @@ for (cell_type in cell_types){
     markers <- markers[markers$ratio>1, ]
 
     ## Find rat orthologs
-    markers_rat_IDs <- obtain_rat_orthologs_in_mouse(markers$gene)
+    markers_rat_IDs <- obtain_rat_orthologs_mouse(markers$gene)
     ## Take unique rat ensembl IDs: rat genes with at least one mouse ortholog marker gene
     markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
     markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
@@ -716,6 +716,7 @@ for (cell_type in cell_types){
 # [1] "Number of Oligo3 marker genes in rat: 90"
 # [1] "Number of OPC2 marker genes in rat: 22"
 # [1] "Number of OPC3 marker genes in rat: 94"
+save(MeanRatio_top100_all_hab_ratIDs, file = here('processed-data/08_GSEA/MeanRatio_top100_all_hab_mouse_ratIDs.Rdata'))
 
 
 ####################  Neuronal cell subpopulations markers  ######################
@@ -769,7 +770,7 @@ for (cell_type in cell_types){
     markers <- markers[markers$ratio>1, ]
 
     ## Find rat orthologs
-    markers_rat_IDs <- obtain_rat_orthologs_in_mouse(markers$gene)
+    markers_rat_IDs <- obtain_rat_orthologs_mouse(markers$gene)
     ## Take unique rat ensembl IDs: rat genes with at least one mouse ortholog marker gene
     markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
     markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
@@ -789,6 +790,7 @@ for (cell_type in cell_types){
 # [1] "Number of MHb4 marker genes in rat: 52"
 # [1] "Number of MHb5 marker genes in rat: 121"
 # [1] "Number of MHb6 marker genes in rat: 26"
+save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/MeanRatio_top100_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
@@ -1102,44 +1104,133 @@ for (cell_type in cell_types){
 #             iii)  Markers for cell types in mouse habenula
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-####################  Broad resolution cell type markers  ######################
-## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
+####################  All cell subpopulations markers  ######################
+## (DEGs (FDR<0.05 and logFC>0) for one cell type vs the rest were taken as markers)
 
-lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
-lvsALL_broad_hab_human_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
+lvsALL_all_genes <- lvsALL_all_hab_mouse_genes
 
 ## Cell types
-cell_types <- gsub('fdr_', '', colnames(lvsALL_broad_genes_enrich_stats)[grep('fdr', colnames(lvsALL_broad_genes_enrich_stats))])
+cell_types <- names(table(lvsALL_all_genes$cellType.target))
 cell_types
-# [1] "Astrocyte"   "Endo"   "Excit.Thal"  "Inhib.Thal"  "LHb"   "MHb"   "Microglia"  "Oligo"   "OPC"
+# [1] "Astrocyte1"  "Astrocyte2"  "Endothelial" "Microglia"   "Mural"
+# [6] "Neuron1"     "Neuron2"     "Neuron3"     "Neuron4"     "Neuron5"
+# [11] "Neuron6"     "Neuron7"     "Neuron8"     "Oligo1"      "Oligo2"
+# [16] "Oligo3"      "OPC2"        "OPC3"
 
 ## Cell type-specific DEGs and corresponding orthologs in rat
-lvsALL_broad_hab_ratIDs <- list()
+lvsALL_all_hab_ratIDs <- list()
 for (cell_type in cell_types){
 
     ## Cell type data
-    cell_type_stats <- lvsALL_broad_genes_enrich_stats[,  c(paste0(c('t_stat_', 'p_value_', 'fdr_', 'logFC_'), cell_type), 'gene')]
+    cell_type_stats <- subset(lvsALL_all_genes, cellType.target==cell_type)
     ## DEGs symbols
-    cell_type_DEGs <- subset(cell_type_stats, eval(parse_expr(paste0('fdr_', cell_type)))<0.05  &
-                                 eval(parse_expr(paste0('logFC_', cell_type)))>0)$gene
-    print(paste0('Number of ', cell_type, ' human DEGs: ', length(cell_type_DEGs)))
+    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05) & logFC >0)$gene
+    print(paste0('Number of ', cell_type, ' mouse DEGs: ', length(cell_type_DEGs)))
 
     ## Rat orthologs
-    cell_type_DEGs_rat_IDs <- obtain_rat_orthologs_human(cell_type_DEGs)
+    cell_type_DEGs_rat_IDs <- obtain_rat_orthologs_mouse(cell_type_DEGs)
     markers_rat_IDs <- unique(cell_type_DEGs_rat_IDs$rnorvegicus_homolog_ensembl_gene)
     markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
 
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
-    lvsALL_broad_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+    lvsALL_all_hab_ratIDs[[cell_type]] <- markers_rat_IDs
 }
+# [1] "Number of Astrocyte1 mouse DEGs: 1086"
+# [1] "Number of Astrocyte1 marker genes in rat: 981"
+# [1] "Number of Astrocyte2 mouse DEGs: 286"
+# [1] "Number of Astrocyte2 marker genes in rat: 281"
+# [1] "Number of Endothelial mouse DEGs: 746"
+# [1] "Number of Endothelial marker genes in rat: 790"
+# [1] "Number of Microglia mouse DEGs: 713"
+# [1] "Number of Microglia marker genes in rat: 740"
+# [1] "Number of Mural mouse DEGs: 356"
+# [1] "Number of Mural marker genes in rat: 366"
+# [1] "Number of Neuron1 mouse DEGs: 4788"
+# [1] "Number of Neuron1 marker genes in rat: 4572"
+# [1] "Number of Neuron2 mouse DEGs: 5663"
+# [1] "Number of Neuron2 marker genes in rat: 5358"
+# [1] "Number of Neuron3 mouse DEGs: 2376"
+# [1] "Number of Neuron3 marker genes in rat: 2273"
+# [1] "Number of Neuron4 mouse DEGs: 1497"
+# [1] "Number of Neuron4 marker genes in rat: 1374"
+# [1] "Number of Neuron5 mouse DEGs: 3182"
+# [1] "Number of Neuron5 marker genes in rat: 3025"
+# [1] "Number of Neuron6 mouse DEGs: 3320"
+# [1] "Number of Neuron6 marker genes in rat: 3217"
+# [1] "Number of Neuron7 mouse DEGs: 279"
+# [1] "Number of Neuron7 marker genes in rat: 252"
+# [1] "Number of Neuron8 mouse DEGs: 6665"
+# [1] "Number of Neuron8 marker genes in rat: 6356"
+# [1] "Number of Oligo1 mouse DEGs: 1592"
+# [1] "Number of Oligo1 marker genes in rat: 1516"
+# [1] "Number of Oligo2 mouse DEGs: 605"
+# [1] "Number of Oligo2 marker genes in rat: 595"
+# [1] "Number of Oligo3 mouse DEGs: 802"
+# [1] "Number of Oligo3 marker genes in rat: 758"
+# [1] "Number of OPC2 mouse DEGs: 646"
+# [1] "Number of OPC2 marker genes in rat: 599"
+# [1] "Number of OPC3 mouse DEGs: 615"
+# [1] "Number of OPC3 marker genes in rat: 618"
+save(lvsALL_all_hab_ratIDs, file = here('processed-data/08_GSEA/lvsALL_all_hab_mouse_ratIDs.Rdata'))
+
+
+####################   Habenula neuronal subpopulations   ######################
+
+lvsALL_neu_genes <- lvsALL_neu_hab_mouse_genes
+
+## Cell types
+cell_types <- names(table(lvsALL_neu_genes$cellType.target))
+cell_types
+# [1] "LHb1" "LHb2" "LHb3" "LHb4" "LHb5" "LHb6" "MHb1" "MHb2" "MHb3" "MHb4"
+# [11] "MHb5" "MHb6"
+
+lvsALL_neu_hab_ratIDs <- list()
+for (cell_type in cell_types){
+
+    ## Cell type data
+    cell_type_stats <- subset(lvsALL_neu_genes, cellType.target==cell_type)
+    ## DEGs symbols
+    cell_type_DEGs <- subset(cell_type_stats, log.FDR<log(0.05) & logFC >0)$gene
+    print(paste0('Number of ', cell_type, ' mouse DEGs: ', length(cell_type_DEGs)))
+
+    ## Rat orthologs
+    cell_type_DEGs_rat_IDs <- obtain_rat_orthologs_mouse(cell_type_DEGs)
+    markers_rat_IDs <- unique(cell_type_DEGs_rat_IDs$rnorvegicus_homolog_ensembl_gene)
+    markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
+
+    print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
+    lvsALL_neu_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+}
+# [1] "Number of LHb1 mouse DEGs: 4332"
+# [1] "Number of LHb1 marker genes in rat: 4203"
+# [1] "Number of LHb2 mouse DEGs: 354"
+# [1] "Number of LHb2 marker genes in rat: 322"
+# [1] "Number of LHb3 mouse DEGs: 1728"
+# [1] "Number of LHb3 marker genes in rat: 1694"
+# [1] "Number of LHb4 mouse DEGs: 231"
+# [1] "Number of LHb4 marker genes in rat: 220"
+# [1] "Number of LHb5 mouse DEGs: 412"
+# [1] "Number of LHb5 marker genes in rat: 440"
+# [1] "Number of LHb6 mouse DEGs: 2246"
+# [1] "Number of LHb6 marker genes in rat: 2214"
+# [1] "Number of MHb1 mouse DEGs: 903"
+# [1] "Number of MHb1 marker genes in rat: 888"
+# [1] "Number of MHb2 mouse DEGs: 1381"
+# [1] "Number of MHb2 marker genes in rat: 1382"
+# [1] "Number of MHb3 mouse DEGs: 2951"
+# [1] "Number of MHb3 marker genes in rat: 2855"
+# [1] "Number of MHb4 mouse DEGs: 264"
+# [1] "Number of MHb4 marker genes in rat: 293"
+# [1] "Number of MHb5 mouse DEGs: 453"
+# [1] "Number of MHb5 marker genes in rat: 484"
+# [1] "Number of MHb6 mouse DEGs: 85"
+# [1] "Number of MHb6 marker genes in rat: 73"
+save(lvsALL_neu_hab_ratIDs, file = here('processed-data/08_GSEA/lvsALL_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
 
 
-
-
-# Pasas 5
 ############################################################################
 ##             3. Compare MeanRatio vs 1vsALL marker genes
 ############################################################################
@@ -1176,7 +1267,8 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
         cell_types_lvsALL <- unique(lvsALL_markers$cellType.target)
     }
     else if(region == 'habenula' & species=='mouse'){
-
+        cell_types_MR <- unique(MR_markers$cellType.target)
+        cell_types_lvsALL <- unique(lvsALL_markers$cellType.target)
     }
 
     ## Colors and alphas for plots
@@ -1250,6 +1342,27 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
         ##  C) MeanRatio vs 1vsALL markers in mouse habenula
         ## --------------------------------------------------
         else if(region=='habenula' & species=='mouse'){
+
+            ########### i) MeanRatio vs 1vsALL for all subpops markers ###########
+            if(resolution_MR=='all' & resolution_lvsALL=='all'){
+                ## Use all cell types for both methods
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                cell_type_1vsALL <- "cell_type"
+
+                ## Broad cell types: not needed
+                broad_cell_types <- NA
+            }
+
+            ########### ii) MeanRatio vs 1vsALL for neuronal subpops markers ###########
+            if(resolution_MR=='neu' & resolution_lvsALL=='neu'){
+                ## Use hab neuronal cell types for both methods
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                cell_type_1vsALL <- "cell_type"
+
+                broad_cell_types <- NA
+            }
 
         }
     }
@@ -1345,14 +1458,6 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
             }
 
         }
-
-        ## --------------------------------------------------
-        ##  C) MeanRatio vs 1vsALL markers in mouse habenula
-        ## --------------------------------------------------
-        else if(region=='habenula' & species=='mouse'){
-
-        }
-
     }
 
     ## Plot per cell type
@@ -1392,7 +1497,7 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
                                                              else{FALSE}})
         }
 
-        else if(region=='amygdala' & species=='human'){
+        else if((region=='amygdala' & species=='human') | (region=='habenula' & species=='mouse')){
             lvsALL_data <- subset(lvsALL_markers, cellType.target==get(cell_type_1vsALL))
             data <- cbind(MR_markers_cell_type, lvsALL_data[match(MR_markers_cell_type$gene, lvsALL_data$gene),
                                                                c('logFC', 'log.FDR', 'std.logFC')])
@@ -1530,21 +1635,21 @@ species <- 'mouse'
 resolution_MR <- 'all'
 resolution_lvsALL <- 'all'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
-plot_grid(plotlist = p, nrow=5)
+plot_grid(plotlist = p, nrow=3)
 ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
-                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 65, height = 26, limitsize = FALSE)
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 33, height = 11, limitsize = FALSE)
 
 ####################  Habenula cell type markers  ######################
 
 ## Compare MeanRatio vs 1vsALL std logFC for habenula cell types
 region <- 'habenula'
 species <- 'mouse'
-resolution_MR <- 'hab'
-resolution_lvsALL <- 'hab'
+resolution_MR <- 'neu'
+resolution_lvsALL <- 'neu'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
-plot_grid(plotlist = p, nrow=2)
+plot_grid(plotlist = p, nrow=3)
 ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
-                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 24, height = 8)
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 21, height = 10)
 
 
 
