@@ -1682,7 +1682,7 @@ ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_
 ############################################################################
 
 ## Enrichment analysis
-enrichment_analysis<- function(region, method, top_n, resolution, DEGs_region){
+enrichment_analysis<- function(region, species, method, top_n, resolution, DEGs_region){
 
     ## Define marker genes
     if(method == "lvsALL"){
@@ -1741,7 +1741,7 @@ enrichment_analysis<- function(region, method, top_n, resolution, DEGs_region){
 
             ms[[paste(group, cell_type, sep='-')]] <- m
 
-            ## Confirm number of DEGs, cell type markers and universe size
+            ## Confirm number of DEGs, cell type markers, and universe size
             if (sum(m[1,])==length(de_genes) & sum(m[,1])==length(cell_type_markers) & sum(m)==length(all_genes)){
                 ## Assess enrichment of markers among DEGs
                 p <- fisher.test(m, alternative = "greater")$p.value
@@ -1800,66 +1800,102 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, widt
                  { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 17, col='yellow1'))} }
     )
 
-    pdf(file=paste0('plots/08_GSEA/', filename, '_vs_', DEGs_region, 'DEGs.pdf'), height = 5, width = width)
+    pdf(file=here(paste0('plots/08_GSEA/', filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 5, width = width)
     print(h)
     dev.off()
 }
 
 
-####  Compare amygdala DEGs vs cell type marker genes in amygdala:
+## -----------------------------------------------------------------------------
+##     Compare rat amygdala DEGs vs cell type marker genes in human amygdala
+## -----------------------------------------------------------------------------
 
 #   * MeanRatio-based cell type marker genes at fine resolution
-results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'MeanRatio', 'top100', 'fine', 'amygdala')
+results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[1]]
-heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based amygdala fine cell type markers',
+heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala fine cell type markers',
               'MeanRatio_top100_fine_amyg', 11)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
-results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'MeanRatio', 'top100', 'broad', 'amygdala')
+results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'broad', 'amygdala')
 p_values_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[1]]
-heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based amygdala broad cell type markers',
+heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala broad cell type markers',
               'MeanRatio_top100_broad_amyg', 6.7)
 ms_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
-results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'lvsALL', NULL, 'fine', 'amygdala')
+results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[1]]
-heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based amygdala fine cell type markers',
+heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based human amygdala fine cell type markers',
               'lvsALL_fine_amy', 11)
 ms_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
-results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'lvsALL', NULL, 'broad', 'amygdala')
+results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'broad', 'amygdala')
 p_values_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[1]]
-heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based amygdala broad cell type markers',
+heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based human amygdala broad cell type markers',
               'lvsALL_broad_amy', 6.7)
 ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 
 
-
-####  Compare habenula DEGs vs cell type marker genes in epithalamus:
+## -----------------------------------------------------------------------------
+##   Compare rat habenula DEGs vs cell type marker genes in human epithalamus
+## -----------------------------------------------------------------------------
 
 #   * MeanRatio-based cell type marker genes at fine resolution
-results_MeanRatio_50_fine_hab <- enrichment_analysis('hab', 'MeanRatio', 'top50', 'fine', 'habenula')
+results_MeanRatio_50_fine_hab <- enrichment_analysis('hab', 'human', 'MeanRatio', 'top50', 'fine', 'habenula')
 p_values_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[1]]
-heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based habenula fine cell type markers',
+heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based human habenula fine cell type markers',
               'MeanRatio_top50_fine_hab', 8)
 ms_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
-results_lvsALL_fine_hab <- enrichment_analysis('hab', 'lvsALL', NULL, 'fine', 'habenula')
+results_lvsALL_fine_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'fine', 'habenula')
 p_values_lvsALL_fine_hab <- results_lvsALL_fine_hab[[1]]
-heatmap_pvals(p_values_lvsALL_fine_hab, 'habenula', '1vsALL-based habenula fine cell type markers',
+heatmap_pvals(p_values_lvsALL_fine_hab, 'habenula', '1vsALL-based human habenula fine cell type markers',
               'lvsALL_fine_hab', 8)
 ms_lvsALL_fine_hab <- results_lvsALL_fine_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
-results_lvsALL_broad_hab <- enrichment_analysis('hab', 'lvsALL', NULL, 'broad', 'habenula')
+results_lvsALL_broad_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'broad', 'habenula')
 p_values_lvsALL_broad_hab <- results_lvsALL_broad_hab[[1]]
-heatmap_pvals(p_values_lvsALL_broad_hab, 'habenula', '1vsALL-based habenula broad cell type markers',
+heatmap_pvals(p_values_lvsALL_broad_hab, 'habenula', '1vsALL-based human habenula broad cell type markers',
               'lvsALL_broad_hab', 6)
 ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
+
+
+## -----------------------------------------------------------------------------
+##    Compare rat habenula DEGs vs cell type marker genes in mouse habenula
+## -----------------------------------------------------------------------------
+
+#   * MeanRatio-based cell type marker genes for all cell types
+results_MeanRatio_100_all_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'all', 'habenula')
+p_values_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[1]]
+heatmap_pvals(p_values_MeanRatio_100_all_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for all cell types',
+              'MeanRatio_top100_all_hab', 8)
+ms_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[2]]
+
+#   * MeanRatio-based cell type marker genes for habenula neuronal cell types
+results_MeanRatio_100_neu_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'neu', 'habenula')
+p_values_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[1]]
+heatmap_pvals(p_values_MeanRatio_100_neu_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for neuronal cell types',
+              'MeanRatio_top100_neu_hab', 8)
+ms_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[2]]
+
+#   * 1vsALL-based cell type marker genes for all cell types
+results_lvsALL_all_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'all', 'habenula')
+p_values_lvsALL_all_hab <- results_lvsALL_all_hab[[1]]
+heatmap_pvals(p_values_lvsALL_all_hab, 'habenula', '1vsALL-based mouse habenula markers for all cell types',
+              'lvsALL_all_hab', 8)
+ms_lvsALL_all_hab <- results_lvsALL_all_hab[[2]]
+
+#   * 1vsALL-based cell type marker genes for habenula neuronal cell types
+results_lvsALL_neu_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'neu', 'habenula')
+p_values_lvsALL_neu_hab <- results_lvsALL_neu_hab[[1]]
+heatmap_pvals(p_values_lvsALL_neu_hab, 'habenula', '1vsALL-based mouse habenula markers for neuronal cell types',
+              'lvsALL_neu_hab', 8)
+ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 
 
 
@@ -1872,112 +1908,168 @@ ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 options(width = 120)
 session_info()
 
-# ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
-# setting  value
-# version  R version 4.4.0 (2024-04-24)
-# os       macOS Monterey 12.5.1
-# system   aarch64, darwin20
-# ui       RStudio
-# language (EN)
-# collate  en_US.UTF-8
-# ctype    en_US.UTF-8
-# tz       America/New_York
-# date     2024-06-20
-# rstudio  2024.04.2+764 Chocolate Cosmos (desktop)
-# pandoc   3.1.11 @ /private/var/folders/r6/94s0dsks4m3298b0d1mrp5tw0000gn/T/AppTranslocation/73D2BAF6-C47F-4B84-B5C9-D80EC60F9834/d/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
-#
-# ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-# package              * version date (UTC) lib source
-# abind                  1.4-5   2016-07-21 [1] CRAN (R 4.4.0)
-# AnnotationDbi          1.67.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# Biobase              * 2.65.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# BiocFileCache          2.13.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# BiocGenerics         * 0.51.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# biomaRt              * 2.61.1  2024-06-12 [1] Bioconductor 3.20 (R 4.4.1)
-# Biostrings             2.73.1  2024-06-02 [1] Bioconductor 3.20 (R 4.4.0)
-# bit                    4.0.5   2022-11-15 [1] CRAN (R 4.4.0)
-# bit64                  4.0.5   2020-08-30 [1] CRAN (R 4.4.0)
-# blob                   1.2.4   2023-03-17 [1] CRAN (R 4.4.0)
-# cachem                 1.1.0   2024-05-16 [1] CRAN (R 4.4.0)
-# cellranger             1.1.0   2016-07-27 [1] CRAN (R 4.4.0)
-# circlize               0.4.16  2024-02-20 [1] CRAN (R 4.4.0)
-# cli                    3.6.2   2023-12-11 [1] CRAN (R 4.4.0)
-# clue                   0.3-65  2023-09-23 [1] CRAN (R 4.4.0)
-# cluster                2.1.6   2023-12-01 [1] CRAN (R 4.4.0)
-# codetools              0.2-20  2024-03-31 [1] CRAN (R 4.4.0)
-# colorspace             2.1-0   2023-01-23 [1] CRAN (R 4.4.0)
-# ComplexHeatmap       * 2.21.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# crayon                 1.5.2   2022-09-29 [1] CRAN (R 4.4.0)
-# curl                   5.2.1   2024-03-01 [1] CRAN (R 4.4.0)
-# DBI                    1.2.3   2024-06-02 [1] CRAN (R 4.4.0)
-# dbplyr                 2.5.0   2024-03-19 [1] CRAN (R 4.4.0)
-# DelayedArray           0.31.1  2024-05-07 [1] Bioconductor 3.20 (R 4.4.0)
-# digest                 0.6.35  2024-03-11 [1] CRAN (R 4.4.0)
-# doParallel             1.0.17  2022-02-07 [1] CRAN (R 4.4.0)
-# dplyr                  1.1.4   2023-11-17 [1] CRAN (R 4.4.0)
-# evaluate               0.24.0  2024-06-10 [1] CRAN (R 4.4.0)
-# fansi                  1.0.6   2023-12-08 [1] CRAN (R 4.4.0)
-# fastmap                1.2.0   2024-05-15 [1] CRAN (R 4.4.0)
-# filelock               1.0.3   2023-12-11 [1] CRAN (R 4.4.0)
-# foreach                1.5.2   2022-02-02 [1] CRAN (R 4.4.0)
-# generics               0.1.3   2022-07-05 [1] CRAN (R 4.4.0)
-# GenomeInfoDb         * 1.41.1  2024-05-24 [1] Bioconductor 3.20 (R 4.4.0)
-# GenomeInfoDbData       1.2.12  2024-06-12 [1] Bioconductor
-# GenomicRanges        * 1.57.1  2024-06-12 [1] Bioconductor 3.20 (R 4.4.1)
-# GetoptLong             1.0.5   2020-12-15 [1] CRAN (R 4.4.0)
-# GlobalOptions          0.1.2   2020-06-10 [1] CRAN (R 4.4.0)
-# glue                   1.7.0   2024-01-09 [1] CRAN (R 4.4.0)
-# here                 * 1.0.1   2020-12-13 [1] CRAN (R 4.4.0)
-# hms                    1.1.3   2023-03-21 [1] CRAN (R 4.4.0)
-# htmltools              0.5.8.1 2024-04-04 [1] CRAN (R 4.4.0)
-# httr                   1.4.7   2023-08-15 [1] CRAN (R 4.4.0)
-# httr2                  1.0.1   2024-04-01 [1] CRAN (R 4.4.0)
-# IRanges              * 2.39.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# iterators              1.0.14  2022-02-05 [1] CRAN (R 4.4.0)
-# jsonlite               1.8.8   2023-12-04 [1] CRAN (R 4.4.0)
-# KEGGREST               1.45.1  2024-06-18 [1] Bioconductor 3.20 (R 4.4.1)
-# knitr                  1.47    2024-05-29 [1] CRAN (R 4.4.0)
-# lattice                0.22-6  2024-03-20 [1] CRAN (R 4.4.0)
-# lifecycle              1.0.4   2023-11-07 [1] CRAN (R 4.4.0)
-# magrittr               2.0.3   2022-03-30 [1] CRAN (R 4.4.0)
-# Matrix                 1.7-0   2024-03-22 [1] CRAN (R 4.4.0)
-# MatrixGenerics       * 1.17.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# matrixStats          * 1.3.0   2024-04-11 [1] CRAN (R 4.4.0)
-# memoise                2.0.1   2021-11-26 [1] CRAN (R 4.4.0)
-# pillar                 1.9.0   2023-03-22 [1] CRAN (R 4.4.0)
-# pkgconfig              2.0.3   2019-09-22 [1] CRAN (R 4.4.0)
-# png                    0.1-8   2022-11-29 [1] CRAN (R 4.4.0)
-# prettyunits            1.2.0   2023-09-24 [1] CRAN (R 4.4.0)
-# progress               1.2.3   2023-12-06 [1] CRAN (R 4.4.0)
-# purrr                  1.0.2   2023-08-10 [1] CRAN (R 4.4.0)
-# R6                     2.5.1   2021-08-19 [1] CRAN (R 4.4.0)
-# rappdirs               0.3.3   2021-01-31 [1] CRAN (R 4.4.0)
-# RColorBrewer           1.1-3   2022-04-03 [1] CRAN (R 4.4.0)
-# readxl               * 1.4.3   2023-07-06 [1] CRAN (R 4.4.0)
-# rjson                  0.2.21  2022-01-09 [1] CRAN (R 4.4.0)
-# rlang                * 1.1.4   2024-06-04 [1] CRAN (R 4.4.0)
-# rmarkdown              2.27    2024-05-17 [1] CRAN (R 4.4.0)
-# rprojroot              2.0.4   2023-11-05 [1] CRAN (R 4.4.0)
-# RSQLite                2.3.7   2024-05-27 [1] CRAN (R 4.4.0)
-# S4Arrays               1.5.1   2024-05-29 [1] Bioconductor 3.20 (R 4.4.0)
-# S4Vectors            * 0.43.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# sessioninfo          * 1.2.2   2021-12-06 [1] CRAN (R 4.4.0)
-# shape                  1.4.6.1 2024-02-23 [1] CRAN (R 4.4.0)
-# SparseArray            1.5.8   2024-06-14 [1] Bioconductor 3.20 (R 4.4.1)
-# stringi                1.8.4   2024-05-06 [1] CRAN (R 4.4.0)
-# stringr                1.5.1   2023-11-14 [1] CRAN (R 4.4.0)
-# SummarizedExperiment * 1.35.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# tibble                 3.2.1   2023-03-20 [1] CRAN (R 4.4.0)
-# tidyselect             1.2.1   2024-03-11 [1] CRAN (R 4.4.0)
-# UCSC.utils             1.1.0   2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# utf8                   1.2.4   2023-10-22 [1] CRAN (R 4.4.0)
-# vctrs                  0.6.5   2023-12-01 [1] CRAN (R 4.4.0)
-# withr                  3.0.0   2024-01-16 [1] CRAN (R 4.4.0)
-# xfun                   0.45    2024-06-16 [1] CRAN (R 4.4.0)
-# xml2                   1.3.6   2023-12-04 [1] CRAN (R 4.4.0)
-# XVector                0.45.0  2024-05-04 [1] Bioconductor 3.20 (R 4.4.0)
-# zlibbioc               1.51.1  2024-06-05 [1] Bioconductor 3.20 (R 4.4.0)
-#
-# [1] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
-#
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# [2] CRAN (R 4.3.1)
+# benchmarkmeData          1.0.4     2020-04-23 [2] CRAN (R 4.3.1)
+# Biobase                * 2.60.0    2023-04-25 [2] Bioconductor
+# BiocFileCache            2.8.0     2023-04-25 [2] Bioconductor
+# BiocGenerics           * 0.46.0    2023-04-25 [2] Bioconductor
+# BiocIO                   1.10.0    2023-04-25 [2] Bioconductor
+# BiocManager              1.30.22   2023-08-08 [2] CRAN (R 4.3.1)
+# BiocNeighbors            1.18.0    2023-04-25 [2] Bioconductor
+# BiocParallel             1.34.2    2023-05-22 [2] Bioconductor
+# BiocSingular             1.16.0    2023-04-25 [2] Bioconductor
+# BiocVersion              3.17.1    2022-11-04 [2] Bioconductor
+# biomaRt                * 2.56.1    2023-06-09 [2] Bioconductor
+# Biostrings               2.68.1    2023-05-16 [2] Bioconductor
+# bit                      4.0.5     2022-11-15 [2] CRAN (R 4.3.1)
+# bit64                    4.0.5     2020-08-30 [2] CRAN (R 4.3.1)
+# bitops                   1.0-7     2021-04-24 [2] CRAN (R 4.3.1)
+# blob                     1.2.4     2023-03-17 [2] CRAN (R 4.3.1)
+# bluster                  1.10.0    2023-04-25 [2] Bioconductor
+# bslib                    0.5.1     2023-08-11 [2] CRAN (R 4.3.1)
+# cachem                   1.0.8     2023-05-01 [2] CRAN (R 4.3.1)
+# Cairo                    1.6-1     2023-08-18 [2] CRAN (R 4.3.1)
+# cellranger               1.1.0     2016-07-27 [2] CRAN (R 4.3.1)
+# circlize                 0.4.15    2022-05-10 [2] CRAN (R 4.3.1)
+# cli                      3.6.1     2023-03-23 [2] CRAN (R 4.3.1)
+# clue                     0.3-64    2023-01-31 [2] CRAN (R 4.3.1)
+# cluster                  2.1.4     2022-08-22 [3] CRAN (R 4.3.1)
+# codetools                0.2-19    2023-02-01 [3] CRAN (R 4.3.1)
+# colorspace               2.1-0     2023-01-23 [2] CRAN (R 4.3.1)
+# ComplexHeatmap         * 2.16.0    2023-04-25 [2] Bioconductor
+# config                   0.3.2     2023-08-30 [2] CRAN (R 4.3.1)
+# cowplot                * 1.1.1     2020-12-30 [2] CRAN (R 4.3.1)
+# crayon                   1.5.2     2022-09-29 [2] CRAN (R 4.3.1)
+# curl                     5.0.2     2023-08-14 [2] CRAN (R 4.3.1)
+# data.table               1.14.8    2023-02-17 [2] CRAN (R 4.3.1)
+# DBI                      1.1.3     2022-06-18 [2] CRAN (R 4.3.1)
+# dbplyr                   2.3.3     2023-07-07 [2] CRAN (R 4.3.1)
+# DeconvoBuddies         * 0.99.0    2024-08-02 [1] Github (LieberInstitute/DeconvoBuddies@e0f3c54)
+# DelayedArray             0.26.7    2023-07-28 [2] Bioconductor
+# DelayedMatrixStats       1.22.6    2023-08-28 [2] Bioconductor
+# digest                   0.6.33    2023-07-07 [2] CRAN (R 4.3.1)
+# doParallel               1.0.17    2022-02-07 [2] CRAN (R 4.3.1)
+# dotCall64                1.0-2     2022-10-03 [2] CRAN (R 4.3.1)
+# dplyr                    1.1.3     2023-09-03 [2] CRAN (R 4.3.1)
+# dqrng                    0.3.1     2023-08-30 [2] CRAN (R 4.3.1)
+# DropletUtils             1.20.0    2023-04-25 [2] Bioconductor
+# DT                       0.29      2023-08-29 [2] CRAN (R 4.3.1)
+# edgeR                    3.42.4    2023-05-31 [2] Bioconductor
+# ellipsis                 0.3.2     2021-04-29 [2] CRAN (R 4.3.1)
+# ExperimentHub            2.8.1     2023-07-12 [2] Bioconductor
+# fansi                    1.0.4     2023-01-22 [2] CRAN (R 4.3.1)
+# fastmap                  1.1.1     2023-02-24 [2] CRAN (R 4.3.1)
+# fields                   15.2      2023-08-17 [2] CRAN (R 4.3.1)
+# filelock                 1.0.2     2018-10-05 [2] CRAN (R 4.3.1)
+# foreach                  1.5.2     2022-02-02 [2] CRAN (R 4.3.1)
+# generics                 0.1.3     2022-07-05 [2] CRAN (R 4.3.1)
+# GenomeInfoDb           * 1.36.3    2023-09-07 [2] Bioconductor
+# GenomeInfoDbData         1.2.10    2023-07-20 [2] Bioconductor
+# GenomicAlignments        1.36.0    2023-04-25 [2] Bioconductor
+# GenomicRanges          * 1.52.0    2023-04-25 [2] Bioconductor
+# GetoptLong               1.0.5     2020-12-15 [2] CRAN (R 4.3.1)
+# ggbeeswarm               0.7.2     2023-04-29 [2] CRAN (R 4.3.1)
+# ggplot2                * 3.4.3     2023-08-14 [2] CRAN (R 4.3.1)
+# ggrepel                  0.9.3     2023-02-03 [2] CRAN (R 4.3.1)
+# GlobalOptions            0.1.2     2020-06-10 [2] CRAN (R 4.3.1)
+# glue                     1.6.2     2022-02-24 [2] CRAN (R 4.3.1)
+# golem                    0.4.1     2023-06-05 [2] CRAN (R 4.3.1)
+# gridExtra                2.3       2017-09-09 [2] CRAN (R 4.3.1)
+# gtable                   0.3.4     2023-08-21 [2] CRAN (R 4.3.1)
+# HDF5Array                1.28.1    2023-05-01 [2] Bioconductor
+# here                   * 1.0.1     2020-12-13 [2] CRAN (R 4.3.1)
+# hms                      1.1.3     2023-03-21 [2] CRAN (R 4.3.1)
+# htmltools                0.5.6     2023-08-10 [2] CRAN (R 4.3.1)
+# htmlwidgets              1.6.2     2023-03-17 [2] CRAN (R 4.3.1)
+# httpuv                   1.6.11    2023-05-11 [2] CRAN (R 4.3.1)
+# httr                     1.4.7     2023-08-15 [2] CRAN (R 4.3.1)
+# igraph                   1.5.1     2023-08-10 [2] CRAN (R 4.3.1)
+# interactiveDisplayBase   1.38.0    2023-04-25 [2] Bioconductor
+# IRanges                * 2.34.1    2023-06-22 [2] Bioconductor
+# irlba                    2.3.5.1   2022-10-03 [2] CRAN (R 4.3.1)
+# iterators                1.0.14    2022-02-05 [2] CRAN (R 4.3.1)
+# jquerylib                0.1.4     2021-04-26 [2] CRAN (R 4.3.1)
+# jsonlite                 1.8.7     2023-06-29 [2] CRAN (R 4.3.1)
+# KEGGREST                 1.40.0    2023-04-25 [2] Bioconductor
+# later                    1.3.1     2023-05-02 [2] CRAN (R 4.3.1)
+# lattice                  0.21-8    2023-04-05 [3] CRAN (R 4.3.1)
+# lazyeval                 0.2.2     2019-03-15 [2] CRAN (R 4.3.1)
+# lifecycle                1.0.3     2022-10-07 [2] CRAN (R 4.3.1)
+# limma                    3.56.2    2023-06-04 [2] Bioconductor
+# locfit                   1.5-9.8   2023-06-11 [2] CRAN (R 4.3.1)
+# magick                   2.7.5     2023-08-07 [2] CRAN (R 4.3.1)
+# magrittr                 2.0.3     2022-03-30 [2] CRAN (R 4.3.1)
+# maps                     3.4.1     2022-10-30 [2] CRAN (R 4.3.1)
+# Matrix                   1.6-1.1   2023-09-18 [3] CRAN (R 4.3.1)
+# MatrixGenerics         * 1.12.3    2023-07-30 [2] Bioconductor
+# matrixStats            * 1.0.0     2023-06-02 [2] CRAN (R 4.3.1)
+# memoise                  2.0.1     2021-11-26 [2] CRAN (R 4.3.1)
+# metapod                  1.8.0     2023-04-25 [2] Bioconductor
+# mime                     0.12      2021-09-28 [2] CRAN (R 4.3.1)
+# munsell                  0.5.0     2018-06-12 [2] CRAN (R 4.3.1)
+# paletteer                1.5.0     2022-10-19 [2] CRAN (R 4.3.1)
+# pillar                   1.9.0     2023-03-22 [2] CRAN (R 4.3.1)
+# pkgconfig                2.0.3     2019-09-22 [2] CRAN (R 4.3.1)
+# plotly                   4.10.2    2023-06-03 [2] CRAN (R 4.3.1)
+# png                      0.1-8     2022-11-29 [2] CRAN (R 4.3.1)
+# prettyunits              1.1.1     2020-01-24 [2] CRAN (R 4.3.1)
+# progress                 1.2.2     2019-05-16 [2] CRAN (R 4.3.1)
+# promises                 1.2.1     2023-08-10 [2] CRAN (R 4.3.1)
+# purrr                    1.0.2     2023-08-10 [2] CRAN (R 4.3.1)
+# R.methodsS3              1.8.2     2022-06-13 [2] CRAN (R 4.3.1)
+# R.oo                     1.25.0    2022-06-12 [2] CRAN (R 4.3.1)
+# R.utils                  2.12.2    2022-11-11 [2] CRAN (R 4.3.1)
+# R6                       2.5.1     2021-08-19 [2] CRAN (R 4.3.1)
+# rafalib                  1.0.0     2015-08-09 [1] CRAN (R 4.3.1)
+# randomcoloR            * 1.1.0.1   2019-11-24 [1] CRAN (R 4.3.1)
+# rappdirs                 0.3.3     2021-01-31 [2] CRAN (R 4.3.1)
+# RColorBrewer             1.1-3     2022-04-03 [2] CRAN (R 4.3.1)
+# Rcpp                     1.0.11    2023-07-06 [2] CRAN (R 4.3.1)
+# RCurl                    1.98-1.12 2023-03-27 [2] CRAN (R 4.3.1)
+# readxl                 * 1.4.3     2023-07-06 [2] CRAN (R 4.3.1)
+# rematch2                 2.1.2     2020-05-01 [2] CRAN (R 4.3.1)
+# restfulr                 0.0.15    2022-06-16 [2] CRAN (R 4.3.1)
+# rhdf5                    2.44.0    2023-04-25 [2] Bioconductor
+# rhdf5filters             1.12.1    2023-04-30 [2] Bioconductor
+# Rhdf5lib                 1.22.1    2023-09-10 [2] Bioconductor
+# rjson                    0.2.21    2022-01-09 [2] CRAN (R 4.3.1)
+# rlang                  * 1.1.1     2023-04-28 [2] CRAN (R 4.3.1)
+# rprojroot                2.0.3     2022-04-02 [2] CRAN (R 4.3.1)
+# Rsamtools                2.16.0    2023-04-25 [2] Bioconductor
+# RSQLite                  2.3.1     2023-04-03 [2] CRAN (R 4.3.1)
+# rstudioapi               0.15.0    2023-07-07 [2] CRAN (R 4.3.1)
+# rsvd                     1.0.5     2021-04-16 [2] CRAN (R 4.3.1)
+# rtracklayer              1.60.1    2023-08-15 [2] Bioconductor
+# Rtsne                    0.16      2022-04-17 [2] CRAN (R 4.3.1)
+# S4Arrays                 1.0.6     2023-08-30 [2] Bioconductor
+# S4Vectors              * 0.38.1    2023-05-02 [2] Bioconductor
+# sass                     0.4.7     2023-07-15 [2] CRAN (R 4.3.1)
+# ScaledMatrix             1.8.1     2023-05-03 [2] Bioconductor
+# scales                   1.2.1     2022-08-20 [2] CRAN (R 4.3.1)
+# scater                 * 1.28.0    2023-04-25 [2] Bioconductor
+# scran                    1.28.2    2023-07-23 [2] Bioconductor
+# scuttle                * 1.10.2    2023-08-03 [2] Bioconductor
+# sessioninfo            * 1.2.2     2021-12-06 [2] CRAN (R 4.3.1)
+# shape                    1.4.6     2021-05-19 [2] CRAN (R 4.3.1)
+# shiny                    1.7.5     2023-08-12 [2] CRAN (R 4.3.1)
+# shinyWidgets             0.8.0     2023-08-30 [2] CRAN (R 4.3.1)
+# SingleCellExperiment   * 1.22.0    2023-04-25 [2] Bioconductor
+# spam                     2.9-1     2022-08-07 [2] CRAN (R 4.3.1)
+# sparseMatrixStats        1.12.2    2023-07-02 [2] Bioconductor
+# SpatialExperiment        1.10.0    2023-04-25 [2] Bioconductor
+# spatialLIBD              1.12.0    2023-04-27 [2] Bioconductor
+# statmod                  1.5.0     2023-01-06 [2] CRAN (R 4.3.1)
+# stringi                  1.7.12    2023-01-11 [2] CRAN (R 4.3.1)
+# stringr                  1.5.0     2022-12-02 [2] CRAN (R 4.3.1)
+# SummarizedExperiment   * 1.30.2    2023-06-06 [2] Bioconductor
+# tibble                   3.2.1     2023-03-20 [2] CRAN (R 4.3.1)
+# tidyr                    1.3.0     2023-01-24 [2] CRAN (R 4.3.1)
+# tidyselect               1.2.0     2022-10-10 [2] CRAN (R 4.3.1)
+# utf8                     1.2.3     2023-01-31 [2] CRAN (R 4.3.1)
+# V8                       4.4.2     2024-02-15 [1] CRAN (R 4.3.1)
+# vctrs                    0.6.3     2023-06-14 [2] CRAN (R 4.3.1)
+# vipor                    0.4.5     2017-03-22 [2] CRAN (R 4.3.1)
+# viridis                  0.6.4     2023-07-22 [2] CRAN (R 4.3.1)
+# viridisLite              0.4.2     2023-05-02 [2] CRAN (R 4.3.1)
+# withr                    2.5.0     2022-03-03 [2] CRAN (R 4.3.1)
+# XML                      3.99-0.14 2023-03-19 [2] CRAN (R 4.3.1)
