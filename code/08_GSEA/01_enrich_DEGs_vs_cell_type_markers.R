@@ -32,7 +32,6 @@ load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = 
 # *From doi: 10.1016/j.neuron.2020.03.011
 
 ## Load single cell mouse data (internal LIBD paths)
-
 ## Count data for all cell subpopulations
 all_counts <- read.csv("/dcs04/lieber/lcolladotor/pilotHb_LIBD001/Roche_Habenula/processed-data/09_cross_species_analysis/Hashikawa_data/count.csv", row.names = 1)
 ## Count data for habenula neuronal subpopulations
@@ -152,7 +151,7 @@ summary(lib.sf_mouse_hab)
 ## Log-normalize counts in a separate assay: log2(gene count/cell size factor)
 ## Provided size factors are the same computed internally by logNormCounts()
 sce_mouse_all <- logNormCounts(sce_mouse_all, size.factors=lib.sf_mouse_all)
-save(sce_mouse_all, file = here('processed-data/08_GSEA/sce_mouse_all.Rdata'))
+save(sce_mouse_all, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_all.Rdata'))
 assays(sce_mouse_all)$logcounts[1:5, 1:5]
 #        AAACCTGAGGCCCTCAcntl AAACCTGAGTTTGCGTcntl AAACCTGTCGTAGGTTcntl
 # Xkr4                      .                    .                    .
@@ -168,7 +167,7 @@ assays(sce_mouse_all)$logcounts[1:5, 1:5]
 # Tcea1                     .             .
 
 sce_mouse_hab <- logNormCounts(sce_mouse_hab, size.factors=lib.sf_mouse_hab)
-save(sce_mouse_hab, file = here('processed-data/08_GSEA/sce_mouse_hab.Rdata'))
+save(sce_mouse_hab, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_hab.Rdata'))
 assays(sce_mouse_hab)$logcounts[1:5, 1:5]
 #        AACACGTGTGGCAAACcntl AACCGCGGTAGGCATGcntl AACCGCGTCGACCAGCcntl
 # Xkr4                      .                    .             .
@@ -217,15 +216,15 @@ sum(table(colData(sce_mouse_hab)[, c('stim', 'celltype')])['cntl',])
 ## Subset to naive mice samples
 sce_mouse_all_ctrl <- sce_mouse_all[, which(sce_mouse_all$stim=='cntl')]
 sce_mouse_hab_ctrl <- sce_mouse_hab[, which(sce_mouse_hab$stim=='cntl')]
-save(sce_mouse_all_ctrl, file = here('processed-data/08_GSEA/sce_mouse_all_ctrl.Rdata'))
-save(sce_mouse_hab_ctrl, file = here('processed-data/08_GSEA/sce_mouse_hab_ctrl.Rdata'))
+save(sce_mouse_all_ctrl, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_all_ctrl.Rdata'))
+save(sce_mouse_hab_ctrl, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_hab_ctrl.Rdata'))
 
-## Remove cell groups with <10 cells
+## Remove cell types with <10 cells
 sce_mouse_all_ctrl_filt <- sce_mouse_all_ctrl[, which(!sce_mouse_all_ctrl$celltype %in% names(which(table(sce_mouse_all_ctrl$celltype)<10)))]
-save(sce_mouse_all_ctrl_filt, file = here('processed-data/08_GSEA/sce_mouse_all_ctrl_filt.Rdata'))
+save(sce_mouse_all_ctrl_filt, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_all_ctrl_filt.Rdata'))
 ## None in habenula subpops
 sce_mouse_hab_ctrl_filt <- sce_mouse_hab_ctrl[, which(!sce_mouse_hab_ctrl$celltype %in% names(which(table(sce_mouse_hab_ctrl$celltype)<10)))]
-save(sce_mouse_hab_ctrl_filt, file = here('processed-data/08_GSEA/sce_mouse_hab_ctrl_filt.Rdata'))
+save(sce_mouse_hab_ctrl_filt, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_hab_ctrl_filt.Rdata'))
 
 
 ## -----------------------------------------------------------------------------
@@ -237,11 +236,11 @@ MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_all_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
-save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_all_hab_mouse_genes.Rdata'))
 
 ## Subset to top100 markers per cell type
 MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
 
 
 ######################  Habenula neuronal subpopulations  ######################
@@ -249,11 +248,11 @@ MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_hab_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
-save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_neu_hab_mouse_genes.Rdata'))
 
 ## Top100 only
 MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 
 ## -----------------------------------------------------------------------------
@@ -267,7 +266,7 @@ lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
-save(lvsALL_all_hab_mouse_genes, file = here('processed-data/08_GSEA/lvsALL_all_hab_mouse_genes.Rdata'))
+save(lvsALL_all_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_all_hab_mouse_genes.Rdata'))
 
 ## Number of genes with stats per cell subpopulation
 unique(table(lvsALL_all_hab_mouse_genes$cellType.target))
@@ -280,7 +279,7 @@ lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
-save(lvsALL_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/lvsALL_neu_hab_mouse_genes.Rdata'))
+save(lvsALL_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_neu_hab_mouse_genes.Rdata'))
 
 unique(table(lvsALL_neu_hab_mouse_genes$cellType.target))
 # [1] 17726
@@ -337,8 +336,10 @@ obtain_rat_orthologs_mouse <- function(mouse_marker_genes){
 ####################  Fine resolution cell type markers  ######################
 
 ## All ranked marker genes
-MeanRatio_genes <- as.data.frame(read_xlsx('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top50_MarkerGenes_hab.xlsx'))
+MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top50_MarkerGenes_hab.xlsx')))
 MeanRatio_top50_fine_hab_human_genes <- MeanRatio_genes
+save(MeanRatio_top50_fine_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top50_fine_hab_human_genes.Rdata'))
+
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -411,6 +412,8 @@ for (cell_type in cell_types){
 # [1] "Number of Oligo marker genes in rat: 40"
 # [1] "Number of OPC marker genes in rat: 47"
 
+save(MeanRatio_top50_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top50_fine_hab_human_ratIDs.Rdata'))
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #                ii)  Markers for cell types in human amygdala*
@@ -420,8 +423,9 @@ for (cell_type in cell_types){
 ####################  Broad resolution cell type markers  ######################
 
 ## All ranked marker genes
-MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top100_broadMarkerGenes_amyg.csv'))
+MeanRatio_genes <- as.data.frame(read.csv(here('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top100_broadMarkerGenes_amyg.csv')))
 MeanRatio_top100_broad_amy_human_genes <- MeanRatio_genes
+save(MeanRatio_top100_broad_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_broad_amy_human_genes.Rdata'))
 
 ## Broad cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -470,11 +474,14 @@ for (cell_type in cell_types){
 # [1] "Number of Oligodendrocyte marker genes in rat: 86"
 # [1] "Number of OPC marker genes in rat: 91"
 
+save(MeanRatio_top100_broad_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_broad_amyg_human_ratIDs.Rdata'))
+
 
 ####################  Fine resolution cell type markers  ######################
 
-MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers/MeanRatio_Top100_fineMarkerGenes_amyg.csv'))
+MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top100_fineMarkerGenes_amyg.csv'))
 MeanRatio_top100_fine_amy_human_genes <- MeanRatio_genes
+save(MeanRatio_top100_fine_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_fine_amy_human_genes.Rdata'))
 
 ## Fine cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -616,6 +623,8 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP ABI3BP marker genes in rat: 59"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 60"
 
+save(MeanRatio_top100_fine_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_fine_amyg_human_ratIDs.Rdata'))
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #             iii)  Markers for cell types in mouse habenula*
@@ -626,6 +635,7 @@ for (cell_type in cell_types){
 
 MeanRatio_top100_all_hab_mouse_genes$ratio <- MeanRatio_top100_all_hab_mouse_genes$MeanRatio
 MeanRatio_genes <- MeanRatio_top100_all_hab_mouse_genes
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -716,13 +726,15 @@ for (cell_type in cell_types){
 # [1] "Number of Oligo3 marker genes in rat: 90"
 # [1] "Number of OPC2 marker genes in rat: 22"
 # [1] "Number of OPC3 marker genes in rat: 94"
-save(MeanRatio_top100_all_hab_ratIDs, file = here('processed-data/08_GSEA/MeanRatio_top100_all_hab_mouse_ratIDs.Rdata'))
+
+save(MeanRatio_top100_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_all_hab_mouse_ratIDs.Rdata'))
 
 
 ####################  Neuronal cell subpopulations markers  ######################
 
 MeanRatio_top100_neu_hab_mouse_genes$ratio <- MeanRatio_top100_neu_hab_mouse_genes$MeanRatio
 MeanRatio_genes <- MeanRatio_top100_neu_hab_mouse_genes
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -790,12 +802,13 @@ for (cell_type in cell_types){
 # [1] "Number of MHb4 marker genes in rat: 52"
 # [1] "Number of MHb5 marker genes in rat: 121"
 # [1] "Number of MHb6 marker genes in rat: 26"
-save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/MeanRatio_top100_neu_hab_mouse_ratIDs.Rdata'))
+
+save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
 ## -----------------------------------------------------------------------------
-##             B) 1vsALL-based cell type marker genes in human
+##                  B) 1vsALL-based cell type marker genes
 ## -----------------------------------------------------------------------------
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -805,8 +818,9 @@ save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/MeanRa
 ####################  Broad resolution cell type markers  ######################
 ## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
 
-lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_hab.Rdata'))))
+lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_broad_MarkerGenes_hab.Rdata'))))
 lvsALL_broad_hab_human_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
+save(lvsALL_broad_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_broad_hab_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_broad_genes_enrich_stats)[grep('fdr', colnames(lvsALL_broad_genes_enrich_stats))])
@@ -832,7 +846,6 @@ for (cell_type in cell_types){
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
     lvsALL_broad_hab_ratIDs[[cell_type]] <- markers_rat_IDs
 }
-
 # [1] "Number of Astrocyte human DEGs: 669"
 # [1] "Number of Astrocyte marker genes in rat: 409"
 # [1] "Number of Endo human DEGs: 427"
@@ -852,11 +865,14 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 196"
 # [1] "Number of OPC marker genes in rat: 118"
 
+save(lvsALL_broad_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_broad_hab_human_ratIDs.Rdata'))
+
 
 ####################  Fine resolution cell type markers  #######################
 
-lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_fine_MarkerGenes_hab.Rdata'))))
+lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_fine_MarkerGenes_hab.Rdata'))))
 lvsALL_fine_hab_human_genes <- lvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
+save(lvsALL_fine_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_fine_hab_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_fine_genes_enrich_stats)[grep('fdr', colnames(lvsALL_fine_genes_enrich_stats))])
@@ -884,7 +900,6 @@ for (cell_type in cell_types){
         lvsALL_fine_hab_ratIDs[[cell_type]] <- markers_rat_IDs
     }
 }
-
 # [1] "Number of Astrocyte human DEGs: 1193"
 # [1] "Number of Astrocyte marker genes in rat: 801"
 # [1] "Number of Endo human DEGs: 788"
@@ -919,18 +934,20 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 440"
 # [1] "Number of OPC marker genes in rat: 295"
 
+save(lvsALL_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_fine_hab_human_ratIDs.Rdata'))
+
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #                  ii)  Markers for cell types in human amygdala
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ####################  Broad resolution cell type markers  ######################
+## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model as marker genes)
 
 ## Cell type-specific enrichment stats for all genes
-lvsALL_broad_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_broad_MarkerGenes_amyg.csv')
-## (DEGs (FDR<0.05) based on the enrichment model as marker genes)
-
+lvsALL_broad_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_broad_MarkerGenes_amyg.csv')
 lvsALL_broad_amy_human_genes <- lvsALL_broad_genes
+save(lvsALL_broad_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_broad_amy_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- names(table(lvsALL_broad_genes$cellType.target))
@@ -955,7 +972,6 @@ for (cell_type in cell_types){
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
     lvsALL_broad_amy_ratIDs[[cell_type]] <- markers_rat_IDs
 }
-
 # [1] "Number of Astrocyte human DEGs: 6440"
 # [1] "Number of Astrocyte marker genes in rat: 4105"
 # [1] "Number of Endothelial human DEGs: 4784"
@@ -971,11 +987,14 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 3125"
 # [1] "Number of OPC marker genes in rat: 2223"
 
+save(lvsALL_broad_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_broad_amy_human_ratIDs.Rdata'))
+
 
 ####################  Fine resolution cell type markers  ######################
 
-lvsALL_fine_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers/lvsALL_fine_MarkerGenes_amyg.csv')
+lvsALL_fine_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_fine_MarkerGenes_amyg.csv')
 lvsALL_fine_amy_human_genes <- lvsALL_fine_genes
+save(lvsALL_fine_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_fine_amy_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- names(table(lvsALL_fine_genes$cellType.target))
@@ -1007,7 +1026,6 @@ for (cell_type in cell_types){
     print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
     lvsALL_fine_amy_ratIDs[[cell_type]] <- markers_rat_IDs
 }
-
 # [1] "Number of Human_Astro_1 FGFR3 human DEGs: 4601"
 # [1] "Number of Human_Astro_1 FGFR3 marker genes in rat: 3117"
 # [1] "Number of Human_Astro_2 FGFR3 human DEGs: 5844"
@@ -1099,6 +1117,8 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP NDNF human DEGs: 6878"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 5179"
 
+save(lvsALL_fine_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_fine_amy_human_ratIDs.Rdata'))
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #             iii)  Markers for cell types in mouse habenula
@@ -1171,7 +1191,8 @@ for (cell_type in cell_types){
 # [1] "Number of OPC2 marker genes in rat: 599"
 # [1] "Number of OPC3 mouse DEGs: 615"
 # [1] "Number of OPC3 marker genes in rat: 618"
-save(lvsALL_all_hab_ratIDs, file = here('processed-data/08_GSEA/lvsALL_all_hab_mouse_ratIDs.Rdata'))
+
+save(lvsALL_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_all_hab_mouse_ratIDs.Rdata'))
 
 
 ####################   Habenula neuronal subpopulations   ######################
@@ -1225,7 +1246,8 @@ for (cell_type in cell_types){
 # [1] "Number of MHb5 marker genes in rat: 484"
 # [1] "Number of MHb6 mouse DEGs: 85"
 # [1] "Number of MHb6 marker genes in rat: 73"
-save(lvsALL_neu_hab_ratIDs, file = here('processed-data/08_GSEA/lvsALL_neu_hab_mouse_ratIDs.Rdata'))
+
+save(lvsALL_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
