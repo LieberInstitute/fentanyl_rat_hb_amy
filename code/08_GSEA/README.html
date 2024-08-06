@@ -355,17 +355,18 @@ display: none;
 <div id="gene-set-enrichment-analysis-gsea" class="section level1">
 <h1>Gene Set Enrichment Analysis (GSEA)</h1>
 <p>The association between the differential expression of genes in rat
-habenula and amygdala and their cell type-specific expression was
-assessed based on the enrichment of such DEGs among rat orthologs of
-human marker genes for epithalamus (including the habenula) and amygdala
-cell types at broad and fine resolutions, and mouse marker genes for all
-or only neuronal cellular subpopulations of the habenula complex.</p>
+habenula and amygdala after fentanyl self-administration and their cell
+type-specific expression was assessed based on the enrichment among such
+rat habenula and amygdala DEGs, of rat orthologs of human marker genes
+for epithalamus (including the habenula) and amygdala cell types at
+broad and fine resolutions, and mouse marker genes for all or only
+neuronal cell subpopulations of the habenula complex.</p>
 <p>Cell type marker genes in human epithalamus and amygdala, and mouse
 habenula were obtained applying the <em>MeanRatio</em> and
 <em>1vsALL</em> methods -described in <a href="http://research.libd.org/DeconvoBuddies/index.html">Huuki-Myers,
 L., et al. (2024)</a>- using snRNA-seq data from <a href="https://doi.org/10.1101/2024.02.26.582081">Yalcinbas, E., et
 al. (2024)</a> for human epithalamus, <a href="https://doi.org/10.1038/s41421-022-00506-y">Yu, B., et
-al. (2023)</a> for human amygdala, and <a href="https://pubmed.ncbi.nlm.nih.gov/32272058/">Hashikawa, Y., et
+al. (2023)</a> for human amygdala, and scRNA-seq data from <a href="https://pubmed.ncbi.nlm.nih.gov/32272058/">Hashikawa, Y., et
 al. (2020)</a> for mouse habenula.</p>
 <p>The following were the sets of markers used:</p>
 <ul>
@@ -375,26 +376,27 @@ al. (2020)</a> for mouse habenula.</p>
 <li>Markers for cell types in human epithalamus:</li>
 </ol>
 <ul>
-<li>Fine resolution cell type markers: the top 50 marker genes for fine
-cell types in human epithalamus.</li>
+<li>Fine resolution cell type markers: the top 50 marker genes for each
+fine cell type in human epithalamus.</li>
 </ul></li>
 <li><ol start="2" style="list-style-type: lower-roman">
 <li>Markers for cell types in human amygdala:</li>
 </ol>
 <ul>
-<li>Broad resolution cell type markers: top 100 marker genes for broad
-cell types in human amygdala.</li>
-<li>Fine resolution cell type markers: top 100 marker genes for fine
-cell types in human amygdala.</li>
+<li>Broad resolution cell type markers: the top 100 marker genes for
+each broad cell type in human amygdala.</li>
+<li>Fine resolution cell type markers: the top 100 marker genes for each
+fine cell type in human amygdala.</li>
 </ul></li>
 <li><ol start="3" style="list-style-type: lower-roman">
 <li>Markers for cell types in mouse habenula complex:</li>
 </ol>
 <ul>
-<li>All cell subpopulation markers: top 100 marker genes for all cell
-subpopulations in mouse habenula complex.</li>
-<li>Habenula neuronal subpopulation markers: top 100 marker genes for
-habenula neuronal subpopulations in mouse habenula complex.</li>
+<li>All cell subpopulation markers: the top 100 marker genes for each of
+all cell subpopulations in mouse habenula complex.</li>
+<li>Habenula neuronal subpopulation markers: the top 100 marker genes
+for each of the habenula neuronal subpopulations in mouse habenula
+complex.</li>
 </ul></li>
 </ul>
 <p><strong><em>Note</em></strong>: only genes with mean expression
@@ -407,10 +409,10 @@ expressed in the target cell type than in any other cell type.</p></li>
 </ol>
 <ul>
 <li>Broad resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05 and logFC&gt;0) for broad cell types in human
+FDR&lt;0.05 and logFC&gt;0) for each broad cell type in human
 epithalamus.</li>
 <li>Fine resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05 and logFC&gt;0) for fine cell types in human
+FDR&lt;0.05 and logFC&gt;0) for each fine cell type in human
 epithalamus.</li>
 </ul></li>
 <li><ol start="2" style="list-style-type: lower-roman">
@@ -418,20 +420,22 @@ epithalamus.</li>
 </ol>
 <ul>
 <li>Broad resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05 and logFC&gt;0) for broad cell types in human amygdala.</li>
+FDR&lt;0.05 and logFC&gt;0) for each broad cell type in human
+amygdala.</li>
 <li>Fine resolution cell type markers: marker genes (DEGs with
-FDR&lt;0.05 and logFC&gt;0) for fine cell types in human amygdala.</li>
+FDR&lt;0.05 and logFC&gt;0) for each fine cell type in human
+amygdala.</li>
 </ul></li>
 <li><ol start="3" style="list-style-type: lower-roman">
 <li>Markers for cell types in mouse habenula complex:</li>
 </ol>
 <ul>
 <li>All cell subpopulation markers: marker genes (DEGs with FDR&lt;0.05
-and logFC&gt;0) for all cell subpopulations in mouse habenula
+and logFC&gt;0) for each of all cell subpopulations in mouse habenula
 complex.</li>
 <li>Habenula neuronal subpopulation markers: marker genes (DEGs with
-FDR&lt;0.05 and logFC&gt;0) for habenula neuronal subpopulations in
-mouse habenula complex.</li>
+FDR&lt;0.05 and logFC&gt;0) for each of the habenula neuronal
+subpopulations in mouse habenula complex.</li>
 </ul></li>
 </ul></li>
 <li><p><a href="01_enrich_DEGs_vs_cell_type_markers.R"><code>01_enrich_DEGs_vs_cell_type_markers.R</code></a>:</p>
@@ -445,12 +449,12 @@ subpopulations with <em>MeanRatio</em> and <em>1vsALL</em>.</p></li>
 <li><p><strong>2. Obtain sets of orthologs of human/mouse marker genes
 in rat</strong>: for the human and mouse marker genes in each of the
 sets previously described, their rat orthologs were obtained using
-ENSEMBL under the human GRCh38 and mouse GRCm39 genome version,
+ENSEMBL under the human GRCh38 and mouse GRCm39 genome versions,
 respectively.</p></li>
 <li><p><strong>3. Compare <em>MeanRatio</em> vs <em>1vsALL</em> marker
-genes</strong>: the ratios of <em>MeanRatio</em> marker genes for broad
-and fine human cell types, or for all and neuronal mouse cell types,
-were compared against their <em>1vsALL</em> standard logFCs (aka
+genes</strong>: the ratio of <em>MeanRatio</em> marker genes for broad
+and fine human cell types, and for all and neuronal mouse cell types,
+was compared against their <em>1vsALL</em> standard logFC (aka
 <em>t</em>-stats) for the same or equivalent cell types, identifying
 common markers with both methods, for both habenula and amygdala cell
 types in human and mouse.</p></li>
