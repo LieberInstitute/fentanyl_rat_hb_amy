@@ -2,6 +2,7 @@
 library(here)
 library(SingleCellExperiment)
 library(SummarizedExperiment)
+library(Seurat)
 library(scater)
 library(DeconvoBuddies)
 library(biomaRt)
@@ -27,8 +28,12 @@ load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = 
 
 
 ############################################################################
-##           1. Obtain cell type marker genes in mouse habenula*
+##     1. Obtain cell type marker genes in rodent habenula and amygdala
 ############################################################################
+
+## --------------------------------------------------------------------------
+##            1.1 Obtain cell type marker genes in mouse habenula*
+## --------------------------------------------------------------------------
 # *From doi: 10.1016/j.neuron.2020.03.011
 
 ## Load single cell mouse data (internal LIBD paths)
@@ -184,7 +189,7 @@ assays(sce_mouse_hab)$logcounts[1:5, 1:5]
 
 
 ## Number of cells of each type from naive and exposed mice:
-##  All cell types
+##  * All cell types
 table(colData(sce_mouse_all)[, c('stim', 'celltype')])
 #        celltype
 # stim   Astrocyte1 Astrocyte2 Endothelial Epen Microglia Mural Neuron1 Neuron2
@@ -199,16 +204,18 @@ table(colData(sce_mouse_all)[, c('stim', 'celltype')])
 # cntl      9  359   73
 # stim    581  226   57
 
+## Number of total cells from ctrl mice only
 sum(table(colData(sce_mouse_all)[, c('stim', 'celltype')])['cntl',])
 # [1] 5942
 
-##  Cells from habenula subtypes
+##  * Cells from habenula neuronal subtypes
 table(colData(sce_mouse_hab)[, c('stim', 'celltype')])
 #        celltype
 # stim   LHb1 LHb2 LHb3 LHb4 LHb5 LHb6 MHb1 MHb2 MHb3 MHb4 MHb5 MHb6
 # cntl    329  279  217  214  150  174  315  264  270  148  165  142
 # stim    229  178  222  185  210  185  351  398  351  264  229   89
 
+## Number of hb neuronal cells from ctrl mice only
 sum(table(colData(sce_mouse_hab)[, c('stim', 'celltype')])['cntl',])
 # [1] 2667
 
@@ -227,20 +234,20 @@ sce_mouse_hab_ctrl_filt <- sce_mouse_hab_ctrl[, which(!sce_mouse_hab_ctrl$cellty
 save(sce_mouse_hab_ctrl_filt, file = here('processed-data/08_GSEA/Input_mouse_habenula_data/sce_mouse_hab_ctrl_filt.Rdata'))
 
 
-## -----------------------------------------------------------------------------
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                    A) MeanRatio cell type marker genes
-## -----------------------------------------------------------------------------
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ########################  All habenula subpopulations  #########################
 MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_all_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
-save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_all_hab_mouse_genes.Rdata'))
 
 ## Subset to top100 markers per cell type
 MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
 
 
 ######################  Habenula neuronal subpopulations  ######################
@@ -248,16 +255,16 @@ MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
                                                 sce_mouse_hab_ctrl_filt,
                                                 cellType_col = "celltype",
                                                 assay_name = "logcounts"))
-save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_neu_hab_mouse_genes.Rdata'))
 
 ## Top100 only
 MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 
-## -----------------------------------------------------------------------------
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                     B) 1vsALL cell type marker genes
-## -----------------------------------------------------------------------------
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ########################  All habenula subpopulations  #########################
 lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
@@ -266,7 +273,7 @@ lvsALL_all_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
-save(lvsALL_all_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_all_hab_mouse_genes.Rdata'))
+save(lvsALL_all_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/mouse_habenula_Hashikawa/lvsALL_all_hab_mouse_genes.Rdata'))
 
 ## Number of genes with stats per cell subpopulation
 unique(table(lvsALL_all_hab_mouse_genes$cellType.target))
@@ -279,7 +286,7 @@ lvsALL_neu_hab_mouse_genes <- as.data.frame(findMarkers_1vAll(
                                                 cellType_col = "celltype",
                                                 mod = NULL,
                                                 verbose = TRUE))
-save(lvsALL_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_neu_hab_mouse_genes.Rdata'))
+save(lvsALL_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/1vsALL_markers/mouse_habenula_Hashikawa/lvsALL_neu_hab_mouse_genes.Rdata'))
 
 unique(table(lvsALL_neu_hab_mouse_genes$cellType.target))
 # [1] 17726
@@ -287,7 +294,210 @@ unique(table(lvsALL_neu_hab_mouse_genes$cellType.target))
 
 
 
+## --------------------------------------------------------------------------
+##            1.2 Obtain cell type marker genes in rat amygdala*
+## --------------------------------------------------------------------------
+# *From doi: https://doi.org/10.1038/s41593-023-01452-y
 
+## Download data in the cluster from GEO accession: GSE212415
+system("wget -P processed-data/08_GSEA/Input_rat_amygdala_data/ https://ftp.ncbi.nlm.nih.gov/geo/series/GSE212nnn/GSE212415/suppl/GSE212415%5Fseurat%2Erds%2Egz")
+
+rat_amyg_data <- readRDS(here("processed-data/08_GSEA/Input_rat_amygdala_data/GSE212415_seurat.rds"))
+
+rat_amyg_data
+# An object of class Seurat
+# 36594 features across 163003 samples within 3 assays
+# Active assay: RNA (17297 features, 0 variable features)
+# 2 layers present: counts, data
+# 2 other assays present: SCT, integrated
+# 2 dimensional reductions calculated: pca, umap
+
+## Explore log-normalized data (stored in layer "data") CONFIRM IS LOG-NORM!!!!!!!!
+dim(rat_amyg_data[["RNA"]]$data)
+# [1]  17297 163003
+
+## Explore cell data
+rat_amyg_data[[]][1:3, ]
+#                           orig.ident nCount_RNA nFeature_RNA          sample
+# AAACCCAAGAAACCCG-1_1 933000320047328       4644         2677 933000320047328
+# AAACCCACAAAGCACG-1_1 933000320047328       1845         1148 933000320047328
+# AAACCCACATGACCCG-1_1 933000320047328       5861         2835 933000320047328
+#                      treatment addiction.index        label percent.mt
+# AAACCCAAGAAACCCG-1_1   cocaine            high cocaine_high  0.8613264
+# AAACCCACAAAGCACG-1_1   cocaine            high cocaine_high  0.1626016
+# AAACCCACATGACCCG-1_1   cocaine            high cocaine_high  0.9042825
+#                      nCount_SCT nFeature_SCT rfid integrated_snn_res.0.8
+# AAACCCAAGAAACCCG-1_1       3299         2509   NA                     13
+# AAACCCACAAAGCACG-1_1       2049         1148   NA                      0
+# AAACCCACATGACCCG-1_1       3166         2164   NA                     15
+#                      seurat_clusters cocaine.low cocaine.high 933000320047328
+# AAACCCAAGAAACCCG-1_1              13           0            1               1
+# AAACCCACAAAGCACG-1_1               0           0            1               1
+# AAACCCACATGACCCG-1_1              15           0            1               1
+#                      933000120138592 933000120138586 933000320046084
+# AAACCCAAGAAACCCG-1_1               0               0               0
+# AAACCCACAAAGCACG-1_1               0               0               0
+# AAACCCACATGACCCG-1_1               0               0               0
+#                      933000320046077 933000120138609 933000320186802
+# AAACCCAAGAAACCCG-1_1               0               0               0
+# AAACCCACAAAGCACG-1_1               0               0               0
+# AAACCCACATGACCCG-1_1               0               0               0
+#                      933000320047225 933000320046609 933000320047001
+# AAACCCAAGAAACCCG-1_1               0               0               0
+# AAACCCACAAAGCACG-1_1               0               0               0
+# AAACCCACATGACCCG-1_1               0               0               0
+#                      933000320047132 933000320186801 933000320046621
+# AAACCCAAGAAACCCG-1_1               0               0               0
+# AAACCCACAAAGCACG-1_1               0               0               0
+# AAACCCACATGACCCG-1_1               0               0               0
+#                      A_933000320046625_JB_257 933000320047104 933000320045674
+# AAACCCAAGAAACCCG-1_1                        0               0               0
+# AAACCCACAAAGCACG-1_1                        0               0               0
+# AAACCCACATGACCCG-1_1                        0               0               0
+#                      Rat_Opioid_HS_1 Rat_Opioid_HS_2 Rat_Amygdala_787A_all_seq
+# AAACCCAAGAAACCCG-1_1               0               0                         0
+# AAACCCACAAAGCACG-1_1               0               0                         0
+# AAACCCACATGACCCG-1_1               0               0                         0
+#                      batch
+# AAACCCAAGAAACCCG-1_1     1
+# AAACCCACAAAGCACG-1_1     1
+# AAACCCACATGACCCG-1_1     1
+
+## Add column with unique cell ids
+rat_amyg_data[[]]$cell_id <- rownames(rat_amyg_data[[]])
+
+rat_amyg_data[[]]$seurat_clusters <- as.vector(rat_amyg_data[[]]$seurat_clusters)
+
+## Create sce object
+sce_rat_amy <- as.SingleCellExperiment(rat_amyg_data)
+save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
+
+## 49 cell clusters
+table(sce_rat_amy$seurat_clusters)
+#     0     1    10    11    12    13    14    15    16    17    18    19     2
+# 12456 12079  5911  5899  5829  5483  4656  4187  4138  4114  3795  3510 10684
+#   20    21    22    23    24    25    26    27    28    29     3    30    31
+# 2883  2599  2481  2380  1762  1628  1478  1471  1423  1247  9298  1030  1008
+#  32    33    34    35    36    37    38    39     4    40    41    42    43
+# 934   699   612   559   545   432   423   384  8368   321   309   237   218
+#  44    45    46    47    48     5     6     7     8     9
+# 205   157   157   120    91  8281  7492  7037  6005  5988
+
+## Add cell type column
+cell_data <- read.csv(here("processed-data/08_GSEA/Input_rat_amygdala_data/cell_data.csv"))
+dim(cell_data)
+# [1] 163003      9
+
+head(cell_data)
+#          rfid nCount_RNA nFeature_RNA addiction.index percent.mt batch
+#  9.330003e+14       4644         2677            high  0.8613264     1
+#  9.330003e+14       1845         1148            high  0.1626016     1
+#  9.330003e+14       5861         2835            high  0.9042825     1
+#  9.330003e+14       8205         3407            high  0.8287629     1
+#  9.330003e+14      11814         4401            high  0.5078720     1
+#  9.330003e+14       4024         2433            high  0.5715706     1
+#  seurat_clusters            barcode   celltype
+#               13 AAACCCAAGAAACCCG-1  InhNeuron
+#                0 AAACCCACAAAGCACG-1 Astrocytes
+#               15 AAACCCACATGACCCG-1  InhNeuron
+#               14 AAACCCAGTGCATACT-1   ExNeuron
+#                6 AAACCCAGTGTCTAAC-1   ExNeuron
+#               17 AAACCCATCACCATCC-1      Nos1+
+
+## Same cell ID format
+colData(sce_rat_amy)$barcode <- sapply(rownames(colData(sce_rat_amy)), function(x){strsplit(x, '_')[[1]][1]})
+## Matching cell IDs
+identical(as.vector(colData(sce_rat_amy)$barcode), cell_data$barcode)
+# [1] TRUE
+
+## Add cell type
+colData(
+########################  All habenula subpopulations  #########################
+MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
+                                                sce_mouse_all_ctrl_filt,
+                                                cellType_col = "celltype",
+                                                assay_name = "logcounts"))
+save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_all_hab_mouse_genes.Rdata'))
+
+## Subset to top100 markers per cell type
+MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+
+
+######################  Habenula neuronal subpopulations  ######################
+MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
+                                                sce_mouse_hab_ctrl_filt,
+                                                cellType_col = "celltype",
+                                                assay_name = "logcounts"))
+save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_neu_hab_mouse_genes.Rdata'))
+
+## Top100 only
+MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+
+
+#)$celltype <- cell_data$celltype
+
+## 13 cell types:
+## 7 main (Astro, Endo, ExNeuron, InhNeuron, Microglia, Oligo, and OPC)
+## + 6 Inh neuron subtypes (Cck+/Vip+, Chat+, Nos1+, Pvalb+, Reln+, and Sst+)
+table(colData(sce_rat_amy)$celltype)
+
+#       Astrocytes        Cck+/Vip+            Chat+      Endothelial
+#            19651             3959             1628              699
+#         ExNeuron        InhNeuron        Microglia            Nos1+
+#            23943            52579             8834             4114
+# Oligodendrocytes              OPC           Pvalb+            Reln+
+#            29140             9780              423             1008
+#             Sst+
+#             7245
+
+## Broad (main) cell types
+colData(sce_rat_amy)$celltype_broad <- replace(colData(sce_rat_amy)$celltype,
+                                               which(colData(sce_rat_amy)$celltype %in% c("Cck+/Vip+", "Chat+", "Nos1+",
+                                                                                           "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##                    A) MeanRatio cell type marker genes
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+########################  Main cell types  #########################
+MeanRatio_main_amy_rat_genes <- as.data.frame(get_mean_ratio(
+    sce_rat_main_ctrl_filt,
+    cellType_col = "celltype",
+    assay_name = "logcounts"))
+save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_all_hab_mouse_genes.Rdata'))
+
+## Subset to top100 markers per cell type
+MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+
+
+######################  Main cell types + Inhib subtypes  ######################
+MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
+    sce_mouse_hab_ctrl_filt,
+    cellType_col = "celltype",
+    assay_name = "logcounts"))
+save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_neu_hab_mouse_genes.Rdata'))
+
+## Top100 only
+MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+
+
+#
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##                     B) 1vsALL cell type marker genes
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+
+
+
+
+
+# Pasar 5
 ############################################################################
 ##     2. Obtain sets of orthologs of human/mouse marker genes in rat
 ############################################################################

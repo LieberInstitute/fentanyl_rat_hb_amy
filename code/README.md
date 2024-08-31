@@ -48,7 +48,7 @@ See more details in [07_MAGMA](07_MAGMA/).
 
 ## 08. Gene Set Enrichment Analysis (GSEA)
 
-The enrichment of rat orthologs of cell type-specific marker genes in human epithalamus and amygdala, and mouse habenula, among habenula and amygdala DEGs, was assessed. 
+The enrichment of rat orthologs of cell type-specific marker genes in human epithalamus and amygdala, mouse habenula, and rat amygdala, among rat habenula and amygdala DEGs, was assessed. 
 
 See more details of the human and mouse marker sets used and the analysis in [08_GSEA](08_GSEA/).
 
