@@ -312,7 +312,7 @@ rat_amyg_data
 # 2 other assays present: SCT, integrated
 # 2 dimensional reductions calculated: pca, umap
 
-## Explore log-normalized data (stored in layer "data") CONFIRM IS LOG-NORM!!!!!!!!
+## Explore normalized data (stored in layer "data")
 dim(rat_amyg_data[["RNA"]]$data)
 # [1]  17297 163003
 
@@ -370,6 +370,20 @@ rat_amyg_data[[]]$seurat_clusters <- as.vector(rat_amyg_data[[]]$seurat_clusters
 
 ## Create sce object
 sce_rat_amy <- as.SingleCellExperiment(rat_amyg_data)
+sce_rat_amy
+# class: SingleCellExperiment
+# dim: 17297 163003
+# metadata(0):
+#     assays(2): counts logcounts
+# rownames(17297): AABR07000156.1 Lrp11 ... AABR07043200.1 Pomp
+# rowData names(0):
+#     colnames(163003): AAACCCAAGAAACCCG-1_1 AAACCCACAAAGCACG-1_1 ...
+# TTTGTTGTCTTCGTAT-1_19 TTTGTTGTCTTCTGGC-1_19
+# colData names(37): orig.ident nCount_RNA ... cell_id ident
+# reducedDimNames(0):
+#     mainExpName: RNA
+# altExpNames(2): SCT integrated
+
 save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
 
 ## 49 cell clusters
@@ -411,32 +425,7 @@ identical(as.vector(colData(sce_rat_amy)$barcode), cell_data$barcode)
 # [1] TRUE
 
 ## Add cell type
-colData(
-########################  All habenula subpopulations  #########################
-MeanRatio_all_hab_mouse_genes <- as.data.frame(get_mean_ratio(
-                                                sce_mouse_all_ctrl_filt,
-                                                cellType_col = "celltype",
-                                                assay_name = "logcounts"))
-save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_all_hab_mouse_genes.Rdata'))
-
-## Subset to top100 markers per cell type
-MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
-
-
-######################  Habenula neuronal subpopulations  ######################
-MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
-                                                sce_mouse_hab_ctrl_filt,
-                                                cellType_col = "celltype",
-                                                assay_name = "logcounts"))
-save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_neu_hab_mouse_genes.Rdata'))
-
-## Top100 only
-MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
-
-
-#)$celltype <- cell_data$celltype
+colData(sce_rat_amy)$celltype <- cell_data$celltype
 
 ## 13 cell types:
 ## 7 main (Astro, Endo, ExNeuron, InhNeuron, Microglia, Oligo, and OPC)
@@ -456,48 +445,68 @@ table(colData(sce_rat_amy)$celltype)
 colData(sce_rat_amy)$celltype_broad <- replace(colData(sce_rat_amy)$celltype,
                                                which(colData(sce_rat_amy)$celltype %in% c("Cck+/Vip+", "Chat+", "Nos1+",
                                                                                            "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
+
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                    A) MeanRatio cell type marker genes
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-########################  Main cell types  #########################
+#############################  Main cell types  ################################
 MeanRatio_main_amy_rat_genes <- as.data.frame(get_mean_ratio(
-    sce_rat_main_ctrl_filt,
-    cellType_col = "celltype",
+    sce_rat_amy,
+    cellType_col = "celltype_broad",
     assay_name = "logcounts"))
-save(MeanRatio_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_main_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_main_amy_rat_genes.Rdata'))
 
 ## Subset to top100 markers per cell type
-MeanRatio_top100_all_hab_mouse_genes <- subset(MeanRatio_all_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+MeanRatio_top100_main_amy_rat_genes <- subset(MeanRatio_main_amy_rat_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_main_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_top100_main_amy_rat_genes.Rdata'))
 
 
 ######################  Main cell types + Inhib subtypes  ######################
-MeanRatio_neu_hab_mouse_genes <- as.data.frame(get_mean_ratio(
-    sce_mouse_hab_ctrl_filt,
+MeanRatio_fine_amy_rat_genes <- as.data.frame(get_mean_ratio(
+    sce_rat_amy,
     cellType_col = "celltype",
     assay_name = "logcounts"))
-save(MeanRatio_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_fine_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_fine_amy_rat_genes.Rdata'))
 
-## Top100 only
-MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, MeanRatio.rank<=100)
-save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+## Top100
+MeanRatio_top100_fine_amy_rat_genes <- subset(MeanRatio_fine_amy_rat_genes, MeanRatio.rank<=100)
+save(MeanRatio_top100_fine_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_top100_fine_amy_rat_genes.Rdata'))
 
 
-#
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                     B) 1vsALL cell type marker genes
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+#############################  Main cell types  ################################
+lvsALL_main_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
+    sce_rat_amy,
+    assay_name = "logcounts",
+    cellType_col = "celltype_broad",
+    mod = NULL,
+    verbose = TRUE))
+save(lvsALL_main_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_main_amy_rat_genes.Rdata'))
+
+## Number of genes with stats per cell type
+unique(table(lvsALL_main_amy_rat_genes$cellType.target))
+# [1] 17297
+
+######################  Main cell types + Inhib subtypes  ######################
+lvsALL_fine_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
+    sce_rat_amy,
+    assay_name = "logcounts",
+    cellType_col = "celltype",
+    mod = NULL,
+    verbose = TRUE))
+save(lvsALL_fine_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_fine_amy_rat_genes.Rdata'))
+
+unique(table(lvsALL_fine_amy_rat_genes$cellType.target))
+# [1] 17297
 
 
 
 
 
-
-
-
-# Pasar 5
 ############################################################################
 ##     2. Obtain sets of orthologs of human/mouse marker genes in rat
 ############################################################################
