@@ -357,11 +357,11 @@ display: none;
 <p>The association between the differential expression of genes in rat
 habenula and amygdala after fentanyl self-administration and their cell
 type-specific expression was assessed based on the enrichment among such
-rat habenula and amygdala DEGs, of rat orthologs of human marker genes
-for epithalamus (including the habenula) and amygdala cell types at
-broad and fine resolutions, as well as mouse marker genes for all or
-only neuronal cell subpopulations of the habenula complex, and rat
-amygdala cell types at ?? resolutions ….</p>
+rat habenula and amygdala DEGs, of rat marker genes for main and fine
+amygdala cell types, and rat orthologs of human marker genes for
+epithalamus (including the habenula) and amygdala cell types at broad
+and fine resolutions, as well as mouse marker genes for all or only
+neuronal cell subpopulations of the habenula complex.</p>
 <p>Cell type marker genes in human epithalamus and amygdala, mouse
 habenula, and rat amygdala were obtained applying the <em>MeanRatio</em>
 and <em>1vsALL</em> methods -described in <a href="http://research.libd.org/DeconvoBuddies/index.html">Huuki-Myers,
@@ -404,8 +404,10 @@ complex.</li>
 <li>Markers for cell types in rat amygdala:</li>
 </ol>
 <ul>
-<li></li>
-<li></li>
+<li>Main cell type markers: the top 100 marker genes for each main cell
+type in rat amygdala.</li>
+<li>Fine cell type markers: the top 100 marker genes for each fine cell
+type in rat amygdala.</li>
 </ul></li>
 </ul>
 <p><strong><em>Note</em></strong>: only genes with mean expression
@@ -450,8 +452,10 @@ subpopulations in mouse habenula complex.</li>
 <li>Markers for cell types in rat amygdala:</li>
 </ol>
 <ul>
-<li></li>
-<li></li>
+<li>Main cell type markers: marker genes (DEGs with FDR&lt;0.05 and
+logFC&gt;0) for each main cell type in rat amygdala.</li>
+<li>Fine cell type markers: marker genes (DEGs with FDR&lt;0.05 and
+logFC&gt;0) for each fine cell type in rat amygdala.</li>
 </ul></li>
 </ul></li>
 <li><p><a href="01_enrich_DEGs_vs_cell_type_markers.R"><code>01_enrich_DEGs_vs_cell_type_markers.R</code></a>:</p>
@@ -466,12 +470,12 @@ with &lt;10 cells were discarded. These processed data were subsequently
 used to find mouse marker genes for (all/neuronal) habenula
 subpopulations with <em>MeanRatio</em> and <em>1vsALL</em>.</p></li>
 <li><p><em>1.2 Obtain cell type marker genes in rat amygdala</em>:
-snRNA-seq data from Zhou, J., et al. (2023) were explored and log-norm
+snRNA-seq data from Zhou, J., et al. (2023) were explored and normalized
 counts were used to find <em>MeanRatio</em> and <em>1vsALL</em> markers
-[TODO].</p></li>
+for main cell types and Inhib. neuronal subtypes.</p></li>
 </ul>
-<p><strong><em>Note</em></strong>: for human habenula and amygdala cell
-type markers were obtained and provided by <a href="https://lahuuki.github.io">Louise Huuki-Myers</a> and <a href="https://github.com/MicTott">Michael Totty</a>,
+<p><strong><em>Note</em></strong>: human habenula and amygdala cell type
+markers were generated and provided by <a href="https://lahuuki.github.io">Louise Huuki-Myers</a> and <a href="https://github.com/MicTott">Michael Totty</a>,
 respectively.</p></li>
 <li><p><strong>2. Obtain sets of orthologs of human/mouse marker genes
 in rat</strong>: for the human and mouse marker genes in each of the

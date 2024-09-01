@@ -459,6 +459,28 @@ save(MeanRatio_main_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio
 
 ## Subset to top100 markers per cell type
 MeanRatio_top100_main_amy_rat_genes <- subset(MeanRatio_main_amy_rat_genes, MeanRatio.rank<=100)
+
+#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+#     We don't want markers with ratios =<1 as they are      |
+#        more expressed in the non-target cell type !!!      |
+#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+## Range of expression ratios of marker genes per cell type
+for (cell_type in unique(MeanRatio_top100_main_amy_rat_genes$cellType.target)){
+    ratios <- subset(MeanRatio_top100_main_amy_rat_genes, cellType.target==cell_type)$MeanRatio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+# [1] "Range of ratios of marker genes for InhNeuron: 1.1 - 3.3"
+# [1] "Range of ratios of marker genes for Astrocytes: 1 - 19"
+# [1] "Range of ratios of marker genes for ExNeuron: 1.6 - 8.5"
+# [1] "Range of ratios of marker genes for Microglia: 0.39 - 40"
+# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.78 - 30"
+# [1] "Range of ratios of marker genes for OPC: 0.96 - 33"
+# [1] "Range of ratios of marker genes for Endothelial: 0.41 - 290"
+
+## Remove genes with ratio<=1
+MeanRatio_top100_main_amy_rat_genes <- subset(MeanRatio_top100_main_amy_rat_genes, MeanRatio>1)
+MeanRatio_top100_main_amy_rat_genes$ratio <- MeanRatio_top100_main_amy_rat_genes$MeanRatio
 save(MeanRatio_top100_main_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_top100_main_amy_rat_genes.Rdata'))
 
 
@@ -471,12 +493,39 @@ save(MeanRatio_fine_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio
 
 ## Top100
 MeanRatio_top100_fine_amy_rat_genes <- subset(MeanRatio_fine_amy_rat_genes, MeanRatio.rank<=100)
+
+for (cell_type in unique(MeanRatio_top100_fine_amy_rat_genes$cellType.target)){
+    ratios <- subset(MeanRatio_top100_fine_amy_rat_genes, cellType.target==cell_type)$MeanRatio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+# [1] "Range of ratios of marker genes for InhNeuron: 0.97 - 2.4"
+# [1] "Range of ratios of marker genes for Astrocytes: 0.93 - 16"
+# [1] "Range of ratios of marker genes for ExNeuron: 1.2 - 4.3"
+# [1] "Range of ratios of marker genes for Nos1+: 1.1 - 1.8"
+# [1] "Range of ratios of marker genes for Microglia: 0.39 - 40"
+# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.77 - 30"
+# [1] "Range of ratios of marker genes for Chat+: 1.2 - 180"
+# [1] "Range of ratios of marker genes for Cck+/Vip+: 0.95 - 1.3"
+# [1] "Range of ratios of marker genes for OPC: 0.87 - 33"
+# [1] "Range of ratios of marker genes for Sst+: 0.94 - 2.4"
+# [1] "Range of ratios of marker genes for Reln+: 1.2 - 9.6"
+# [1] "Range of ratios of marker genes for Endothelial: 0.41 - 240"
+# [1] "Range of ratios of marker genes for Pvalb+: 1.2 - 8.2"
+
+## Remove genes with ratio<=1
+MeanRatio_top100_fine_amy_rat_genes <- subset(MeanRatio_top100_fine_amy_rat_genes, MeanRatio>1)
+MeanRatio_top100_fine_amy_rat_genes$ratio <- MeanRatio_top100_fine_amy_rat_genes$MeanRatio
+## Add main cell type
+MeanRatio_top100_fine_amy_rat_genes$broadCellType <- replace(MeanRatio_top100_fine_amy_rat_genes$cellType.target,
+                                                             which(MeanRatio_top100_fine_amy_rat_genes$cellType.target %in%
+                                                                       c("Cck+/Vip+", "Chat+", "Nos1+", "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
 save(MeanRatio_top100_fine_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_top100_fine_amy_rat_genes.Rdata'))
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                     B) 1vsALL cell type marker genes
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
 
 #############################  Main cell types  ################################
 lvsALL_main_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
@@ -485,11 +534,16 @@ lvsALL_main_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
     cellType_col = "celltype_broad",
     mod = NULL,
     verbose = TRUE))
-save(lvsALL_main_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_main_amy_rat_genes.Rdata'))
 
 ## Number of genes with stats per cell type
 unique(table(lvsALL_main_amy_rat_genes$cellType.target))
 # [1] 17297
+save(lvsALL_main_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_main_amy_rat_genes.Rdata'))
+
+## Subset to up-regulated DEGs
+lvsALL_main_amy_rat_genes_DEGs <- subset(lvsALL_main_amy_rat_genes, logFC>0 & log.FDR<log(0.05))
+save(lvsALL_main_amy_rat_genes_DEGs, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_main_amy_rat_genes_DEGs.Rdata'))
+
 
 ######################  Main cell types + Inhib subtypes  ######################
 lvsALL_fine_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
@@ -498,10 +552,19 @@ lvsALL_fine_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
     cellType_col = "celltype",
     mod = NULL,
     verbose = TRUE))
-save(lvsALL_fine_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_fine_amy_rat_genes.Rdata'))
 
 unique(table(lvsALL_fine_amy_rat_genes$cellType.target))
 # [1] 17297
+
+## Add main cell type
+lvsALL_fine_amy_rat_genes$broadCellType <- replace(lvsALL_fine_amy_rat_genes$cellType.target,
+                                                             which(lvsALL_fine_amy_rat_genes$cellType.target %in%
+                                                                       c("Cck+/Vip+", "Chat+", "Nos1+", "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
+save(lvsALL_fine_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_fine_amy_rat_genes.Rdata'))
+
+## Subset to up-regulated DEGs
+lvsALL_fine_amy_rat_genes_DEGs <- subset(lvsALL_fine_amy_rat_genes, logFC>0 & log.FDR<log(0.05))
+save(lvsALL_fine_amy_rat_genes_DEGs, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_fine_amy_rat_genes_DEGs.Rdata'))
 
 
 
@@ -724,11 +787,6 @@ for (cell_type in cell_types){
     ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
     print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
 }
-
-#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-#     We don't want markers with ratios =<1 as they are      |
-#        more expressed in the non-target cell type !!!      |
-#- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 # [1] "Range of ratios of marker genes for Human_Astro_1 FGFR3: 1.1 - 2.4"
 # [1] "Range of ratios of marker genes for Human_Astro_2 FGFR3: 1.1 - 1.9"
@@ -1482,7 +1540,7 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
         top_n <- 'top50'
         region_name <- 'hab'
     }
-    else if(region== 'amygdala' & species=='human'){
+    else if(region== 'amygdala'){
         top_n <- 'top100'
         region_name <- 'amy'
     }
@@ -1503,7 +1561,7 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
         cell_types_MR <- unique(MR_markers$cellType.target)
         cell_types_lvsALL <- gsub('fdr_', '', colnames(lvsALL_markers)[grep('fdr', colnames(lvsALL_markers))])
     }
-    else if (region== 'amygdala' & species=='human'){
+    else if (region== 'amygdala'){
         cell_types_MR <- unique(MR_markers$cellType.target)
         cell_types_lvsALL <- unique(lvsALL_markers$cellType.target)
     }
@@ -1606,6 +1664,32 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
             }
 
         }
+
+        ## --------------------------------------------------
+        ##  D) MeanRatio vs 1vsALL markers in rat amygdala
+        ## --------------------------------------------------
+        else if(region=='amygdala' & species=='rat'){
+
+            ########### i) Main MeanRatio vs Main 1vsALL cell types ###########
+            if(resolution_MR=='main' & resolution_lvsALL=='main'){
+                ## Use main cell types for both methods
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                cell_type_1vsALL <- "cell_type"
+
+                broad_cell_types <- NA
+            }
+
+            ########### ii) Fine MeanRatio vs Fine 1vsALL cell types ###########
+            if(resolution_MR=='fine' & resolution_lvsALL=='fine'){
+                ## Use fine cell types for both methods
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                cell_type_1vsALL <- "cell_type"
+
+                broad_cell_types <- NA
+            }
+        }
     }
 
 
@@ -1699,6 +1783,60 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
             }
 
         }
+
+        ## --------------------------------------------------
+        ##  C) MeanRatio vs 1vsALL markers in rat amygdala
+        ## --------------------------------------------------
+        else if(region=='amygdala' & species=='rat'){
+
+            ########### i) Fine MeanRatio vs Main 1vsALL cell types ###########
+
+            if(resolution_MR=='fine' & resolution_lvsALL=='main'){
+
+                ## Fine MeanRatio markers
+                MR_markers$cellType.target_fine <- MR_markers$cellType.target
+                ## Main cell types of fine types
+                fine_and_broad_cell_types <- unique(MR_markers[,c('cellType.target_fine', 'broadCellType')])
+                broad_cell_types <- fine_and_broad_cell_types$broadCellType
+                names(broad_cell_types) <- fine_and_broad_cell_types$cellType.target_fine
+
+                ## Verify fine cell types have a broad type in the broad data
+                stopifnot(broad_cell_types %in% cell_types_lvsALL)
+
+                ## Use fine cell types for plots
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                ## Broad cell types for 1vsALL
+                cell_type_1vsALL <- "broad_cell_type"
+            }
+
+            ########### ii) Main MeanRatio vs Fine 1vsALL cell types ###########
+
+            if(resolution_MR=='main' & resolution_lvsALL=='fine'){
+
+                ## Fine 1vsALL markers
+                lvsALL_markers$cellType.target_fine <- lvsALL_markers$cellType.target
+
+                ## Broad MeanRatio markers
+                MR_markers$cellType.target_fine <- NA
+                cell_type_colors_res <- 'cellType.target'
+
+                ## Broad cell types of the fine ones
+                fine_and_broad_cell_types <- unique(lvsALL_markers[,c('cellType.target_fine', 'broadCellType')])
+                broad_cell_types <- fine_and_broad_cell_types$broadCellType
+                names(broad_cell_types) <- fine_and_broad_cell_types$cellType.target_fine
+
+                ## Verify fine cell types have a broad type in the broad data
+                stopifnot(broad_cell_types %in% cell_types_MR)
+
+                ## Use fine cell types for plots
+                cell_types <- cell_types_lvsALL
+                cell_type_1vsALL <- "cell_type"
+                ## Broad cell types for MeanRatio
+                cell_type_MR <- "broad_cell_type"
+            }
+
+        }
     }
 
     ## Plot per cell type
@@ -1738,7 +1876,7 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
                                                              else{FALSE}})
         }
 
-        else if((region=='amygdala' & species=='human') | (region=='habenula' & species=='mouse')){
+        else if((region=='amygdala') | (region=='habenula' & species=='mouse')){
             lvsALL_data <- subset(lvsALL_markers, cellType.target==get(cell_type_1vsALL))
             data <- cbind(MR_markers_cell_type, lvsALL_data[match(MR_markers_cell_type$gene, lvsALL_data$gene),
                                                                c('logFC', 'log.FDR', 'std.logFC')])
@@ -1891,6 +2029,57 @@ p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
 ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 21, height = 10)
+
+
+## -----------------------------------------------------------------------------
+##              D) MeanRatio vs 1vsALL markers in rat amygdala
+## -----------------------------------------------------------------------------
+
+###########################  Main cell type markers  ##############################
+
+## Compare MeanRatio vs 1vsALL std logFC for main cell types
+region <- 'amygdala'
+species <- 'rat'
+resolution_MR <- 'main'
+resolution_lvsALL <- 'main'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=3)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 16, height = 10, limitsize = FALSE)
+
+#################  Fine cell type markers (for Inhib Neurons) #####################
+
+## Compare MeanRatio vs 1vsALL std logFC for fine cell types
+region <- 'amygdala'
+species <- 'rat'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'fine'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=3)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
+
+######################  Main and fine cell type markers  ##########################
+
+## Compare MeanRatio for fine cell types vs 1vsALL std logFC for the respective main cell types
+region <- 'amygdala'
+species <- 'rat'
+resolution_MR <- 'fine'
+resolution_lvsALL <- 'main'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=3)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
+
+## Compare MeanRatio for main cell types vs 1vsALL std logFC for the respective fine cell types
+region <- 'amygdala'
+species <- 'rat'
+resolution_MR <- 'main'
+resolution_lvsALL <- 'fine'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=3)
+ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
 
 
 
