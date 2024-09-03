@@ -46,10 +46,10 @@ MAGMA analysis performed to find associations between the sets of DEGs with mult
 
 See more details in [07_MAGMA](07_MAGMA/).
 
-## 08. Gene Set Enrichment Analysis (GSEA)
+## 08. Cell Type Enrichment Analysis
+Also named Gene Set Enrichment Analysis (GSEA).
+The enrichment of rat cell type-specific marker genes in habenula/amygdala among rat habenula and amygdala DEGs was assessed. 
 
-The enrichment of rat orthologs of cell type-specific marker genes in human epithalamus and amygdala, mouse habenula, and rat amygdala, among rat habenula and amygdala DEGs, was assessed. 
-
-See more details of the human and mouse marker sets used and the analysis in [08_GSEA](08_GSEA/).
+See more details of the marker sets used and the analysis in [08_GSEA](08_GSEA/).
 
 
