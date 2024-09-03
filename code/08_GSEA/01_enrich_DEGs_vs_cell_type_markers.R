@@ -15,7 +15,7 @@ library(randomcoloR)
 library(sessioninfo)
 
 
-####################   Gene Set Enrichment Analysis   ######################
+####################   Cell Type Enrichment Analysis    ######################
 
 ## All expressed genes as universe
 all_genes <- eval(parse_expr(load(here('processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata'), verbose = TRUE)))[[1]]$ensemblID
@@ -384,6 +384,9 @@ sce_rat_amy
 #     mainExpName: RNA
 # altExpNames(2): SCT integrated
 
+## Save
+save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
+
 ## 49 cell clusters
 table(sce_rat_amy$seurat_clusters)
 #     0     1    10    11    12    13    14    15    16    17    18    19     2
@@ -425,30 +428,37 @@ identical(as.vector(colData(sce_rat_amy)$barcode), cell_data$barcode)
 ## Add cell type
 colData(sce_rat_amy)$celltype <- cell_data$celltype
 
-## 13 cell types:
-## 7 main (Astro, Endo, ExNeuron, InhNeuron, Microglia, Oligo, and OPC)
-## + 6 Inh neuron subtypes (Cck+/Vip+, Chat+, Nos1+, Pvalb+, Reln+, and Sst+)
-table(colData(sce_rat_amy)$celltype)
+## Cells from control mice per cell type
+##   13 cell types:
+##   7 main (Astro, Endo, ExNeuron, InhNeuron, Microglia, Oligo, and OPC)
+##   + 6 Inh neuron subtypes (Cck+/Vip+, Chat+, Nos1+, Pvalb+, Reln+, and Sst+)
+table(colData(sce_rat_amy)[, c('treatment', 'celltype')])
+# treatment Astrocytes Cck+/Vip+ Chat+ Endothelial ExNeuron InhNeuron Microglia
+#   cocaine      12389      2676  1121         463    14905     35309      5122
+#   naive         7262      1283   507         236     9038     17270      3712
+#
+# treatment Nos1+ Oligodendrocytes   OPC Pvalb+ Reln+  Sst+
+#  cocaine  2895            18202  6016    282   619  4650
+#  naive    1219            10938  3764    141   389  2595
 
-#       Astrocytes        Cck+/Vip+            Chat+      Endothelial
-#            19651             3959             1628              699
-#         ExNeuron        InhNeuron        Microglia            Nos1+
-#            23943            52579             8834             4114
-# Oligodendrocytes              OPC           Pvalb+            Reln+
-#            29140             9780              423             1008
-#             Sst+
-#             7245
+## Total number of cells from controls only
+table(sce_rat_amy$treatment)
+# cocaine   naive
+#  104649   58354
+
+## Subset to control mice cells
+sce_rat_amy_ctrl <- sce_rat_amy[, sce_rat_amy$treatment=="naive"]
 
 ## Broad (main) cell types
-colData(sce_rat_amy)$celltype_broad <- replace(colData(sce_rat_amy)$celltype,
-                                               which(colData(sce_rat_amy)$celltype %in% c("Cck+/Vip+", "Chat+", "Nos1+",
+colData(sce_rat_amy_ctrl)$celltype_broad <- replace(colData(sce_rat_amy_ctrl)$celltype,
+                                               which(colData(sce_rat_amy_ctrl)$celltype %in% c("Cck+/Vip+", "Chat+", "Nos1+",
                                                                                            "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
 
 ## Obtain gene Ensembl IDs
 mart = useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
 ensembl_ids <- getBM(attributes = c('external_gene_name', 'ensembl_gene_id'),
                      filters = 'external_gene_name',
-                     values = rownames(sce_rat_amy),
+                     values = rownames(sce_rat_amy_ctrl),
                      mart = mart)
 
 ## Keep first occurrence of each gene symbol
@@ -456,12 +466,12 @@ ensembl_ids <- ensembl_ids[-which(duplicated(ensembl_ids$external_gene_name)), ]
 rownames(ensembl_ids) <- ensembl_ids$external_gene_name
 
 ## Add to sce object
-rowData(sce_rat_amy)$ensembl_id <- sapply(rownames(sce_rat_amy), function(gene){
+rowData(sce_rat_amy_ctrl)$ensembl_id <- sapply(rownames(sce_rat_amy_ctrl), function(gene){
                 if(gene %in% ensembl_ids$external_gene_name){ensembl_ids[gene, 'ensembl_gene_id']}
                 else {NA}})
 
 ## Save
-save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
+save(sce_rat_amy_ctrl, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy_ctrl.Rdata'))
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -470,7 +480,7 @@ save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sc
 
 #############################  Main cell types  ################################
 MeanRatio_main_amy_rat_genes <- as.data.frame(get_mean_ratio(
-    sce = sce_rat_amy,
+    sce = sce_rat_amy_ctrl,
     cellType_col = "celltype_broad",
     assay_name = "logcounts"))
 
@@ -492,13 +502,13 @@ for (cell_type in unique(MeanRatio_top100_main_amy_rat_genes$cellType.target)){
     ratios <- subset(MeanRatio_top100_main_amy_rat_genes, cellType.target==cell_type)$MeanRatio
     print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
 }
-# [1] "Range of ratios of marker genes for InhNeuron: 1.1 - 3.3"
-# [1] "Range of ratios of marker genes for Astrocytes: 1 - 19"
-# [1] "Range of ratios of marker genes for ExNeuron: 1.6 - 8.5"
-# [1] "Range of ratios of marker genes for Microglia: 0.39 - 40"
-# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.78 - 30"
-# [1] "Range of ratios of marker genes for OPC: 0.96 - 33"
-# [1] "Range of ratios of marker genes for Endothelial: 0.41 - 290"
+# [1] "Range of ratios of marker genes for OPC: 0.99 - 23"
+# [1] "Range of ratios of marker genes for ExNeuron: 1.6 - 6.6"
+# [1] "Range of ratios of marker genes for Astrocytes: 1.1 - 19"
+# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.83 - 20"
+# [1] "Range of ratios of marker genes for InhNeuron: 1.2 - 3.6"
+# [1] "Range of ratios of marker genes for Microglia: 0.4 - 47"
+# [1] "Range of ratios of marker genes for Endothelial: 0.4 - 240"
 
 ## Remove genes with ratio<=1
 MeanRatio_top100_main_amy_rat_genes <- subset(MeanRatio_top100_main_amy_rat_genes, MeanRatio>1)
@@ -508,7 +518,7 @@ save(MeanRatio_top100_main_amy_rat_genes, file = here('processed-data/08_GSEA/Me
 
 ######################  Main cell types + Inhib subtypes  ######################
 MeanRatio_fine_amy_rat_genes <- as.data.frame(get_mean_ratio(
-    sce_rat_amy,
+    sce_rat_amy_ctrl,
     cellType_col = "celltype",
     assay_name = "logcounts"))
 
@@ -524,19 +534,19 @@ for (cell_type in unique(MeanRatio_top100_fine_amy_rat_genes$cellType.target)){
     ratios <- subset(MeanRatio_top100_fine_amy_rat_genes, cellType.target==cell_type)$MeanRatio
     print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
 }
-# [1] "Range of ratios of marker genes for InhNeuron: 0.97 - 2.4"
-# [1] "Range of ratios of marker genes for Astrocytes: 0.93 - 16"
-# [1] "Range of ratios of marker genes for ExNeuron: 1.2 - 4.3"
-# [1] "Range of ratios of marker genes for Nos1+: 1.1 - 1.8"
-# [1] "Range of ratios of marker genes for Microglia: 0.39 - 40"
-# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.77 - 30"
-# [1] "Range of ratios of marker genes for Chat+: 1.2 - 180"
-# [1] "Range of ratios of marker genes for Cck+/Vip+: 0.95 - 1.3"
-# [1] "Range of ratios of marker genes for OPC: 0.87 - 33"
+# [1] "Range of ratios of marker genes for OPC: 0.88 - 20"
+# [1] "Range of ratios of marker genes for ExNeuron: 1.2 - 4"
+# [1] "Range of ratios of marker genes for Astrocytes: 0.94 - 17"
+# [1] "Range of ratios of marker genes for Oligodendrocytes: 0.78 - 20"
+# [1] "Range of ratios of marker genes for InhNeuron: 0.97 - 2.8"
 # [1] "Range of ratios of marker genes for Sst+: 0.94 - 2.4"
-# [1] "Range of ratios of marker genes for Reln+: 1.2 - 9.6"
-# [1] "Range of ratios of marker genes for Endothelial: 0.41 - 240"
-# [1] "Range of ratios of marker genes for Pvalb+: 1.2 - 8.2"
+# [1] "Range of ratios of marker genes for Microglia: 0.4 - 47"
+# [1] "Range of ratios of marker genes for Cck+/Vip+: 0.95 - 1.4"
+# [1] "Range of ratios of marker genes for Nos1+: 1.1 - 2.7"
+# [1] "Range of ratios of marker genes for Chat+: 1.2 - 160"
+# [1] "Range of ratios of marker genes for Reln+: 1.3 - 10"
+# [1] "Range of ratios of marker genes for Endothelial: 0.4 - 220"
+# [1] "Range of ratios of marker genes for Pvalb+: 1.2 - 9"
 
 ## Remove genes with ratio<=1
 MeanRatio_top100_fine_amy_rat_genes <- subset(MeanRatio_top100_fine_amy_rat_genes, MeanRatio>1)
@@ -551,11 +561,12 @@ save(MeanRatio_top100_fine_amy_rat_genes, file = here('processed-data/08_GSEA/Me
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                     B) 1vsALL cell type marker genes
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
+## (Note: only up-DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs
+##        the rest were taken as markers)
 
 #############################  Main cell types  ################################
 lvsALL_main_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
-    sce_rat_amy,
+    sce_rat_amy_ctrl,
     assay_name = "logcounts",
     cellType_col = "celltype_broad",
     mod = NULL,
@@ -577,7 +588,7 @@ save(lvsALL_main_amy_rat_genes_DEGs, file = here('processed-data/08_GSEA/1vsALL_
 
 ######################  Main cell types + Inhib subtypes  ######################
 lvsALL_fine_amy_rat_genes <- as.data.frame(findMarkers_1vAll(
-    sce_rat_amy,
+    sce_rat_amy_ctrl,
     assay_name = "logcounts",
     cellType_col = "celltype",
     mod = NULL,
@@ -642,6 +653,7 @@ obtain_rat_orthologs_mouse <- function(mouse_marker_genes){
 ## -----------------------------------------------------------------------------
 ##                A) MeanRatio-based cell type marker genes
 ## -----------------------------------------------------------------------------
+# (Note: only genes with mean ratios >1 were considered real markers)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #               i)  Markers for cell types in human epithalamus*
@@ -651,9 +663,9 @@ obtain_rat_orthologs_mouse <- function(mouse_marker_genes){
 ####################  Fine resolution cell type markers  ######################
 
 ## All ranked marker genes
-MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top50_MarkerGenes_hab.xlsx')))
+MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/MeanRatio_Top50_MarkerGenes_hab.xlsx')))
 MeanRatio_top50_fine_hab_human_genes <- MeanRatio_genes
-save(MeanRatio_top50_fine_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top50_fine_hab_human_genes.Rdata'))
+save(MeanRatio_top50_fine_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_top50_fine_hab_human_genes.Rdata'))
 
 
 ## Cell types/clusters included
@@ -727,7 +739,7 @@ for (cell_type in cell_types){
 # [1] "Number of Oligo marker genes in rat: 40"
 # [1] "Number of OPC marker genes in rat: 47"
 
-save(MeanRatio_top50_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top50_fine_hab_human_ratIDs.Rdata'))
+save(MeanRatio_top50_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_habenula_Yalcinbas/MeanRatio_top50_fine_hab_human_ratIDs.Rdata'))
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -738,9 +750,9 @@ save(MeanRatio_top50_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker
 ####################  Broad resolution cell type markers  ######################
 
 ## All ranked marker genes
-MeanRatio_genes <- as.data.frame(read.csv(here('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top100_broadMarkerGenes_amyg.csv')))
+MeanRatio_genes <- as.data.frame(read.csv(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_amygdala_Yu/MeanRatio_Top100_broadMarkerGenes_amyg.csv')))
 MeanRatio_top100_broad_amy_human_genes <- MeanRatio_genes
-save(MeanRatio_top100_broad_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_broad_amy_human_genes.Rdata'))
+save(MeanRatio_top100_broad_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_amygdala_Yu/MeanRatio_top100_broad_amy_human_genes.Rdata'))
 
 ## Broad cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -789,14 +801,14 @@ for (cell_type in cell_types){
 # [1] "Number of Oligodendrocyte marker genes in rat: 86"
 # [1] "Number of OPC marker genes in rat: 91"
 
-save(MeanRatio_top100_broad_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_broad_amyg_human_ratIDs.Rdata'))
+save(MeanRatio_top100_broad_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_amygdala_Yu/MeanRatio_top100_broad_amyg_human_ratIDs.Rdata'))
 
 
 ####################  Fine resolution cell type markers  ######################
 
-MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/MeanRatio_Top100_fineMarkerGenes_amyg.csv'))
+MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/human_amygdala_Yu/MeanRatio_Top100_fineMarkerGenes_amyg.csv'))
 MeanRatio_top100_fine_amy_human_genes <- MeanRatio_genes
-save(MeanRatio_top100_fine_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_fine_amy_human_genes.Rdata'))
+save(MeanRatio_top100_fine_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_amygdala_Yu/MeanRatio_top100_fine_amy_human_genes.Rdata'))
 
 ## Fine cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -933,7 +945,7 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP ABI3BP marker genes in rat: 59"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 60"
 
-save(MeanRatio_top100_fine_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_fine_amyg_human_ratIDs.Rdata'))
+save(MeanRatio_top100_fine_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_amygdala_Yu/MeanRatio_top100_fine_amyg_human_ratIDs.Rdata'))
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -945,7 +957,7 @@ save(MeanRatio_top100_fine_amyg_ratIDs, file = here('processed-data/08_GSEA/mark
 
 MeanRatio_top100_all_hab_mouse_genes$ratio <- MeanRatio_top100_all_hab_mouse_genes$MeanRatio
 MeanRatio_genes <- MeanRatio_top100_all_hab_mouse_genes
-save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_all_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_genes.Rdata'))
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -1037,14 +1049,14 @@ for (cell_type in cell_types){
 # [1] "Number of OPC2 marker genes in rat: 22"
 # [1] "Number of OPC3 marker genes in rat: 94"
 
-save(MeanRatio_top100_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_all_hab_mouse_ratIDs.Rdata'))
+save(MeanRatio_top100_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/mouse_habenula_Hashikawa/MeanRatio_top100_all_hab_mouse_ratIDs.Rdata'))
 
 
 ####################  Neuronal cell subpopulations markers  ######################
 
 MeanRatio_top100_neu_hab_mouse_genes$ratio <- MeanRatio_top100_neu_hab_mouse_genes$MeanRatio
 MeanRatio_genes <- MeanRatio_top100_neu_hab_mouse_genes
-save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
+save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -1113,13 +1125,14 @@ for (cell_type in cell_types){
 # [1] "Number of MHb5 marker genes in rat: 121"
 # [1] "Number of MHb6 marker genes in rat: 26"
 
-save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/MeanRatio_top100_neu_hab_mouse_ratIDs.Rdata'))
+save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
 ## -----------------------------------------------------------------------------
 ##                  B) 1vsALL-based cell type marker genes
 ## -----------------------------------------------------------------------------
+## (Note: up-DEGs (FDR<0.05 and logFC>0) based on the enrichment model were considered marker genes)
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #                i)  Markers for cell types in human epithalamus
@@ -1128,9 +1141,9 @@ save(MeanRatio_top100_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker
 ####################  Broad resolution cell type markers  ######################
 ## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model for one cell type vs the rest were taken as markers)
 
-lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_broad_MarkerGenes_hab.Rdata'))))
+lvsALL_broad_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/lvsALL_broad_MarkerGenes_hab.Rdata'))))
 lvsALL_broad_hab_human_genes <- lvsALL_broad_genes_enrich_stats <- lvsALL_broad_genes$enrichment
-save(lvsALL_broad_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_broad_hab_human_genes.Rdata'))
+save(lvsALL_broad_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/human_habenula_Yalcinbas/lvsALL_broad_hab_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_broad_genes_enrich_stats)[grep('fdr', colnames(lvsALL_broad_genes_enrich_stats))])
@@ -1175,14 +1188,14 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 196"
 # [1] "Number of OPC marker genes in rat: 118"
 
-save(lvsALL_broad_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_broad_hab_human_ratIDs.Rdata'))
+save(lvsALL_broad_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_habenula_Yalcinbas/lvsALL_broad_hab_human_ratIDs.Rdata'))
 
 
 ####################  Fine resolution cell type markers  #######################
 
-lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_fine_MarkerGenes_hab.Rdata'))))
+lvsALL_fine_genes <- eval(parse_expr(load(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/lvsALL_fine_MarkerGenes_hab.Rdata'))))
 lvsALL_fine_hab_human_genes <- lvsALL_fine_genes_enrich_stats <- lvsALL_fine_genes$enrichment
-save(lvsALL_fine_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_fine_hab_human_genes.Rdata'))
+save(lvsALL_fine_hab_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/human_habenula_Yalcinbas/lvsALL_fine_hab_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- gsub('fdr_', '', colnames(lvsALL_fine_genes_enrich_stats)[grep('fdr', colnames(lvsALL_fine_genes_enrich_stats))])
@@ -1244,7 +1257,7 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 440"
 # [1] "Number of OPC marker genes in rat: 295"
 
-save(lvsALL_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_fine_hab_human_ratIDs.Rdata'))
+save(lvsALL_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_habenula_Yalcinbas/lvsALL_fine_hab_human_ratIDs.Rdata'))
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1252,12 +1265,11 @@ save(lvsALL_fine_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ra
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ####################  Broad resolution cell type markers  ######################
-## (DEGs (FDR<0.05 and logFC>0) based on the enrichment model as marker genes)
 
 ## Cell type-specific enrichment stats for all genes
-lvsALL_broad_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_broad_MarkerGenes_amyg.csv')
+lvsALL_broad_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/human_amygdala_Yu/lvsALL_broad_MarkerGenes_amyg.csv')
 lvsALL_broad_amy_human_genes <- lvsALL_broad_genes
-save(lvsALL_broad_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_broad_amy_human_genes.Rdata'))
+save(lvsALL_broad_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/human_amygdala_Yu/lvsALL_broad_amy_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- names(table(lvsALL_broad_genes$cellType.target))
@@ -1297,14 +1309,14 @@ for (cell_type in cell_types){
 # [1] "Number of OPC human DEGs: 3125"
 # [1] "Number of OPC marker genes in rat: 2223"
 
-save(lvsALL_broad_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_broad_amy_human_ratIDs.Rdata'))
+save(lvsALL_broad_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_amygdala_Yu/lvsALL_broad_amy_human_ratIDs.Rdata'))
 
 
 ####################  Fine resolution cell type markers  ######################
 
-lvsALL_fine_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/lvsALL_fine_MarkerGenes_amyg.csv')
+lvsALL_fine_genes <- read.csv('processed-data/08_GSEA/Input_cell_type_markers_human/human_amygdala_Yu/lvsALL_fine_MarkerGenes_amyg.csv')
 lvsALL_fine_amy_human_genes <- lvsALL_fine_genes
-save(lvsALL_fine_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/lvsALL_fine_amy_human_genes.Rdata'))
+save(lvsALL_fine_amy_human_genes, file = here('processed-data/08_GSEA/1vsALL_markers/human_amygdala_Yu/lvsALL_fine_amy_human_genes.Rdata'))
 
 ## Cell types
 cell_types <- names(table(lvsALL_fine_genes$cellType.target))
@@ -1427,7 +1439,7 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP NDNF human DEGs: 6878"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 5179"
 
-save(lvsALL_fine_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_fine_amy_human_ratIDs.Rdata'))
+save(lvsALL_fine_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_amygdala_Yu/lvsALL_fine_amy_human_ratIDs.Rdata'))
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1435,7 +1447,6 @@ save(lvsALL_fine_amy_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ra
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ####################  All cell subpopulations markers  ######################
-## (DEGs (FDR<0.05 and logFC>0) for one cell type vs the rest were taken as markers)
 
 lvsALL_all_genes <- lvsALL_all_hab_mouse_genes
 
@@ -1502,7 +1513,7 @@ for (cell_type in cell_types){
 # [1] "Number of OPC3 mouse DEGs: 615"
 # [1] "Number of OPC3 marker genes in rat: 618"
 
-save(lvsALL_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_all_hab_mouse_ratIDs.Rdata'))
+save(lvsALL_all_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/mouse_habenula_Hashikawa/lvsALL_all_hab_mouse_ratIDs.Rdata'))
 
 
 ####################   Habenula neuronal subpopulations   ######################
@@ -1557,7 +1568,7 @@ for (cell_type in cell_types){
 # [1] "Number of MHb6 mouse DEGs: 85"
 # [1] "Number of MHb6 marker genes in rat: 73"
 
-save(lvsALL_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/lvsALL_neu_hab_mouse_ratIDs.Rdata'))
+save(lvsALL_neu_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/mouse_habenula_Hashikawa/lvsALL_neu_hab_mouse_ratIDs.Rdata'))
 
 
 
