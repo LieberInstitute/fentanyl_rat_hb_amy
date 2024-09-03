@@ -485,7 +485,7 @@ MeanRatio_main_amy_rat_genes <- as.data.frame(get_mean_ratio(
     assay_name = "logcounts"))
 
 ## Add ensembl ID
-MeanRatio_main_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy)[MeanRatio_main_amy_rat_genes$gene, ]
+MeanRatio_main_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy_ctrl)[MeanRatio_main_amy_rat_genes$gene, ]
 
 save(MeanRatio_main_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_main_amy_rat_genes.Rdata'))
 
@@ -523,7 +523,7 @@ MeanRatio_fine_amy_rat_genes <- as.data.frame(get_mean_ratio(
     assay_name = "logcounts"))
 
 ## Add ensembl ID
-MeanRatio_fine_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy)[MeanRatio_fine_amy_rat_genes$gene, ]
+MeanRatio_fine_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy_ctrl)[MeanRatio_fine_amy_rat_genes$gene, ]
 
 save(MeanRatio_fine_amy_rat_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_fine_amy_rat_genes.Rdata'))
 
@@ -577,7 +577,7 @@ unique(table(lvsALL_main_amy_rat_genes$cellType.target))
 # [1] 17297
 
 ## Add ensembl IDs
-lvsALL_main_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy)[lvsALL_main_amy_rat_genes$gene, ]
+lvsALL_main_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy_ctrl)[lvsALL_main_amy_rat_genes$gene, ]
 
 save(lvsALL_main_amy_rat_genes, file = here('processed-data/08_GSEA/1vsALL_markers/rat_amygdala_Zhou/lvsALL_main_amy_rat_genes.Rdata'))
 
@@ -598,7 +598,7 @@ unique(table(lvsALL_fine_amy_rat_genes$cellType.target))
 # [1] 17297
 
 ## Add ensembl IDs
-lvsALL_fine_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy)[lvsALL_fine_amy_rat_genes$gene, ]
+lvsALL_fine_amy_rat_genes$ensembl_id <- rowData(sce_rat_amy_ctrl)[lvsALL_fine_amy_rat_genes$gene, ]
 
 ## Add main cell type
 lvsALL_fine_amy_rat_genes$broadCellType <- replace(lvsALL_fine_amy_rat_genes$cellType.target,
@@ -1979,7 +1979,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 24, height = 20)
 
 ###############  Fine and broad resolution cell type markers  ##################
@@ -1991,7 +1991,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'broad'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 20, height = 15)
 
 
@@ -2008,7 +2008,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_amygdala_Yu/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 65, height = 26, limitsize = FALSE)
 
 ####################  Broad resolution cell type markers  ######################
@@ -2020,7 +2020,7 @@ resolution_MR <- 'broad'
 resolution_lvsALL <- 'broad'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=2)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_amygdala_Yu/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 24, height = 8)
 
 ###############  Fine and broad resolution cell type markers  ##################
@@ -2032,7 +2032,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'broad'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_amygdala_Yu/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 65, height = 26, limitsize = FALSE)
 
 ## Compare 1vsALL std logFC for fine cell types vs MeanRatio for the respective broad cell types
@@ -2042,7 +2042,7 @@ resolution_MR <- 'broad'
 resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_amygdala_Yu/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 65, height = 26, limitsize = FALSE)
 
 
@@ -2059,7 +2059,7 @@ resolution_MR <- 'all'
 resolution_lvsALL <- 'all'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/mouse_habenula_Hashikawa/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 33, height = 11, limitsize = FALSE)
 
 ####################  Habenula cell type markers  ######################
@@ -2071,7 +2071,7 @@ resolution_MR <- 'neu'
 resolution_lvsALL <- 'neu'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/mouse_habenula_Hashikawa/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 21, height = 10)
 
 
@@ -2088,7 +2088,7 @@ resolution_MR <- 'main'
 resolution_lvsALL <- 'main'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/rat_amygdala_Zhou/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 16, height = 10, limitsize = FALSE)
 
 #################  Fine cell type markers (for Inhib Neurons) #####################
@@ -2100,7 +2100,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/rat_amygdala_Zhou/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
 
 ######################  Main and fine cell type markers  ##########################
@@ -2112,7 +2112,7 @@ resolution_MR <- 'fine'
 resolution_lvsALL <- 'main'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/rat_amygdala_Zhou/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
 
 ## Compare MeanRatio for main cell types vs 1vsALL std logFC for the respective fine cell types
@@ -2122,7 +2122,7 @@ resolution_MR <- 'main'
 resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=3)
-ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/rat_amygdala_Zhou/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 26.5, height = 10, limitsize = FALSE)
 
 
@@ -2229,7 +2229,7 @@ enrichment_analysis<- function(region, species, method, top_n, resolution, DEGs_
 
 
 ## Create heatmaps for results
-heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, width){
+heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir, width){
 
     ## Heatmap for -log(p-values)
     log_p_values <- -log10(p_values)
@@ -2241,17 +2241,17 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, widt
     down_DEGs <- subset(de_genes, logFC<0)$ensemblID
     num_DEGs_group <- data.frame('Freq'=c('all_DEGs'=length(all_DEGs), 'up_DEGs'=length(up_DEGs), 'down_DEGs'=length(down_DEGs)))
 
-    ## Num of marker genes for each cell type (present in the universe)
+    ## Num of marker genes for each cell type (unique and present in the universe = used for GSEA)
     if(filename %in% c('MeanRatio_top100_fine_amy_rat_genes', 'MeanRatio_top100_main_amy_rat_genes',
                        'lvsALL_fine_amy_rat_genes_DEGs', 'lvsALL_main_amy_rat_genes_DEGs')){
         markers <- split(eval(parse_expr(paste0(filename)))$ensembl_id,
                          eval(parse_expr(paste0(filename)))$cellType.target)
         markers <- lapply(markers, function(x){x[!is.na(x)]})
-        markers <- lapply(markers, function(x){x[which(x %in% all_genes)]})
+        markers <- lapply(markers, function(x){unique(x[which(x %in% all_genes)])})
     }
     else{
         markers <- eval(parse_expr(paste0(filename, '_ratIDs')))
-        markers <- lapply(markers, function(x){x[which(x %in% all_genes)]})
+        markers <- lapply(markers, function(x){unique(x[which(x %in% all_genes)])})
     }
     num_markers_cell_type <- data.frame('Freq'= unlist(lapply(markers, length)))
 
@@ -2279,7 +2279,7 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, widt
                  { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 17, col='yellow1'))} }
     )
 
-    pdf(file=here(paste0('plots/08_GSEA/', filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 5, width = width)
+    pdf(file=here(paste0('plots/08_GSEA/', dir, filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 5, width = width)
     print(h)
     dev.off()
 }
@@ -2293,28 +2293,28 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, widt
 results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[1]]
 heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala fine cell type markers',
-              'MeanRatio_top100_fine_amyg', 11)
+              'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 11)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'broad', 'amygdala')
 p_values_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[1]]
 heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala broad cell type markers',
-              'MeanRatio_top100_broad_amyg', 6.7)
+              'MeanRatio_top100_broad_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 6.7)
 ms_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[1]]
 heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based human amygdala fine cell type markers',
-              'lvsALL_fine_amy', 11)
+              'lvsALL_fine_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 11)
 ms_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'broad', 'amygdala')
 p_values_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[1]]
 heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based human amygdala broad cell type markers',
-              'lvsALL_broad_amy', 6.7)
+              'lvsALL_broad_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 6.7)
 ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 
 
@@ -2326,21 +2326,21 @@ ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 results_MeanRatio_50_fine_hab <- enrichment_analysis('hab', 'human', 'MeanRatio', 'top50', 'fine', 'habenula')
 p_values_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based human habenula fine cell type markers',
-              'MeanRatio_top50_fine_hab', 8)
+              'MeanRatio_top50_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
 ms_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'fine', 'habenula')
 p_values_lvsALL_fine_hab <- results_lvsALL_fine_hab[[1]]
 heatmap_pvals(p_values_lvsALL_fine_hab, 'habenula', '1vsALL-based human habenula fine cell type markers',
-              'lvsALL_fine_hab', 8)
+              'lvsALL_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
 ms_lvsALL_fine_hab <- results_lvsALL_fine_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'broad', 'habenula')
 p_values_lvsALL_broad_hab <- results_lvsALL_broad_hab[[1]]
 heatmap_pvals(p_values_lvsALL_broad_hab, 'habenula', '1vsALL-based human habenula broad cell type markers',
-              'lvsALL_broad_hab', 6)
+              'lvsALL_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 6)
 ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 
 
@@ -2352,28 +2352,28 @@ ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 results_MeanRatio_100_all_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'all', 'habenula')
 p_values_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_100_all_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for all cell types',
-              'MeanRatio_top100_all_hab', 8)
+              'MeanRatio_top100_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
 ms_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[2]]
 
 #   * MeanRatio-based cell type marker genes for habenula neuronal cell types
 results_MeanRatio_100_neu_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'neu', 'habenula')
 p_values_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_100_neu_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for neuronal cell types',
-              'MeanRatio_top100_neu_hab', 8)
+              'MeanRatio_top100_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
 ms_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes for all cell types
 results_lvsALL_all_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'all', 'habenula')
 p_values_lvsALL_all_hab <- results_lvsALL_all_hab[[1]]
 heatmap_pvals(p_values_lvsALL_all_hab, 'habenula', '1vsALL-based mouse habenula markers for all cell types',
-              'lvsALL_all_hab', 8)
+              'lvsALL_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
 ms_lvsALL_all_hab <- results_lvsALL_all_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes for habenula neuronal cell types
 results_lvsALL_neu_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'neu', 'habenula')
 p_values_lvsALL_neu_hab <- results_lvsALL_neu_hab[[1]]
 heatmap_pvals(p_values_lvsALL_neu_hab, 'habenula', '1vsALL-based mouse habenula markers for neuronal cell types',
-              'lvsALL_neu_hab', 8)
+              'lvsALL_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
 ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 
 
@@ -2385,29 +2385,32 @@ ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 results_MeanRatio_100_fine_amy_rat <- enrichment_analysis('amy', 'rat', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amy_rat[[1]]
 heatmap_pvals(p_values_MeanRatio_100_fine_amy_rat, 'amygdala', 'Top100 MeanRatio-based rat amygdala fine cell type markers',
-              'MeanRatio_top100_fine_amy_rat_genes', 11)
+              'MeanRatio_top100_fine_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 7)
 ms_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amy_rat[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_100_broad_amy_rat <- enrichment_analysis('amy', 'rat', 'MeanRatio', 'top100', 'main', 'amygdala')
 p_values_MeanRatio_100_broad_amy_rat <- results_MeanRatio_100_broad_amy_rat[[1]]
 heatmap_pvals(p_values_MeanRatio_100_broad_amy_rat, 'amygdala', 'Top100 MeanRatio-based rat amygdala main cell type markers',
-              'MeanRatio_top100_main_amy_rat_genes', 6.7)
+              'MeanRatio_top100_main_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 6.7)
 ms_MeanRatio_100_broad_amy_rat <- results_MeanRatio_100_broad_amy_rat[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_amy_rat <- enrichment_analysis('amy', 'rat', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amy_rat <- results_lvsALL_fine_amy_rat[[1]]
 heatmap_pvals(p_values_lvsALL_fine_amy_rat, 'amygdala', '1vsALL-based rat amygdala fine cell type markers',
-              'lvsALL_fine_amy_rat_genes_DEGs', 11)
+              'lvsALL_fine_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 7)
 ms_lvsALL_fine_amy_rat <- results_lvsALL_fine_amy_rat[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_amy_rat <- enrichment_analysis('amy', 'rat', 'lvsALL', NULL, 'main', 'amygdala')
 p_values_lvsALL_broad_amy_rat <- results_lvsALL_broad_amy_rat[[1]]
 heatmap_pvals(p_values_lvsALL_broad_amy_rat, 'amygdala', '1vsALL-based rat amygdala broad cell type markers',
-              'lvsALL_main_amy_rat_genes_DEGs', 6.7)
+              'lvsALL_main_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 6.7)
 ms_lvsALL_broad_amy_rat <- results_lvsALL_broad_amy_rat[[2]]
+
+
+
 
 
 
