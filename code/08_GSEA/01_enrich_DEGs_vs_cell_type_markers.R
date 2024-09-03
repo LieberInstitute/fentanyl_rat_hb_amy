@@ -384,8 +384,6 @@ sce_rat_amy
 #     mainExpName: RNA
 # altExpNames(2): SCT integrated
 
-save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
-
 ## 49 cell clusters
 table(sce_rat_amy$seurat_clusters)
 #     0     1    10    11    12    13    14    15    16    17    18    19     2
@@ -445,6 +443,26 @@ table(colData(sce_rat_amy)$celltype)
 colData(sce_rat_amy)$celltype_broad <- replace(colData(sce_rat_amy)$celltype,
                                                which(colData(sce_rat_amy)$celltype %in% c("Cck+/Vip+", "Chat+", "Nos1+",
                                                                                            "Pvalb+", "Reln+", "Sst+")), "InhNeuron")
+
+## Obtain gene Ensembl IDs
+mart = useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
+ensembl_ids <- getBM(attributes = c('external_gene_name', 'ensembl_gene_id'),
+                     filters = 'external_gene_name',
+                     values = rownames(sce_rat_amy),
+                     mart = mart)
+
+## Keep first occurrence of each gene symbol
+ensembl_ids <- ensembl_ids[-which(duplicated(ensembl_ids$external_gene_name)), ]
+rownames(ensembl_ids) <- ensembl_ids$external_gene_name
+
+## Add to sce object
+rowData(sce_rat_amy)$ensembl_id <- sapply(rownames(sce_rat_amy), function(gene){
+                if(gene %in% ensembl_ids$external_gene_name){ensembl_ids[gene, 'ensembl_gene_id']}
+                else {NA}})
+
+## Save
+save(sce_rat_amy, file = here('processed-data/08_GSEA/Input_rat_amygdala_data/sce_rat_amy.Rdata'))
+
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                    A) MeanRatio cell type marker genes
@@ -2093,12 +2111,26 @@ ggsave(filename = paste0('plots/08_GSEA/MeanRatio_', resolution_MR, '_vs_lvsALL_
 enrichment_analysis<- function(region, species, method, top_n, resolution, DEGs_region){
 
     ## Define marker genes
-    if(method == "lvsALL"){
-        markers <- eval(parse_expr(paste(method, resolution, region, 'ratIDs', sep='_')))
+    if (!species == 'rat'){
+        if(method == "lvsALL"){
+            markers <- eval(parse_expr(paste(method, resolution, region, 'ratIDs', sep='_')))
+        }
+        else{
+            markers <- eval(parse_expr(paste(method, top_n, resolution, region, 'ratIDs', sep='_')))
+        }
     }
+
     else{
-        markers <- eval(parse_expr(paste(method, top_n, resolution, region, 'ratIDs', sep='_')))
+        if(method == "lvsALL"){
+            markers <- split(eval(parse_expr(paste(method, top_n, resolution, region, species, 'genes_DEGs', sep='_')))$gene,
+                             eval(parse_expr(paste(method, top_n, resolution, region, species, 'genes_DEGs', sep='_')))$cellType.target)
+        }
+        else{
+            markers <- split(eval(parse_expr(paste(method, top_n, resolution, region, species, 'genes', sep='_')))$gene,
+                             eval(parse_expr(paste(method, top_n, resolution, region, species, 'genes', sep='_')))$cellType.target)
+        }
     }
+
 
     ## Define groups of rat DEGs
     de_genes <- eval(parse_expr(paste0('de_genes_', DEGs_region)))
@@ -2306,7 +2338,37 @@ heatmap_pvals(p_values_lvsALL_neu_hab, 'habenula', '1vsALL-based mouse habenula 
 ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 
 
+## -----------------------------------------------------------------------------
+##     Compare rat amygdala DEGs vs cell type marker genes in rat amygdala
+## -----------------------------------------------------------------------------
 
+#   * MeanRatio-based cell type marker genes at fine resolution
+results_MeanRatio_100_fine_amy_rat <- enrichment_analysis('amy', 'rat', 'MeanRatio', 'top100', 'fine', 'amygdala')
+p_values_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amyg[[1]]
+heatmap_pvals(p_values_MeanRatio_100_fine_amy_rat, 'amygdala', 'Top100 MeanRatio-based rat amygdala fine cell type markers',
+              'MeanRatio_top100_fine_amy_rat', 11)
+ms_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amy_rat[[2]]
+
+#   * MeanRatio-based cell type marker genes at broad resolution
+results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'main', 'amygdala')
+p_values_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[1]]
+heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala broad cell type markers',
+              'MeanRatio_top100_broad_amyg', 6.7)
+ms_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[2]]
+
+#   * 1vsALL-based cell type marker genes at fine resolution
+results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'fine', 'amygdala')
+p_values_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[1]]
+heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based human amygdala fine cell type markers',
+              'lvsALL_fine_amy', 11)
+ms_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[2]]
+
+#   * 1vsALL-based cell type marker genes at broad resolution
+results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'broad', 'amygdala')
+p_values_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[1]]
+heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based human amygdala broad cell type markers',
+              'lvsALL_broad_amy', 6.7)
+ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 
 
 
