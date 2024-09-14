@@ -660,10 +660,77 @@ obtain_rat_orthologs_mouse <- function(mouse_marker_genes){
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # *From doi: 10.1101/2024.02.26.582081
 
+####################  Broad resolution cell type markers  ######################
+
+## All ranked markers
+MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/MeanRatio_Top50_broad_MarkerGenes_hab.xlsx')))
+MeanRatio_top50_broad_hab_human_genes <- MeanRatio_genes
+MeanRatio_top50_broad_hab_human_genes$ensembl_id <- MeanRatio_top50_broad_hab_human_genes$gene
+MeanRatio_top50_broad_hab_human_genes$gene <- MeanRatio_top50_broad_hab_human_genes$Symbol
+save(MeanRatio_top50_broad_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_top50_broad_hab_human_genes.Rdata'))
+
+## Broad cell types/clusters included
+cell_types <- names(table(MeanRatio_genes$cellType.target))
+cell_types
+# [1] "Astrocyte"  "Endo"       "Excit.Thal" "Inhib.Thal" "LHb"
+# [6] "MHb"        "Microglia"  "Oligo"      "OPC"
+
+## Confirm there are top 50 markers per cell type
+table(MeanRatio_genes$cellType.target)
+# Astrocyte       Endo Excit.Thal Inhib.Thal        LHb        MHb  Microglia
+#        50         50         50         50         50         50         50
+# Oligo        OPC
+#    50         50
+
+## Range of expression ratios of marker genes per cell type (all >1)
+for (cell_type in cell_types){
+    ratios <- subset(MeanRatio_genes, cellType.target==cell_type)$ratio
+    print(paste0('Range of ratios of marker genes for ', cell_type, ': ', signif(min(ratios), 2), ' - ', signif(max(ratios), 2)))
+}
+# [1] "Range of ratios of marker genes for Astrocyte: 3.3 - 110"
+# [1] "Range of ratios of marker genes for Endo: 2.9 - 210"
+# [1] "Range of ratios of marker genes for Excit.Thal: 1.6 - 27"
+# [1] "Range of ratios of marker genes for Inhib.Thal: 2.6 - 42"
+# [1] "Range of ratios of marker genes for LHb: 1.4 - 6.3"
+# [1] "Range of ratios of marker genes for MHb: 2.8 - 52"
+# [1] "Range of ratios of marker genes for Microglia: 6.4 - 9.8"
+# [1] "Range of ratios of marker genes for Oligo: 6.5 - 25"
+# [1] "Range of ratios of marker genes for OPC: 1.4 - 16"
+
+
+## Divide marker genes per cell type and obtain rat IDs
+MeanRatio_top50_broad_hab_ratIDs <- list()
+for (cell_type in cell_types){
+    markers <- subset(MeanRatio_genes, cellType.target==cell_type)
+
+    ## Find rat orthologs
+    markers_rat_IDs <- obtain_rat_orthologs_human(markers$Symbol)
+    ## Take unique rat ensembl IDs: rat genes with at least one human ortholog marker gene
+    markers_rat_IDs <- unique(markers_rat_IDs$rnorvegicus_homolog_ensembl_gene)
+    markers_rat_IDs <- markers_rat_IDs[markers_rat_IDs!=""]
+    print(paste0('Number of ', cell_type, ' marker genes in rat: ', length(markers_rat_IDs)))
+
+    MeanRatio_top50_broad_hab_ratIDs[[cell_type]] <- markers_rat_IDs
+
+}
+
+# [1] "Number of Astrocyte marker genes in rat: 39"
+# [1] "Number of Endo marker genes in rat: 53"
+# [1] "Number of Excit.Thal marker genes in rat: 34"
+# [1] "Number of Inhib.Thal marker genes in rat: 36"
+# [1] "Number of LHb marker genes in rat: 33"
+# [1] "Number of MHb marker genes in rat: 28"
+# [1] "Number of Microglia marker genes in rat: 36"
+# [1] "Number of Oligo marker genes in rat: 40"
+# [1] "Number of OPC marker genes in rat: 46"
+
+save(MeanRatio_top50_broad_hab_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_habenula_Yalcinbas/MeanRatio_top50_broad_hab_human_ratIDs.Rdata'))
+
+
 ####################  Fine resolution cell type markers  ######################
 
 ## All ranked marker genes
-MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/MeanRatio_Top50_MarkerGenes_hab.xlsx')))
+MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_cell_type_markers_human/human_habenula_Yalcinbas/MeanRatio_Top50_fine_MarkerGenes_hab.xlsx')))
 MeanRatio_top50_fine_hab_human_genes <- MeanRatio_genes
 save(MeanRatio_top50_fine_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_top50_fine_hab_human_genes.Rdata'))
 
@@ -1651,6 +1718,17 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
                 ## Broad cell types: set to NA
                 broad_cell_types <- NA
             }
+
+            ########### ii) Broad MeanRatio vs Broad 1vsALL cell types ###########
+            if(resolution_MR=='broad' & resolution_lvsALL=='broad'){
+                ## Use broad cell types for both methods
+                cell_types <- cell_types_MR
+                cell_type_MR <- "cell_type"
+                cell_type_1vsALL <- "cell_type"
+
+                ## Broad cell types: set to NA (as we are not comparing against fine)
+                broad_cell_types <- NA
+            }
         }
 
         ## --------------------------------------------------
@@ -1676,7 +1754,7 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
                 cell_type_MR <- "cell_type"
                 cell_type_1vsALL <- "cell_type"
 
-                ## Broad cell types: set to NA (as we are not comparing against fine)
+                ## Broad cell types: NA
                 broad_cell_types <- NA
             }
         }
@@ -1771,6 +1849,32 @@ compare_markers <- function(region, species, resolution_MR, resolution_lvsALL){
                 ## Broad cell types for 1vsALL
                 cell_type_1vsALL <- "broad_cell_type"
 
+            }
+
+            ########### ii) Broad MeanRatio vs Fine 1vsALL cell types ###########
+
+            if(resolution_MR=='broad' & resolution_lvsALL=='fine'){
+
+                # # Fine 1vsALL markers
+                # lvsALL_markers$cellType.target_fine <- lvsALL_markers$cellType.target
+
+                ## Broad MeanRatio markers
+                MR_markers$cellType.target_fine <- NA
+                cell_type_colors_res <- 'cellType.target'
+
+                ## Broad cell types of the fine ones
+                broad_cell_types <- replace(replace(cell_types_lvsALL, grep('LHb', cell_types_lvsALL), 'LHb'),
+                                            grep('MHb', cell_types_lvsALL), 'MHb')
+                names(broad_cell_types) <- cell_types_lvsALL
+
+                ## Verify fine cell types have a broad type in the broad data
+                stopifnot(broad_cell_types %in% cell_types_MR)
+
+                ## Use fine cell types for plots
+                cell_types <- cell_types_lvsALL
+                cell_type_1vsALL <- "cell_type"
+                ## Broad cell types for MeanRatio
+                cell_type_MR <- "broad_cell_type"
             }
         }
 
@@ -1982,6 +2086,18 @@ plot_grid(plotlist = p, nrow=5)
 ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
                          resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 24, height = 20)
 
+####################  Broad resolution cell type markers  ######################
+
+## Compare MeanRatio vs 1vsALL std logFC for broad cell types
+region <- 'habenula'
+species <- 'human'
+resolution_MR <- 'broad'
+resolution_lvsALL <- 'broad'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=3)
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 16, height = 10)
+
 ###############  Fine and broad resolution cell type markers  ##################
 
 ## Compare MeanRatio for fine cell types vs 1vsALL std logFC for the respective broad cell types
@@ -1989,6 +2105,16 @@ region <- 'habenula'
 species <- 'human'
 resolution_MR <- 'fine'
 resolution_lvsALL <- 'broad'
+p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
+plot_grid(plotlist = p, nrow=5)
+ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
+                         resolution_lvsALL, '_', region, '_', species, '.pdf'), width = 20, height = 15)
+
+## Compare 1vsALL std logFC for fine cell types vs MeanRatio for the respective broad cell types
+region <- 'habenula'
+species <- 'human'
+resolution_MR <- 'broad'
+resolution_lvsALL <- 'fine'
 p <- compare_markers(region, species, resolution_MR, resolution_lvsALL)
 plot_grid(plotlist = p, nrow=5)
 ggsave(filename = paste0('plots/08_GSEA/hockey_stick_plots/human_habenula_Yalcinbas/MeanRatio_', resolution_MR, '_vs_lvsALL_',
@@ -2328,6 +2454,13 @@ p_values_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based human habenula fine cell type markers',
               'MeanRatio_top50_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
 ms_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[2]]
+
+#   * MeanRatio-based cell type marker genes at broad resolution
+results_MeanRatio_50_broad_hab <- enrichment_analysis('hab', 'human', 'MeanRatio', 'top50', 'broad', 'habenula')
+p_values_MeanRatio_50_broad_hab <- results_MeanRatio_50_broad_hab[[1]]
+heatmap_pvals(p_values_MeanRatio_50_broad_hab, 'habenula', 'Top50 MeanRatio-based human habenula broad cell type markers',
+              'MeanRatio_top50_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
+ms_MeanRatio_50_broad_hab <- results_MeanRatio_50_broad_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'fine', 'habenula')
