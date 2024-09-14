@@ -10,6 +10,7 @@ The following were the sets of markers used:
 * *A) MeanRatio-based cell type marker genes*
     * i) Markers for cell types in human epithalamus:
     
+        * Broad resolution cell type markers: the top 50 marker genes for each broad cell type in human epithalamus. 
         * Fine resolution cell type markers: the top 50 marker genes for each fine cell type in human epithalamus. 
         
     * ii) Markers for cell types in human amygdala:
