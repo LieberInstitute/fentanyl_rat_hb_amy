@@ -552,9 +552,13 @@ de_genes_amygdala <- de_genes_amygdala[,c("chr", "start", "end", "width", "stran
 write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
+## Common DEGs
+de_genes_common <- de_genes_amygdala[which(de_genes_amygdala$symbol_or_ensemblID %in% de_genes_habenula$symbol_or_ensemblID), ]
+write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
+## Psar 5
 ## --------------------------------------------------------------------------------------------------
 ##      1.2 DEA for High vs Low fentanyl intake slope in habenula and amygdala fentanyl samples
 ## --------------------------------------------------------------------------------------------------
