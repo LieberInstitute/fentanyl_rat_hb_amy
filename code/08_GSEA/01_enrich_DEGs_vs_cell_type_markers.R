@@ -899,6 +899,15 @@ MeanRatio_genes <- as.data.frame(read.csv('processed-data/08_GSEA/Input_cell_typ
 MeanRatio_top100_fine_amy_human_genes <- MeanRatio_genes
 save(MeanRatio_top100_fine_amy_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_amygdala_Yu/MeanRatio_top100_fine_amy_human_genes.Rdata'))
 
+## Create supp. table with all top100 MeanRatio markers for broad and fine types
+MeanRatio_markers_top100_amy_human <- rbind(cbind(MeanRatio_top100_broad_amy_human_genes, "Cell_type_resolution" = "Broad"),
+                                           cbind(MeanRatio_top100_fine_amy_human_genes[, -9], "Cell_type_resolution" = "Fine"))
+
+colnames(MeanRatio_markers_top100_amy_human)[4:8] <- c("cellType.2nd", "mean.2nd", "MeanRatio", "MeanRatio.rank", "MeanRatio.anno")
+save(MeanRatio_markers_top100_amy_human, file = here('processed-data/08_GSEA/MeanRatio_markers/human_amygdala_Yu/MeanRatio_markers_top100_amy_human.Rdata'))
+write.table(MeanRatio_markers_top100_amy_human, "processed-data/Supplementary_Tables/TableS10_MeanRatio_markers_top100_amy_human.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
+
 ## Fine cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
 cell_types
