@@ -536,7 +536,7 @@ de_genes_habenula <- de_genes_habenula[,c("chr", "start", "end", "width", "stran
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
                                           "gene_description", "associated_phenotypes")]
 save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_Substance_habenula.Rdata')
-write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS4_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS3_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
@@ -549,7 +549,7 @@ de_genes_amygdala <- de_genes_amygdala[,c("chr", "start", "end", "width", "stran
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
                                           "gene_description", "associated_phenotypes")]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
-write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS4_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 ## Supp table for common DEGs
@@ -567,7 +567,7 @@ de_genes_common <- de_genes_common[,c("chr", "start", "end", "width", "strand", 
                                       paste0(c("logFC", "t", "P.Value", "adj.P.Val"), "_amygdala"),
                                       "gene_description", "associated_phenotypes")]
 save(de_genes_common, file = 'processed-data/05_DEA/de_genes_common_Substance_hab_amy.Rdata')
-write.table(de_genes_common, "processed-data/Supplementary_Tables/TableS6_de_genes_common_Substance_hab_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(de_genes_common, "processed-data/Supplementary_Tables/TableS5_de_genes_common_Substance_hab_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
