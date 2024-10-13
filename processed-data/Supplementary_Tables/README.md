@@ -85,3 +85,11 @@ For broad and fine cell types in the human habenula-enriched epithalamus of neur
 
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/1e526a8f559e6675dbf3f228d5794667b9065434/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L757).
 
+
+## [Supplementary Table 10](TableS10_MeanRatio_markers_top100_amy_human.tsv)
+
+**Top 100 *MeanRatio* marker genes per cell type in human amygdala** 
+
+For broad and fine cell types in the human amygdala of neurotypical control donors obtained in [Yu et al., 2023](https://doi.org/10.1038/s41421-022-00506-y), the top 100 most specific marker genes for each based on the *MeanRatio* method, are reported. See [_DeconvoBuddies_](http://research.libd.org/DeconvoBuddies/) documentation for column description. `Cell_type_resolution` column corresponds to the resolution of the cell type for which the gene is a marker.
+
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/6a583e220223977e182ba31f5b7eb99fc8bb788c/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L908).
