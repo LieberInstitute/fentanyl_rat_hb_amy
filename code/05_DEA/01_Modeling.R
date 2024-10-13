@@ -540,7 +540,7 @@ write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS4_de_g
 
 ## Amygdala
 de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
-de_genes_amygdala <- add_description(de_genes_amygdala) #PENDING
+de_genes_amygdala <- add_description(de_genes_amygdala)
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
 save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
@@ -548,17 +548,31 @@ save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdal
 de_genes_amygdala$chr <- de_genes_amygdala$seqnames
 de_genes_amygdala <- de_genes_amygdala[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
-                                          "associated_phenotypes")]
+                                          "gene_description", "associated_phenotypes")]
 write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
-## Common DEGs
-de_genes_common <- de_genes_amygdala[which(de_genes_amygdala$symbol_or_ensemblID %in% de_genes_habenula$symbol_or_ensemblID), ]
-write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+## Supp table for common DEGs
+de_genes_common <- de_genes_habenula[c(which(de_genes_habenula$Symbol %in% common_DEGs),
+                                       which(de_genes_habenula$ensemblID %in% common_DEGs)), ]
+colnames(de_genes_common)[11:14] <- paste0(colnames(de_genes_common)[11:14], "_habenula")
+## Bind DGE metrics in amygdala
+de_genes_common_in_amy <- de_genes_amygdala[c(which(de_genes_amygdala$Symbol %in% common_DEGs),
+                                       which(de_genes_amygdala$ensemblID %in% common_DEGs)), ]
+de_genes_common <- merge(de_genes_common, de_genes_common_in_amy[, c("ensemblID", "logFC", "t", "P.Value", "adj.P.Val")], by = "ensemblID")
+colnames(de_genes_common)[17:20] <- paste0(colnames(de_genes_common)[17:20], "_amygdala")
+de_genes_common <- de_genes_common[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
+                                      "EntrezID", "Symbol", "meanExprs",
+                                      paste0(c("logFC", "t", "P.Value", "adj.P.Val"), "_habenula"),
+                                      paste0(c("logFC", "t", "P.Value", "adj.P.Val"), "_amygdala"),
+                                      "gene_description", "associated_phenotypes")]
+save(de_genes_common, file = 'processed-data/05_DEA/de_genes_common_Substance_hab_amy.Rdata')
+write.table(de_genes_common, "processed-data/Supplementary_Tables/TableS6_de_genes_common_Substance_hab_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
-## Psar 5
+
+
 ## --------------------------------------------------------------------------------------------------
 ##      1.2 DEA for High vs Low fentanyl intake slope in habenula and amygdala fentanyl samples
 ## --------------------------------------------------------------------------------------------------
