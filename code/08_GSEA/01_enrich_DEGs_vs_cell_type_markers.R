@@ -748,6 +748,14 @@ MeanRatio_genes <- as.data.frame(read_xlsx(here('processed-data/08_GSEA/Input_ce
 MeanRatio_top50_fine_hab_human_genes <- MeanRatio_genes
 save(MeanRatio_top50_fine_hab_human_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_top50_fine_hab_human_genes.Rdata'))
 
+## Create supp. table with all top50 MeanRatio markers for broad and fine types
+MeanRatio_markers_top50_hab_human <- rbind(cbind(MeanRatio_top50_broad_hab_human_genes[, c(1:7, 9)], "Cell_type_resolution" = "Broad"),
+                                          cbind(MeanRatio_top50_fine_hab_human_genes[, c(2:8, 10)], "Cell_type_resolution" = "Fine"))
+
+colnames(MeanRatio_markers_top50_hab_human)[4:8] <- c("cellType.2nd", "mean.2nd", "MeanRatio", "MeanRatio.rank", "MeanRatio.anno")
+save(MeanRatio_markers_top50_hab_human, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_markers_top50_hab_human.Rdata'))
+write.table(MeanRatio_markers_top50_hab_human, "processed-data/Supplementary_Tables/TableS9_MeanRatio_markers_top50_hab_human.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
 
 ## Cell types/clusters included
 cell_types <- names(table(MeanRatio_genes$cellType.target))
