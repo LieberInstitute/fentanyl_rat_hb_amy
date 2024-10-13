@@ -1,5 +1,4 @@
 # Supplementary Tables
-TODO: add Tables S1,S2 to supp tables.
 TODO: add number of figs where these tables were used. 
 
 
@@ -15,7 +14,7 @@ Meaning of the sample (or rat) variables and sample-level quality control metric
 
 **Sample metadata and QC metrics.**
 
-Sample-level metadata and quality control data used for EDA and DGE, as well as data regarding the behavior of fentanyl and saline rats. See [Table S1](stabl_sample_variables_dictionary.tsv) for the description of these variables. 
+Sample-level metadata and quality control data used for EDA and DGE, as well as data regarding the behavior of fentanyl and saline rats. See [Table S1](TableS1_sample_variables_dictionary.tsv) for the description of these variables. 
 
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/e081ddd5a05334d9990002b9d441ba4bc8cd3651/code/04_EDA/01_QCA.R#L69).
 
