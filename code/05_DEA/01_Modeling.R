@@ -530,12 +530,12 @@ de_genes_habenula <- add_description(de_genes_habenula)
 de_genes_habenula$EntrezID <- as.character(de_genes_habenula$EntrezID)
 ## Order first by increasing FDR and secondly by decreasing |logFC|
 de_genes_habenula <- de_genes_habenula[order(de_genes_habenula$adj.P.Val, -abs(de_genes_habenula$logFC)),]
-save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_Substance_habenula.Rdata')
 ## Create supp table with results
 de_genes_habenula$chr <- de_genes_habenula$seqnames
 de_genes_habenula <- de_genes_habenula[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
                                           "gene_description", "associated_phenotypes")]
+save(de_genes_habenula, file = 'processed-data/05_DEA/de_genes_Substance_habenula.Rdata')
 write.table(de_genes_habenula, "processed-data/Supplementary_Tables/TableS4_de_genes_Substance_habenula.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Amygdala
@@ -543,12 +543,12 @@ de_genes_amygdala <- add_phenotypes(de_genes_amygdala)
 de_genes_amygdala <- add_description(de_genes_amygdala)
 de_genes_amygdala$EntrezID <- as.character(de_genes_amygdala$EntrezID)
 de_genes_amygdala <- de_genes_amygdala[order(de_genes_amygdala$adj.P.Val, -abs(de_genes_amygdala$logFC)),]
-save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
 ## Create supp table with results
 de_genes_amygdala$chr <- de_genes_amygdala$seqnames
 de_genes_amygdala <- de_genes_amygdala[,c("chr", "start", "end", "width", "strand", "Length", "ensemblID",
                                           "EntrezID", "Symbol", "meanExprs", "logFC", "t", "P.Value", "adj.P.Val",
                                           "gene_description", "associated_phenotypes")]
+save(de_genes_amygdala, file = 'processed-data/05_DEA/de_genes_Substance_amygdala.Rdata')
 write.table(de_genes_amygdala, "processed-data/Supplementary_Tables/TableS5_de_genes_Substance_amygdala.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
