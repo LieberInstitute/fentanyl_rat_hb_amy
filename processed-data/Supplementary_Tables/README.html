@@ -354,6 +354,8 @@ display: none;
 
 <div id="supplementary-tables" class="section level1">
 <h1>Supplementary Tables</h1>
+<p>TODO: add Tables S1,S2 to supp tables. TODO: add number of figs where
+these tables were used.</p>
 <div id="supplementary-table-1" class="section level2">
 <h2><a href="TableS1_sample_variables_dictionary.tsv">Supplementary
 Table 1</a></h2>
@@ -365,22 +367,15 @@ control metrics used throughout this project.</p>
 <h2><a href="TableS2_sample_metadata_and_QCmetrics.tsv">Supplementary
 Table 2</a></h2>
 <p><strong>Sample metadata and QC metrics.</strong></p>
-<p>Sample-level metadata and quality control data used for EDA and DGE.
-See <a href="stabl_sample_variables_dictionary.tsv">Table SA</a> for the
+<p>Sample-level metadata and quality control data used for EDA and DGE,
+as well as data regarding the behavior of fentanyl and saline rats. See
+<a href="stabl_sample_variables_dictionary.tsv">Table S1</a> for the
 description of these variables.</p>
 <p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/e081ddd5a05334d9990002b9d441ba4bc8cd3651/code/04_EDA/01_QCA.R#L69">here</a>.</p>
 </div>
 <div id="supplementary-table-3" class="section level2">
-<h2><a href="TableS3_rat_behavioral_data.tsv">Supplementary Table
-3</a></h2>
-<p><strong>Rat behavioral data.</strong></p>
-<p>Data regarding the behavior of fentanyl and saline rats. See <a href="%5Bstabl_sample_variables_dictionary%5D">Table SA</a> for the
-description of these variables.</p>
-<p>Maybe not necessary: Created <a href>here</a>.</p>
-</div>
-<div id="supplementary-table-4" class="section level2">
-<h2><a href="TableS4_de_genes_Substance_habenula.tsv">Supplementary
-Table 4</a></h2>
+<h2><a href="TableS3_de_genes_Substance_habenula.tsv">Supplementary
+Table 3</a></h2>
 <p><strong>DEGs for substance in habenula</strong></p>
 <p>Metadata, <em>limma</em> DE statistics, and Ensembl associated
 phenotypes and descriptions of DEGs obtained for fentanyl vs. saline in
@@ -390,9 +385,9 @@ documentation for these statistics definitions. Volcano plot in
 table.</p>
 <p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/2ae73935abf555c6848a9a25c4ff3c322100923b/code/05_DEA/01_Modeling.R#L500">here</a>.</p>
 </div>
-<div id="supplementary-table-5" class="section level2">
-<h2><a href="TableS5_de_genes_Substance_amygdala.tsv">Supplementary
-Table 5</a></h2>
+<div id="supplementary-table-4" class="section level2">
+<h2><a href="TableS4_de_genes_Substance_amygdala.tsv">Supplementary
+Table 4</a></h2>
 <p><strong>DEGs for substance in amygdala</strong></p>
 <p>Metadata, <em>limma</em> DE statistics, and Ensembl associated
 phenotypes and descriptions of DEGs obtained for fentanyl vs. saline in
@@ -402,19 +397,46 @@ documentation for these statistics definitions. Volcano plot in
 table.</p>
 <p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/2ae73935abf555c6848a9a25c4ff3c322100923b/code/05_DEA/01_Modeling.R#L513">here</a>.</p>
 </div>
+<div id="supplementary-table-5" class="section level2">
+<h2><a href="TableS5_de_genes_common_Substance_hab_amy.tsv">Supplementary Table
+5</a></h2>
+<p><strong>Common DEGs for substance in habenula and
+amygdala</strong></p>
+<p>Metadata, region-specific <em>limma</em> DE statistics, and Ensembl
+associated phenotypes and descriptions of overlapping DEGs for fentanyl
+vs. saline in habenula and amygdala. See <a href="https://bioconductor.org/packages/release/bioc/html/limma.html"><em>limma</em></a>
+documentation for these statistics definitions. Volcano plot in
+<strong>Figure XX</strong> was created with the data provided in this
+table.</p>
+<p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/5f2104ac7dbfd4534db9f1bb88ab7e124b984cd5/code/05_DEA/01_Modeling.R#L570">here</a>.</p>
+</div>
 <div id="supplementary-table-6" class="section level2">
 <h2><a href="TableS6_DEAs_results_all_genes_hab_amyg.tsv">Supplementary
 Table 6</a></h2>
 <p><strong>Results for all DGE analyses and genes in habenula and
 amygdala</strong></p>
 <p>Gene-level metadata and <em>limma</em> DE statistics of each gene for
-substance and rat behavior DEG analyses (fentanyl vs. saline, first hour
+substance and rat behavior DGE analyses (fentanyl vs. saline, first hour
 infusion slope, total intake, and last session intake) in habenula and
 amygdala. See <a href="https://bioconductor.org/packages/release/bioc/html/limma.html"><em>limma</em></a>
 documentation for these statistics definitions. Scatter plots in
 <strong>Figure XX</strong> were created with the data provided in this
 table.</p>
 <p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/ccee0d3bb43a43490fe0d6da91253c3011a61640/code/05_DEA/02_Comparisons.R#L89">here</a>.</p>
+</div>
+<div id="supplementary-table-7" class="section level2">
+<h2><a href="TableS7_MeanRatio_markers_top100_hab_mouse.tsv">Supplementary
+Table 7</a></h2>
+<p><strong>Top 100 MeanRatio marker genes per cell type in mouse
+habenula</strong></p>
+<p>For all cell types and habenula neuronal cell types in the habenula
+complex of control mice obtained in <a href="https://pubmed.ncbi.nlm.nih.gov/32272058/">Hashikawa et al.,
+2020</a>, the top 100 most specific marker genes for each based on the
+<em>MeanRatio</em> method, are reported. See <a href="http://research.libd.org/DeconvoBuddies/"><em>DeconvoBuddies</em></a>
+documentation for column description. <code>Cell_type_resolution</code>
+column corresponds to the resolution of the cell type for which the gene
+is a marker.</p>
+<p>Created <a href="https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/76baa6a0271249c89f57996f5aa6e9a58eeb40d8/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L269">here</a>.</p>
 </div>
 </div>
 
