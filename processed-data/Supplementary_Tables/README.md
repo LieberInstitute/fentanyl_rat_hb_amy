@@ -56,12 +56,26 @@ Gene-level metadata and *limma* DE statistics of each gene for substance and rat
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/ccee0d3bb43a43490fe0d6da91253c3011a61640/code/05_DEA/02_Comparisons.R#L89).
 
 
-TODOOOOOO
-## [Supplementary Table 7](TableS7_MeanRatio_marker_genes.tsv)
 
-**Top 100 MeanRatio cell type marker genes in human and rodent habenula and amygdala** 
+## [Supplementary Table 7](TableS7_MeanRatio_markers_top100_hab_mouse.tsv)
 
-Gene-level metadata and *limma* DE statistics of each gene for substance and rat behavior DEG analyses (fentanyl vs. saline, first hour infusion slope, total intake, and last session intake) in habenula and amygdala. See [_limma_](https://bioconductor.org/packages/release/bioc/html/limma.html) documentation for these statistics definitions. Scatter plots in **Figure XX** were created with the data provided in this table.
+**Top 100 *MeanRatio* marker genes per cell type in mouse habenula** 
 
-Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/ccee0d3bb43a43490fe0d6da91253c3011a61640/code/05_DEA/02_Comparisons.R#L89).
+For all cell types and habenula neuronal cell types in the habenula complex of control mice obtained in [Hashikawa et al., 2020](https://pubmed.ncbi.nlm.nih.gov/32272058/), the top 100 most specific marker genes for each based on the *MeanRatio* method, are reported. See [_DeconvoBuddies_](http://research.libd.org/DeconvoBuddies/) documentation for column description. `Cell_type_resolution` column corresponds to the resolution of the cell type for which the gene is a marker. 
+
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/76baa6a0271249c89f57996f5aa6e9a58eeb40d8/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L269).
+
+
+
+## [Supplementary Table 8](TableS8_MeanRatio_markers_top100_amy_rat.tsv)
+
+**Top 100 *MeanRatio* marker genes per cell type in rat amygdala** 
+For main cell types and inhibitory neuronal subtypes in the amygdala of control rats obtained in [Zhou et al., 2023](https://www.nature.com/articles/s41593-023-01452-y), the top 100 most specific marker genes for each based on the *MeanRatio* method, are reported. See [_DeconvoBuddies_](http://research.libd.org/DeconvoBuddies/) documentation for column description. `Cell_type_resolution` column corresponds to the resolution of the cell type for which the gene is a marker.
+
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/3d6ff603b91963e03458b2dd238e60be1a3465c6/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L572).
+
+
+
+
+
 
