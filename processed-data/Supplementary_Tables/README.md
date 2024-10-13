@@ -51,7 +51,7 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/5f210
 
 **Results for all DGE analyses and genes in habenula and amygdala** 
 
-Gene-level metadata and *limma* DE statistics of each gene for substance and rat behavior DEG analyses (fentanyl vs. saline, first hour infusion slope, total intake, and last session intake) in habenula and amygdala. See [_limma_](https://bioconductor.org/packages/release/bioc/html/limma.html) documentation for these statistics definitions. Scatter plots in **Figure XX** were created with the data provided in this table.
+Gene-level metadata and *limma* DE statistics of each gene for substance and rat behavior DGE analyses (fentanyl vs. saline, first hour infusion slope, total intake, and last session intake) in habenula and amygdala. See [_limma_](https://bioconductor.org/packages/release/bioc/html/limma.html) documentation for these statistics definitions. Scatter plots in **Figure XX** were created with the data provided in this table.
 
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/ccee0d3bb43a43490fe0d6da91253c3011a61640/code/05_DEA/02_Comparisons.R#L89).
 

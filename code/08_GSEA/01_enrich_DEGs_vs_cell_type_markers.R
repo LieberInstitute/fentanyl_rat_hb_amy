@@ -262,6 +262,13 @@ MeanRatio_top100_neu_hab_mouse_genes <- subset(MeanRatio_neu_hab_mouse_genes, Me
 save(MeanRatio_top100_neu_hab_mouse_genes, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_top100_neu_hab_mouse_genes.Rdata'))
 
 
+## Create supp. table with all top100 MeanRatio markers for all and neu types
+MeanRatio_markers_top100_hab_mouse <- rbind(cbind(MeanRatio_top100_all_hab_mouse_genes[, -9], "Cell_type_resolution" = "All"),
+                                            cbind(MeanRatio_top100_neu_hab_mouse_genes[, -9], "Cell_type_resolution" = "Habenula_neuronal"))
+save(MeanRatio_markers_top100_hab_mouse, file = here('processed-data/08_GSEA/MeanRatio_markers/mouse_habenula_Hashikawa/MeanRatio_markers_top100_hab_mouse.Rdata'))
+write.table(MeanRatio_markers_top100_hab_mouse, "processed-data/Supplementary_Tables/TableS7_MeanRatio_markers_top100_hab_mouse.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
+
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##                     B) 1vsALL cell type marker genes
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
