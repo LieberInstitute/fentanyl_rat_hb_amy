@@ -13,12 +13,24 @@ man_df = read.table(
         col.names = c('filename', 'md1', 'filename2', 'md2', 'sample_name')
     ) |>
     as_tibble() |>
-    select(filename, filename2, sample_name)
+    select(filename, filename2, sample_name) |>
+    #   The project code changed in the middle of the project, breaking paths
+    mutate(
+        filename = sub(
+            'fentanylRat_LIBD4205', 'fentanylRat_LIBD4270', filename
+        ),
+        filename2 = sub(
+            'fentanylRat_LIBD4205', 'fentanylRat_LIBD4270', filename2
+        )
+    )
 
-#   Assume one pair of files per sample, each ending in '.fastq.gz'
+#   Assume one pair of files per sample, each ending in '.fastq.gz'. All files
+#   should also exist
 stopifnot(nrow(man_df) == length(unique(man_df$sample_name)))
 stopifnot(all(grepl('\\.fastq\\.gz$', man_df$filename)))
 stopifnot(all(grepl('\\.fastq\\.gz$', man_df$filename2)))
+stopifnot(all(file.exists(man_df$filename)))
+stopifnot(all(file.exists(man_df$filename2)))
 
 #   Link original files to the new directory
 file.symlink(

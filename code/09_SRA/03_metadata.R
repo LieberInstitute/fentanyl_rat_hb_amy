@@ -62,9 +62,15 @@ fastq_mapping = tibble(
     ) |>
     mutate(actual_file = Sys.readlink(link_file))
 
-stopifnot(
-    setequal(fastq_mapping$actual_file, c(meta_df$filename, meta_df$filename2))
+#   The project code changed in the middle of the project, breaking paths. Other
+#   than that difference, links should point to the same set of files in the
+#   manifest
+correct_files = sub(
+    'fentanylRat_LIBD4205',
+    'fentanylRat_LIBD4270',
+    c(meta_df$filename, meta_df$filename2)
 )
+stopifnot(setequal(fastq_mapping$actual_file, correct_files))
 
 #   Use the symbolic links in a flat directory structure, not the original paths
 #   used for SPEAQeasy
