@@ -5,6 +5,7 @@ library(sessioninfo)
 man_path = here('processed-data', '02_SPEAQeasy', 'samples.manifest')
 pheno_path = here('raw-data', 'sample_metadata_and_QCmetrics.csv')
 out_path = here('processed-data', '09_SRA', 'metadata.tsv')
+fastq_dir = here('raw-data', 'FASTQ', 'flat_dir')
 
 design_description_text = paste(
     "Drugs",
@@ -51,6 +52,30 @@ meta_df = read.table(
         library_source, library_selection, library_layout, platform,
         instrument_model, design_description, filetype, filename,
         filename2
+    )
+
+#   Mapping from symbolic links to upload to actual files listed in manifest
+fastq_mapping = tibble(
+        link_file = list.files(
+            fastq_dir, pattern = "\\.fastq\\.gz$", full.names = TRUE
+        )
+    ) |>
+    mutate(actual_file = Sys.readlink(link_file))
+
+stopifnot(
+    setequal(fastq_mapping$actual_file, c(meta_df$filename, meta_df$filename2))
+)
+
+#   Use the symbolic links in a flat directory structure, not the original paths
+#   used for SPEAQeasy
+meta_df = meta_df |>
+    mutate(
+        filename = fastq_mapping$link_file[
+            match(filename, fastq_mapping$actual_file)
+        ],
+        filename2 = fastq_mapping$link_file[
+            match(filename2, fastq_mapping$actual_file)
+        ]
     )
 
 #   Also check disk usage (to make sure we comply with SRA requirements)
