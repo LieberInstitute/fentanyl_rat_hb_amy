@@ -1,9 +1,9 @@
 **** Job starts ****
-Mon Oct 28 11:54:45 AM EDT 2024
+Mon Oct 28 11:59:03 AM EDT 2024
 **** JHPCE info ****
 User: neagles
-Job id: 10264580
-Job name: 02_link_fastq
+Job id: 10264638
+Job name: 03_metadata
 Node name: compute-169
 Task id: 
 Loading conda_R/4.4
@@ -25,6 +25,7 @@ Currently Loaded Modules:
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 here() starts at /dcs04/lieber/marmaypag/fentanylRat_LIBD4270/fentanyl_rat_hb_amy
+FASTQ files occupy a total of 0GB.
 ─ Session info ───────────────────────────────────────────────────────────────
  setting  value
  version  R version 4.4.0 Patched (2024-05-22 r86590)
@@ -40,8 +41,11 @@ here() starts at /dcs04/lieber/marmaypag/fentanylRat_LIBD4270/fentanyl_rat_hb_am
 
 ─ Packages ───────────────────────────────────────────────────────────────────
  package     * version date (UTC) lib source
+ bit           4.0.5   2022-11-15 [2] CRAN (R 4.4.0)
+ bit64         4.0.5   2020-08-30 [2] CRAN (R 4.4.0)
  cli           3.6.3   2024-06-21 [1] CRAN (R 4.4.0)
  colorspace    2.1-1   2024-07-26 [1] CRAN (R 4.4.0)
+ crayon        1.5.3   2024-06-20 [1] CRAN (R 4.4.0)
  dplyr       * 1.1.4   2023-11-17 [1] CRAN (R 4.4.0)
  fansi         1.0.6   2023-12-08 [1] CRAN (R 4.4.0)
  forcats     * 1.0.0   2023-01-29 [2] CRAN (R 4.4.0)
@@ -74,6 +78,7 @@ here() starts at /dcs04/lieber/marmaypag/fentanylRat_LIBD4270/fentanyl_rat_hb_am
  tzdb          0.4.0   2023-05-12 [2] CRAN (R 4.4.0)
  utf8          1.2.4   2023-10-22 [1] CRAN (R 4.4.0)
  vctrs         0.6.5   2023-12-01 [1] CRAN (R 4.4.0)
+ vroom         1.6.5   2023-12-05 [2] CRAN (R 4.4.0)
  withr         3.0.1   2024-07-31 [1] CRAN (R 4.4.0)
 
  [1] /users/neagles/R/4.4
@@ -82,4 +87,4 @@ here() starts at /dcs04/lieber/marmaypag/fentanylRat_LIBD4270/fentanyl_rat_hb_am
 
 ──────────────────────────────────────────────────────────────────────────────
 **** Job ends ****
-Mon Oct 28 11:54:48 AM EDT 2024
+Mon Oct 28 11:59:05 AM EDT 2024
