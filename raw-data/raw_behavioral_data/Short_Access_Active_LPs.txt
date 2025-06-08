@@ -1,0 +1,7 @@
+	"2 hr"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Inactive"	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Saline Active "	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Inactive"	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "	"Fentanyl Active "
+ShA1	1	0	4	2	1	2	0	6	2	2	4	1	3	5	7	1	9	12	15	1	7	24	3	3	3	1	0	0	16	0	0				13	8	20	1	1	13	12	2			
+ShA2	2	0	14	1	0	1	0	11	6	1	9	9	1	6	2	1	2	8	10	2	7	13	16	10	0	3	1	0	7	2	0				27	5	2	4	23	8	14	12			
+ShA3	3	4	13	1	0	0	0	11	3	3	19	9	1	14	2	1	12	7	6	0	4	11	5	6	2	4	2	0	5	0	0				15	10	17	5	6	30	12	6			
+Sha4	4	0	2	1	2	11	3	4	4	4	1	18	7	7	6	0	9	6	5	1	6	6	11	26	2	13	9	0	14	0	4				18	15	13	13	17	14	9	4			
+ShA5	5	4	21	0	0	4	0	9	8	2	6	17	6	6	0	1	10	5	8	5	2	7	13	16	0	13	11	0	0	0	6				4	13	266	3	48	21	10	2			
+ShA6	6	5	29	1	2	8	1	18	2	7	7	9	1	5	2	5	3	8	5	3	2	4	16	21	0	6	8	2	3	0	3				13	10	519	10	77	38	37	7			
