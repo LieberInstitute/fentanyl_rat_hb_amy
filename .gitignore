@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 raw-data/count_objects/*
-raw-data/FASTQ/*
 processed-data/03_Data_preparation/
 processed-data/04_EDA/
 processed-data/05_DEA/
