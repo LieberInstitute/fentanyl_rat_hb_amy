@@ -168,7 +168,7 @@ amy_DEGs <- c("Cacna2d1", "Cacnb3", "Chrna5", "Mmp9", "CCK", "Bdnf", "Crhbp", "S
 common_DEGs <- intersect(de_genes_habenula$symbol_or_ensemblID, de_genes_amygdala$symbol_or_ensemblID)
 
 
-plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
+plots_DEGs<-function(brain_region, top_genes, vGene, name, DEGs_list) {
 
     if(name=='First_Hour_Infusion_Slope'){
         FClab = 'log2FC(1st Hour Infusion Slope)'
@@ -206,6 +206,14 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
     up_genes <- subset(top_genes, logFC>0)$symbol_or_ensemblID
     down_genes <- subset(top_genes, logFC<0)$symbol_or_ensemblID
 
+    ## DEGs
+    de_genes <- subset(top_genes, adj.P.Val < 0.05)
+    up_de_genes <- subset(de_genes, logFC>0)
+    top_up_de_genes <- up_de_genes[order(up_de_genes$adj.P.Val), ][1:5, "symbol_or_ensemblID"]
+    down_de_genes <- subset(de_genes, logFC<0)
+    top_down_de_genes <- down_de_genes[order(down_de_genes$adj.P.Val), ][1:5, "symbol_or_ensemblID"]
+    genes_to_label <- c(top_up_de_genes, top_down_de_genes)
+
     ## Position of caption in plot
     caption_x_units <- 0.55
     caption_y_units1 <- 0.15
@@ -218,12 +226,15 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
     }
 
     ## Label specific DEGs in plot
-    top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% DEGs_list){x} else {NA}})
+    # top_genes$DEG_symbol<- sapply(top_genes$symbol_or_ensemblID, function(x){ if(x %in% DEGs_list){x} else {NA}})
 
     ## Plots
     cols <- c("Up" = "indianred2", "Down" = "steelblue2", "n.s." = "grey")
     sizes <- c("Up" = 1.3, "Down" = 1.3, "n.s." = 0.8)
     alphas <- c("Up" = 0.4, "Down" = 0.6, "n.s." = 0.5)
+
+    ## Max pval of DEGs
+    maxP <- max(de_genes$P.Value)
 
     ## MA plot for DE genes
     top_genes$mean_log_expr<-apply(vGene$E, 1, mean)
@@ -250,70 +261,80 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
 
     ## Volcano plot for DE genes
     p2<-ggplot(data = top_genes,
-               aes(x = logFC,y = -log10(adj.P.Val),
+               aes(x = logFC,y = -log10(P.Value),
                    color = DE,
                    fill = DE,
                    size = DE,
-                   alpha = DE,
-                   label= DEG_symbol)) +
+                   alpha = DE)) +
         sm_hgrid(legends = TRUE) +
         geom_point(shape = 21) +
-        geom_hline(yintercept = -log10(FDR),
+        geom_hline(yintercept = -log10(maxP),
                    linetype = "dashed", color = 'gray35', linewidth=0.5) +
         geom_vline(xintercept = c(-1,1),
                    linetype = "dashed", color = 'gray35', linewidth=0.5) +
+        ## Label top DEGs
+        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% genes_to_label),
+                        aes(label = symbol_or_ensemblID),
+                        size=2.7,
+                        color='black',
+                        alpha = 1,
+                        max.overlaps = Inf,
+                        box.padding = 0.15,
+                        segment.size = unit(0.35, 'mm'),
+                        segment.alpha = 0.4,
+                        show.legend=FALSE) +
         ## Label down DEGs (not common)
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% down_genes &
-                                          ! symbol_or_ensemblID %in% common_DEGs),
-                        aes(fontface = 'bold'),
-                        size=2.3,
-                        color='black',
-                        alpha = 1,
-                        max.overlaps = Inf,
-                        box.padding = 0.15, nudge_y = -0.1, nudge_x = -0.4,
-                        segment.size = unit(0.35, 'mm'),
-                        segment.alpha = 0.4,
-                        show.legend=FALSE) +
+        # geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% down_genes &
+        #                                   ! symbol_or_ensemblID %in% common_DEGs),
+        #                 aes(fontface = 'bold'),
+        #                 size=2.3,
+        #                 color='black',
+        #                 alpha = 1,
+        #                 max.overlaps = Inf,
+        #                 box.padding = 0.15, nudge_y = -0.1, nudge_x = -0.4,
+        #                 segment.size = unit(0.35, 'mm'),
+        #                 segment.alpha = 0.4,
+        #                 show.legend=FALSE) +
         ## Label up DEGs (not common)
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% up_genes &
-                                          ! symbol_or_ensemblID %in% common_DEGs),
-                        aes(fontface = 'bold'),
-                        size=2.3,
-                        color='black',
-                        alpha = 1,
-                        max.overlaps = Inf,
-                        box.padding = 0.15, nudge_y = 0.1, nudge_x = 0.4,
-                        segment.size = unit(0.35, 'mm'),
-                        segment.alpha = 0.4,
-                        show.legend=FALSE) +
+        # geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% up_genes &
+        #                                   ! symbol_or_ensemblID %in% common_DEGs),
+        #                 aes(fontface = 'bold'),
+        #                 size=2.3,
+        #                 color='black',
+        #                 alpha = 1,
+        #                 max.overlaps = Inf,
+        #                 box.padding = 0.15, nudge_y = 0.1, nudge_x = 0.4,
+        #                 segment.size = unit(0.35, 'mm'),
+        #                 segment.alpha = 0.4,
+        #                 show.legend=FALSE) +
         ## Label common DEGs (down)
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
-                                                 symbol_or_ensemblID %in% DEGs_list &
-                                                 symbol_or_ensemblID %in% down_genes),
-                         aes(fontface = 'bold'),
-                         size=2.3,
-                         color='darkorange3',
-                         alpha = 1,
-                         max.overlaps = Inf,
-                         box.padding = 0.15, nudge_y = -0.3, nudge_x = -0.7,
-                         segment.size = unit(0.4, 'mm'),
-                         segment.alpha = 0.48,
-                         show.legend=FALSE)+
+        # geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
+        #                                          symbol_or_ensemblID %in% DEGs_list &
+        #                                          symbol_or_ensemblID %in% down_genes),
+        #                  aes(fontface = 'bold'),
+        #                  size=2.3,
+        #                  color='darkorange3',
+        #                  alpha = 1,
+        #                  max.overlaps = Inf,
+        #                  box.padding = 0.15, nudge_y = -0.3, nudge_x = -0.7,
+        #                  segment.size = unit(0.4, 'mm'),
+        #                  segment.alpha = 0.48,
+        #                  show.legend=FALSE)+
         ## Label common DEGs (up)
-        geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
-                                          symbol_or_ensemblID %in% DEGs_list &
-                                          symbol_or_ensemblID %in% up_genes),
-                        aes(fontface = 'bold'),
-                        size=2.3,
-                        color='darkorange3',
-                        alpha = 1,
-                        max.overlaps = Inf,
-                        box.padding = 0.15, nudge_y = 0.3, nudge_x = 0.7,
-                        segment.size = unit(0.4, 'mm'),
-                        segment.alpha = 0.48,
-                        show.legend=FALSE)+
+        # geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% common_DEGs &
+        #                                   symbol_or_ensemblID %in% DEGs_list &
+        #                                   symbol_or_ensemblID %in% up_genes),
+        #                 aes(fontface = 'bold'),
+        #                 size=2.3,
+        #                 color='darkorange3',
+        #                 alpha = 1,
+        #                 max.overlaps = Inf,
+        #                 box.padding = 0.15, nudge_y = 0.3, nudge_x = 0.7,
+        #                 segment.size = unit(0.4, 'mm'),
+        #                 segment.alpha = 0.48,
+        #                 show.legend=FALSE)+
 
-        labs(y="-log10(FDR)", x=FClab)+
+        labs(y="-log10(P)", x=FClab)+
         scale_color_manual(values = cols, name=NULL) +
         scale_fill_manual(values = cols, name=NULL) +
         scale_size_manual(values = sizes, name=NULL) +
@@ -323,13 +344,13 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
               legend.background = element_rect(fill=NA),
               legend.key.height = unit(0.15,"cm"),
               axis.title = element_text(size = (10)),
-              legend.text = element_text(size=10)) +
+              legend.text = element_text(size=10))
         ## Caption: number of DEGs
-        annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units1, label= paste0(length(which(top_genes$adj.P.Val<FDR)), ' DEGs'),
-                 color='gray40', size=2.8, fontface = 'bold') +
+        # annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units1, label= paste0(length(which(top_genes$adj.P.Val<FDR)), ' DEGs'),
+         #        color='gray40', size=3.1, fontface = 'bold')
         ## Caption: FDR threshold
-        annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units2, label= paste0("(FDR<", FDR, ")"),
-                 color='gray40', size=2.5)
+        # annotate("text", x=max(top_genes$logFC)-caption_x_units, y=caption_y_units2, label= paste0("(FDR<", FDR, ")"),
+        #          color='gray40', size=2.5)
 
     plot_grid(p1, p2, ncol=2)
     ggsave(paste("plots/05_DEA/01_Modeling/DEG_plots_", brain_region, '_', name, ".pdf", sep=""),
@@ -339,18 +360,43 @@ plots_DEGs<-function(brain_region, top_genes, vGene, FDR, name, DEGs_list) {
 
 ## Plots for habenula DEGs from the model without correlated variables
 plots_DEGs('habenula', top_genes = results_Substance_uncorr_vars_habenula[[1]],
-           vGene = results_Substance_uncorr_vars_habenula[[2]], FDR = 0.05,
+           vGene = results_Substance_uncorr_vars_habenula[[2]],
            name='Substance', DEGs_list = hab_DEGs)
 
 ## Plots for amygdala DEGs from the model without correlated variables
 plots_DEGs('amygdala', top_genes = results_Substance_uncorr_vars_amygdala[[1]],
-           vGene = results_Substance_uncorr_vars_amygdala[[2]], FDR = 0.05,
+           vGene = results_Substance_uncorr_vars_amygdala[[2]],
            name='Substance', DEGs_list = amy_DEGs)
 
 
+## Regress out covariates from gene expr
+regress_covs <- function(ensemblID, variable, brain_region){
+
+    if(variable == "Substance"){
+        if(brain_region == "habenula"){
+            RSE <- rse_gene_habenula_filt
+            sample_data <- matrix(as.numeric(as.matrix(colData(RSE)[, c("Batch_RNA_extraction", "concordMapRate", "RIN")])), ncol = 3)
+            vGene <- results_Substance_uncorr_vars_habenula[[2]]
+            eGene <- results_Substance_uncorr_vars_habenula[[3]]
+            coeffs <- eGene$coefficients[ensemblID,  c("Batch_RNA_extraction3", "concordMapRate", "RIN")]
+        }
+        else{
+            RSE <- rse_gene_amygdala_filt
+            sample_data <- matrix(as.numeric(as.matrix(colData(RSE)[, c("Batch_RNA_extraction", "Batch_lib_prep",
+                                                                         "overallMapRate", "RIN")])), ncol = 4)
+            vGene <- results_Substance_uncorr_vars_amygdala[[2]]
+            eGene <- results_Substance_uncorr_vars_amygdala[[3]]
+            coeffs <- eGene$coefficients[ensemblID,  c("Batch_RNA_extraction3", "Batch_lib_prep3", "overallMapRate", "RIN")]
+
+        }
+    }
+
+    y = vGene$E[ensemblID, ]
+    return(y - (sample_data %*% coeffs))
+}
 
 ## Boxplot/Scatterplot for a DEG of interest
-DEG_expression_plot <- function (de_genes, vGene, DEG, variable, brain_region){
+DEG_expression_plot <- function (variable, brain_region, gene){
 
     if (variable=='Substance'){
         rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
@@ -360,6 +406,9 @@ DEG_expression_plot <- function (de_genes, vGene, DEG, variable, brain_region){
         rse_gene <- eval(parse_expr(paste("rse_gene", brain_region, 'filt', sep="_")))
         rse_gene <- rse_gene[which(rse_gene$Substance=='Fentanyl'), ]
     }
+
+    de_genes <- eval(parse_expr(paste("de_genes", brain_region, sep="_")))
+    vGene <- eval(parse_expr(paste0("results_", variable, "_uncorr_vars_", brain_region, "[[2]]")))
 
     ## Sample colors
     colors = list("Substance"= c('Fentanyl'='turquoise3', 'Saline'='yellow3'),
@@ -372,71 +421,65 @@ DEG_expression_plot <- function (de_genes, vGene, DEG, variable, brain_region){
                "First_Hour_Infusion_Slope" = "First hour infusion slope")
 
     ## q-value for the gene
-    q_value<-signif(de_genes[which(de_genes$symbol_or_ensemblID==DEG), "adj.P.Val"], digits = 2)
+    q_value <-signif(de_genes[which(de_genes$symbol_or_ensemblID==gene), "adj.P.Val"], digits = 2)
 
     ## FC
-    FC<-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==DEG), "logFC"]), digits=2)
+    FC <-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==gene), "logFC"]), digits=2)
 
     ## Gene symbol + ensemblID
-    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==DEG), "ensemblID"]
-    if (length(ensemblID)!=0 && DEG!=ensemblID){
-        gene_title <- paste(DEG, ensemblID, sep="-")
-    }
-    else {
-        gene_title <- DEG
+    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
+    if (length(ensemblID)!=0 && gene!=ensemblID){
+        gene_title <- paste(gene, ensemblID, sep="-")
+    }else {
+        gene_title <- gene
     }
 
-
-    ## Order genes by q-value
-    de_genes<-de_genes[order(de_genes$adj.P.Val),]
     ## Merge lognorm counts of DEG with sample data
-    lognorm_DE<-vGene$E[rownames(de_genes),]
-    lognorm_DE<-t(lognorm_DE)
-    colnames(lognorm_DE)<-de_genes$symbol_or_ensemblID
-    lognorm_DE<-data.frame(lognorm_DE, variable=colData(rse_gene)[variable])
+    lognorm_DE <- regress_covs(ensemblID, variable, brain_region)
+    lognorm_DE <- as.vector(t(lognorm_DE))
+    lognorm_DE <- data.frame(deg = lognorm_DE, variable=colData(rse_gene)[variable])
 
     ## Boxplot for Substance DGE
     if (variable == 'Substance'){
-        plot <- ggplot(data=lognorm_DE,
+        plot <- ggplot(data = lognorm_DE,
                    aes(x=eval(parse_expr(variable)),
-                       y=eval(parse_expr(DEG)))) +
+                       y=deg)) +
                     ## Hide outliers
-                    geom_boxplot(outlier.color = "#FFFFFFFF", width=0.35) +
+                    geom_boxplot(outlier.color = "#FFFFFFFF", width=0.3, color = "gray30", alpha = 0.6) +
                     ## Samples colored by variable of interest
-                    geom_jitter(aes(colour=eval(parse_expr(variable))),
-                                shape=16,
-                                position=position_jitter(0.2),
-                                size=2.7) +
-                    theme_bw() +
-                    scale_color_manual(values=colors[[variable]]) +
-                    labs(x = x_labs[variable], y = "lognorm counts",
+                    geom_jitter(aes(fill=eval(parse_expr(variable))), color = "black", alpha = 0.85,
+                                shape=21,
+                                position=position_jitter(0.1),
+                                size=3) +
+                    theme_classic() +
+                    scale_fill_manual(values=colors[[variable]]) +
+                    labs(x = x_labs[variable], y = "log(cpm) - covariates",
                          title = gene_title,
                          subtitle = paste("FDR:", q_value, '    ', 'FC:', FC)) +
-                    theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
-                          legend.position = "none",
-                          plot.title = element_text(hjust=0.5, size=12, face="bold"),
-                          plot.subtitle = element_text(size = 11),
-                          axis.title = element_text(size = (12)),
-                          axis.text = element_text(size = 10.5))
+                    theme(legend.position = "none",
+                          plot.title = element_text(hjust=0.5, size=10, face="bold"),
+                          plot.subtitle = element_text(size = 9),
+                          axis.title = element_text(size = (10)),
+                          axis.text = element_text(size = 8.5))
     }
-    else{
-        plot <- ggplot(data=lognorm_DE,
-                       aes(x=eval(parse_expr(variable)),
-                           y=eval(parse_expr(DEG)))) +
-                    geom_point(aes(color=colors[[variable]]), size=2) +
-                    stat_smooth (geom="line", alpha=0.4, size=0.85, span=0.25, method = lm, color='orangered3') +
-                    theme_bw() +
-                    guides(color="none") +
-                    labs(title = gene_title,
-                         subtitle = paste("FDR:", q_value, '    ', 'FC:', FC),
-                         y = 'lognorm counts', x =  x_labs[variable]) +
-                    theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
-                          legend.position = "none",
-                          plot.title = element_text(hjust=0.5, size=12, face="bold"),
-                          plot.subtitle = element_text(size = 11),
-                          axis.title = element_text(size = (12)),
-                          axis.text = element_text(size = 10.5))
-    }
+    # else{
+    #     plot <- ggplot(data=lognorm_DE,
+    #                    aes(x=eval(parse_expr(variable)),
+    #                        y=eval(parse_expr(DEG)))) +
+    #                 geom_point(aes(color=colors[[variable]]), size=2) +
+    #                 stat_smooth (geom="line", alpha=0.4, size=0.85, span=0.25, method = lm, color='orangered3') +
+    #                 theme_bw() +
+    #                 guides(color="none") +
+    #                 labs(title = gene_title,
+    #                      subtitle = paste("FDR:", q_value, '    ', 'FC:', FC),
+    #                      y = 'lognorm counts', x =  x_labs[variable]) +
+    #                 theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
+    #                       legend.position = "none",
+    #                       plot.title = element_text(hjust=0.5, size=12, face="bold"),
+    #                       plot.subtitle = element_text(size = 11),
+    #                       axis.title = element_text(size = (12)),
+    #                       axis.text = element_text(size = 10.5))
+    # }
 
     return(plot)
 }
@@ -446,12 +489,12 @@ DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, 
 
     plots<-list()
     for (i in 1:length(DEGs)){
-        p<-DEG_expression_plot(de_genes, vGene, DEGs[i], variable, brain_region)
+        p<-DEG_expression_plot(variable, brain_region, DEGs[i])
         plots[[i]] <- p
     }
     plot_grid(plotlist = plots, ncol = 3, align = 'hv')
     ggsave(here(paste("plots/05_DEA/01_Modeling/", name, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
-           width = 24, height = 16.5, units = "cm")
+           width = 22, height = 15, units = "cm")
 }
 
 
@@ -472,6 +515,10 @@ DEG_expression_plots(down_DEGs, de_genes_amygdala, results_Substance_uncorr_vars
 up_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC>0), ]
 up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
 DEG_expression_plots(up_DEGs, de_genes_amygdala, results_Substance_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'up')
+
+## Boxplots for specific unique and shared genes
+# DEG_expression_plots(c(), de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'unique')
+# DEG_expression_plots(c(), de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'amygdala', 'unique')
 
 
 

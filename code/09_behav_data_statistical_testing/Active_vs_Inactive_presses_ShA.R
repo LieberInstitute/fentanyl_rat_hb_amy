@@ -571,13 +571,13 @@ anova_test(saline_rats_lever_presses_longer, dv = number, within = session, wid 
 # ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
 #                                   All rats
 # ´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´
-## Three-way ANOVA paired test                        <- *** Correct test ***
+## Three-way mixed ANOVA test                        <- *** Correct test ***
 # ------------------------------------------------------------------------------
 # Used to investigate if there are differences in the num of lever presses by
 # lever type over time (sessions), i.e. if there's a signif interaction between
 # lever type and session on the lever presses, differing between fentanyl and
-# saline rats. This, with repeated measures of the same rats across lever types
-# and sessions.
+# saline rats (between-subjects variable). This, with repeated measures of the
+# same rats across lever types and sessions (within-subjects variables).
 # ------------------------------------------------------------------------------
 ## Assumptions:
 #  A) Normality: not satisfied for most samples.
@@ -779,7 +779,7 @@ summary(lm(number ~ type * session * substance, data = Short_Acess_Active_LPs_lo
 # ------------------------------------------------------------------------------
 # Used to investigate if there are differences in the num of lever presses by
 # lever type over time (sessions). This, with repeated measures of the same rats
-# in the fentanyl group across lever types and sessions.
+# in the fentanyl group across lever types and sessions (two within-subjects variables).
 # ------------------------------------------------------------------------------
 ## Assumptions:
 #  A) Normality: satisfied for most samples.
@@ -794,9 +794,9 @@ fentanyl_rats_lever_presses_longer %>%
 # 4 ShA4    Inactive number       0.887 0.220
 # 5 ShA5    Inactive number       0.812 0.0386
 # 6 ShA6    Inactive number       0.765 0.0120
-# 7 ShA1    Active   number       0.896 0.267
-# 8 ShA2    Active   number       0.909 0.347
-# 9 ShA3    Active   number       0.858 0.115
+# 7 ShA1     Active   number       0.896 0.267
+# 8 ShA2     Active   number       0.909 0.347
+# 9 ShA3     Active   number       0.858 0.115
 # 10 ShA4    Active   number       0.911 0.360
 # 11 ShA5    Active   number       0.551 0.0000417
 # 12 ShA6    Active   number       0.528 0.0000225
@@ -953,7 +953,7 @@ get_anova_table(res.aov)
 
 
 
-
+## TODOs: remove outliers and check more carefully assumptions for two-way mixed and paired ANOVA tests
 
 
 
