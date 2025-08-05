@@ -426,13 +426,13 @@ DEG_expression_plot <- function (variable, brain_region, gene){
     ## FC
     FC <-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==gene), "logFC"]), digits=2)
 
-    ## Gene symbol + ensemblID
-    # ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
-    # if (length(ensemblID)!=0 && gene!=ensemblID){
-    #     gene_title <- paste(gene, ensemblID, sep="-")
-    # }else {
-    #     gene_title <- gene
-    # }
+    # Gene symbol + ensemblID
+    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
+    if (length(ensemblID)!=0 && gene!=ensemblID){
+        gene_title <- paste(gene, ensemblID, sep="-")
+    }else {
+        gene_title <- gene
+    }
 
     ## Merge lognorm counts of DEG with sample data
     lognorm_DE <- regress_covs(ensemblID, variable, brain_region)
