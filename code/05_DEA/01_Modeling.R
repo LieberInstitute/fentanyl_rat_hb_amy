@@ -427,12 +427,12 @@ DEG_expression_plot <- function (variable, brain_region, gene){
     FC <-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==gene), "logFC"]), digits=2)
 
     ## Gene symbol + ensemblID
-    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
-    if (length(ensemblID)!=0 && gene!=ensemblID){
-        gene_title <- paste(gene, ensemblID, sep="-")
-    }else {
-        gene_title <- gene
-    }
+    # ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
+    # if (length(ensemblID)!=0 && gene!=ensemblID){
+    #     gene_title <- paste(gene, ensemblID, sep="-")
+    # }else {
+    #     gene_title <- gene
+    # }
 
     ## Merge lognorm counts of DEG with sample data
     lognorm_DE <- regress_covs(ensemblID, variable, brain_region)
@@ -450,11 +450,11 @@ DEG_expression_plot <- function (variable, brain_region, gene){
                     geom_jitter(aes(fill=eval(parse_expr(variable))), color = "black", alpha = 0.85,
                                 shape=21,
                                 position=position_jitter(0.1),
-                                size=3) +
+                                size=2.2) +
                     theme_classic() +
                     scale_fill_manual(values=colors[[variable]]) +
                     labs(x = x_labs[variable], y = "log(cpm) - covariates",
-                         title = gene_title,
+                         title = gene,
                          subtitle = paste("FDR:", q_value, '    ', 'FC:', FC)) +
                     theme(legend.position = "none",
                           plot.title = element_text(hjust=0.5, size=10, face="bold"),
@@ -494,7 +494,7 @@ DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, 
     }
     plot_grid(plotlist = plots, ncol = 3, align = 'hv')
     ggsave(here(paste("plots/05_DEA/01_Modeling/", name, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
-           width = 22, height = 15, units = "cm")
+           width = 15, height = 11, units = "cm")
 }
 
 
