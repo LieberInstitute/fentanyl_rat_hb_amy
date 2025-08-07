@@ -89,7 +89,7 @@ df_DEstats_complete <- cbind(df_habenula, df_amygdala[,11:26])
 
 ## Create supp table
 save(df_DEstats_complete, file = "processed-data/05_DEA/DEAs_results_all_genes_hab_amyg.Rdata")
-write.table(df_DEstats_complete, "processed-data/Supplementary_Tables/TableS9_DEAs_results_all_genes_hab_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(df_DEstats_complete, "processed-data/Supplementary_Tables/TableS10_DEAs_results_all_genes_hab_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 ## Scatter plots
 ggpairs(df_DEstats_complete,

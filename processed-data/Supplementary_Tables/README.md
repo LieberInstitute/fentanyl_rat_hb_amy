@@ -60,14 +60,18 @@ Metadata, region-specific *limma* DE statistics, and Ensembl associated phenotyp
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/5f2104ac7dbfd4534db9f1bb88ab7e124b984cd5/code/05_DEA/01_Modeling.R#L570).
 
 
-## [Supplementary Table 8](TableS8_GO_KEGG_results.tsv)
-**GO terms and KEGG pathways enriched among substance DEGs**
-Description TODO (GO / KEGG full results from compareCluster() + remember to CITE clusterProfiler ). 
+## [Supplementary Table 8](TableS8_GO_KEGG_results_hab.tsv)
+**Functional enrichment results for substance DEGs in Hb**
+GO terms for biological processes (`BP`), molecular functions (`MF`), cellular components (`CC`), and `KEGG` pathways that are significantly enriched in up- and down-regulated DEGs for fentanyl vs. saline in Hb. Provided are the ID and description of each significant term/pathway, the number and fraction of up/down-regulated DEGs annotated to each term (`Count` and `GeneRatio`, respectively), as well as the list of such genes (`geneID`), the fraction of genes in universe annotated to each term (`BgRatio`), fold of enrichment, *p*-value, and Benjamini-Hochberg FDR-corrected *p*-value.
+
+
+## [Supplementary Table 9](TableS9_GO_KEGG_results_amy.tsv)
+**Functional enrichment results for substance DEGs in Amyg**
+Same as [Table S8](TableS8_GO_KEGG_results_hab.tsv) for up- and down-regulated DEGs for fentanyl vs. saline in Amyg. 
 
 
 
-
-## [Supplementary Table 9](TableS9_DEAs_results_all_genes_hab_amyg.tsv)
+## [Supplementary Table 10](TableS10_DEAs_results_all_genes_hab_amyg.tsv)
 
 **Results for all DGE analyses and genes in habenula and amygdala** 
 
@@ -87,7 +91,7 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/76baa
 
 
 
-## [Supplementary Table 11](TableS11_MeanRatio_markers_top100_amy_rat.tsv)
+## [Supplementary Table 12](TableS12_MeanRatio_markers_top100_amy_rat.tsv)
 
 **Top 100 *MeanRatio* marker genes per cell type in rat amygdala** 
 
@@ -97,7 +101,7 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/3d6ff
 
 
 
-## [Supplementary Table 12](TableS12_MeanRatio_markers_top50_hab_human.tsv)
+## [Supplementary Table 13](TableS13_MeanRatio_markers_top50_hab_human.tsv)
 
 **Top 50 *MeanRatio* marker genes per cell type in human habenula** 
 
@@ -106,7 +110,7 @@ For broad and fine cell types in the human habenula-enriched epithalamus of neur
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/1e526a8f559e6675dbf3f228d5794667b9065434/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L757).
 
 
-## [Supplementary Table 13](TableS13_MeanRatio_markers_top100_amy_human.tsv)
+## [Supplementary Table 14](TableS14_MeanRatio_markers_top100_amy_human.tsv)
 
 **Top 100 *MeanRatio* marker genes per cell type in human amygdala** 
 

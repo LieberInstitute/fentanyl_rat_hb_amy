@@ -5,6 +5,7 @@ library(clusterProfiler)
 library(org.Rn.eg.db)
 library(cowplot)
 library(ggplot2)
+library(biomaRt)
 library(sessioninfo)
 
 
@@ -53,6 +54,8 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     ## Save
     if (!is.null(goBP_Adj)){
         p1 <- dotplot(goBP_Adj, title="GO Enrichment Analysis: Biological processes")
+        goBP_Adj <- as.data.frame(goBP_Adj)
+        goBP_Adj$geneID <- sapply(goBP_Adj$geneID, function(row){gsub("/", ", ", row)})
     }
 
 
@@ -70,6 +73,8 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
     if (!is.null(goMF_Adj)){
         p2 <- dotplot(goMF_Adj, title="GO Enrichment Analysis: Molecular function")
+        goMF_Adj <- as.data.frame(goMF_Adj)
+        goMF_Adj$geneID <- sapply(goMF_Adj$geneID, function(row){gsub("/", ", ", row)})
     }
 
 
@@ -87,6 +92,8 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
     if (!is.null(goCC_Adj)){
         p3 <- dotplot(goCC_Adj, title="GO Enrichment Analysis: Cellular components")
+        goCC_Adj <- as.data.frame(goCC_Adj)
+        goCC_Adj$geneID <- sapply(goCC_Adj$geneID, function(row){gsub("/", ", ", row)})
     }
 
 
@@ -102,6 +109,25 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
     if (!is.null(kegg_Adj)){
         p4 <- dotplot(kegg_Adj, title="KEGG Enrichment Analysis")
+        ## Add symbols
+        kegg_Adj <- as.data.frame(kegg_Adj)
+        genes <-sapply(kegg_Adj$geneID, function(term_genes){unlist(strsplit(term_genes, "/"))})
+        names(genes) <- kegg_Adj$ID
+        mart = useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
+        term_symbols <- lapply(genes, function(term_genes){
+
+            symbols <- getBM(attributes = c("entrezgene_id", "external_gene_name", "ensembl_gene_id"),
+                             filters = "entrezgene_id",
+                             values = term_genes,
+                             mart = mart)
+            symbols <- apply(symbols, 1, function(gene){if(!is.na(gene["external_gene_name"])){gene["external_gene_name"]}
+                else if(!is.na(gene["ensembl_gene_id"])){gene["ensembl_gene_id"]}
+                else{gene["entrezgene_id"]}})
+
+            paste(symbols, collapse = ", ")
+
+        })
+        kegg_Adj$geneID <- do.call(rbind, term_symbols)
     }
 
     ## Plots
@@ -132,8 +158,10 @@ sigGeneList <- list("All"= de_genes_habenula[which(!is.na(de_genes_habenula$Entr
 geneUniverse <- as.character(results_Substance_uncorr_vars_amygdala[[1]]$EntrezID)
 geneUniverse <- geneUniverse[!is.na(geneUniverse) & !geneUniverse=='NULL']
 
-goList_habenula_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'habenula_all_DEGs')
+goList_habenula_all_DEGs <- GO_KEGG(sigGeneList, geneUniverse, 'habenula_all_DEGs')
 save(goList_habenula_all_DEGs, file="processed-data/06_GO_KEGG/goList_habenula_all_DEGs.Rdata")
+
+
 
 ######################
 #      Amygdala
@@ -161,6 +189,22 @@ sigGeneList <- list("Up"=up_hab[which(!is.na(up_hab$EntrezID) & !up_hab$EntrezID
 goList_habenula_up_down_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'habenula_up_down_DEGs')
 save(goList_habenula_up_down_DEGs, file="processed-data/06_GO_KEGG/goList_habenula_up_down_DEGs.Rdata")
 
+## Merge
+go_kegg_results_hab <- rbind(cbind(goList_habenula_up_down_DEGs$BP, Ontology = "BP"),
+                             cbind(goList_habenula_up_down_DEGs$MF, Ontology = "MF"),
+                             cbind(goList_habenula_up_down_DEGs$CC, Ontology = "CC"),
+                             cbind(goList_habenula_up_down_DEGs$KEGG[colnames(goList_habenula_up_down_DEGs$BP)], Ontology = "KEGG"))
+go_kegg_results_hab$DEGs_set <- go_kegg_results_hab$Cluster
+go_kegg_results_hab$Cluster <- NULL
+
+go_kegg_results_hab <- go_kegg_results_hab[, c("Ontology", "DEGs_set", "ID", "Description", "Count", "GeneRatio",
+                                               "BgRatio", "FoldEnrichment", "pvalue", "p.adjust", "geneID")]
+go_kegg_results_hab <- go_kegg_results_hab[order(go_kegg_results_hab$Ontology, go_kegg_results_hab$DEGs_set, go_kegg_results_hab$p.adjust), ]
+
+
+write.table(go_kegg_results_hab, "processed-data/Supplementary_Tables/TableS8_GO_KEGG_results_hab.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
+
 ######################
 #      Amygdala
 ######################
@@ -170,6 +214,18 @@ sigGeneList <- list("Up"=up_amy[which(!is.na(up_amy$EntrezID) & !up_amy$EntrezID
 
 goList_amygdala_up_down_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_up_down_DEGs')
 save(goList_amygdala_up_down_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_up_down_DEGs.Rdata")
+
+go_kegg_results_amy <- rbind(cbind(goList_amygdala_up_down_DEGs$BP, Ontology = "BP"),
+                             cbind(goList_amygdala_up_down_DEGs$MF, Ontology = "MF"),
+                             cbind(goList_amygdala_up_down_DEGs$CC, Ontology = "CC"),
+                             cbind(goList_amygdala_up_down_DEGs$KEGG[colnames(goList_amygdala_up_down_DEGs$BP)], Ontology = "KEGG"))
+go_kegg_results_amy$DEGs_set <- go_kegg_results_amy$Cluster
+go_kegg_results_amy$Cluster <- NULL
+
+go_kegg_results_amy <- go_kegg_results_amy[, c("Ontology", "DEGs_set", "ID", "Description", "Count", "GeneRatio",
+                                               "BgRatio", "FoldEnrichment", "pvalue", "p.adjust", "geneID")]
+go_kegg_results_amy <- go_kegg_results_amy[order(go_kegg_results_amy$Ontology, go_kegg_results_amy$DEGs_set, go_kegg_results_amy$p.adjust), ]
+write.table(go_kegg_results_amy, "processed-data/Supplementary_Tables/TableS9_GO_KEGG_results_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
