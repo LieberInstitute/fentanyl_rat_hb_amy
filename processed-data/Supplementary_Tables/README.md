@@ -1,5 +1,4 @@
 # Supplementary Tables
-TODO: add number of figs where these tables were used. 
 
 ## [Supplementary Table 1](TableS1_SA_sessions_behavioral_data_raw.tsv)
 
@@ -61,14 +60,21 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/5f210
 
 
 ## [Supplementary Table 8](TableS8_GO_KEGG_results_hab.tsv)
+
 **Functional enrichment results for substance DEGs in Hb**
-GO terms for biological processes (`BP`), molecular functions (`MF`), cellular components (`CC`), and `KEGG` pathways that are significantly enriched in up- and down-regulated DEGs for fentanyl vs. saline in Hb. Provided are the ID and description of each significant term/pathway, the number and fraction of up/down-regulated DEGs annotated to each term (`Count` and `GeneRatio`, respectively), as well as the list of such genes (`geneID`), the fraction of genes in universe annotated to each term (`BgRatio`), fold of enrichment, *p*-value, and Benjamini-Hochberg FDR-corrected *p*-value.
+
+GO terms for biological processes (`BP`), molecular functions (`MF`), cellular components (`CC`), and `KEGG` pathways that are significantly enriched in up- and down-regulated DEGs for fentanyl vs. saline in Hb. Provided are the ID and description of each significant term/pathway, the number and fraction of up/down-regulated DEGs annotated to each term (`Count` and `GeneRatio`, respectively), as well as the list of such genes (`geneID`), the fraction of genes in universe annotated to each term (`BgRatio`), fold of enrichment, *p*-value, and Benjamini-Hochberg FDR-corrected *p*-value. See [_clusterProfiler_](https://bioconductor.org/packages/devel/bioc/html/clusterProfiler.html) documentation for more detailed definitions. 
+
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/32bfc8018fc10dd3557eb9b86289fb896afaff41/code/06_GO_KEGG/01_GO_KEGG_Analyses.R#L205).
 
 
 ## [Supplementary Table 9](TableS9_GO_KEGG_results_amy.tsv)
+
 **Functional enrichment results for substance DEGs in Amyg**
+
 Same as [Table S8](TableS8_GO_KEGG_results_hab.tsv) for up- and down-regulated DEGs for fentanyl vs. saline in Amyg. 
 
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/32bfc8018fc10dd3557eb9b86289fb896afaff41/code/06_GO_KEGG/01_GO_KEGG_Analyses.R#L228).
 
 
 ## [Supplementary Table 10](TableS10_DEAs_results_all_genes_hab_amyg.tsv)
@@ -81,7 +87,7 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/ccee0
 
 
 
-## [Supplementary Table 10](TableS10_MeanRatio_markers_top100_hab_mouse.tsv)
+## [Supplementary Table 11](TableS11_MeanRatio_markers_top100_hab_mouse.tsv)
 
 **Top 100 *MeanRatio* marker genes per cell type in mouse habenula** 
 
