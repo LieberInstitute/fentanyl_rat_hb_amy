@@ -189,7 +189,7 @@ save(goList_habenula_all_DEGs, file="processed-data/06_GO_KEGG/goList_habenula_a
 ######################
 #      Amygdala
 ######################
-sigGeneList <- list("All"= de_genes_amygdala[which(!is.na(de_genes_amygdala$EntrezID) & !de_genes_amygdala$EntrezID=='NULL'), 'EntrezID'])
+sigGeneList <- list("All"= unique(de_genes_amygdala[which(!is.na(de_genes_amygdala$EntrezID) & !de_genes_amygdala$EntrezID=='NULL' & !de_genes_amygdala$EntrezID==''), 'EntrezID']))
 goList_amygdala_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_all_DEGs')
 save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_all_DEGs.Rdata")
 
@@ -201,8 +201,8 @@ save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_a
 ######################
 
 ## List of DEG sets
-sigGeneList <- list("Up"=up_hab[which(!is.na(up_hab$EntrezID) & !up_hab$EntrezID=='NULL'), 'EntrezID'],
-                    "Down"=down_hab[which(!is.na(down_hab$EntrezID) & !down_hab$EntrezID=='NULL'), 'EntrezID'])
+sigGeneList <- list("Up"=up_hab[which(!is.na(up_hab$EntrezID) & !up_hab$EntrezID=='NULL' & !up_hab$EntrezID==''), 'EntrezID'],
+                    "Down"=down_hab[which(!is.na(down_hab$EntrezID) & !down_hab$EntrezID=='NULL' & !down_hab$EntrezID==''), 'EntrezID'])
 
 goList_habenula_up_down_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'habenula_up_down_DEGs')
 save(goList_habenula_up_down_DEGs, file="processed-data/06_GO_KEGG/goList_habenula_up_down_DEGs.Rdata")
@@ -226,8 +226,8 @@ write.table(go_kegg_results_hab, "processed-data/Supplementary_Tables/TableS8_GO
 #      Amygdala
 ######################
 
-sigGeneList <- list("Up"=up_amy[which(!is.na(up_amy$EntrezID) & !up_amy$EntrezID=='NULL'), 'EntrezID'],
-                    "Down"=down_amy[which(!is.na(down_amy$EntrezID) & !down_amy$EntrezID=='NULL'), 'EntrezID'])
+sigGeneList <- list("Up"=up_amy[which(!is.na(up_amy$EntrezID) & !up_amy$EntrezID=='NULL' & !up_amy$EntrezID==''), 'EntrezID'],
+                    "Down"=down_amy[which(!is.na(down_amy$EntrezID) & !down_amy$EntrezID=='NULL' & !down_amy$EntrezID==''), 'EntrezID'])
 
 goList_amygdala_up_down_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_up_down_DEGs')
 save(goList_amygdala_up_down_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_up_down_DEGs.Rdata")
