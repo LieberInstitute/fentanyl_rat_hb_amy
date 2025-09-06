@@ -5,14 +5,12 @@
 raw-data/count_objects/*
 processed-data/03_Data_preparation/
 processed-data/04_EDA/
-processed-data/05_DEA/
 processed-data/06_GO_KEGG/
 processed-data/07_MAGMA/Input_Gene_Sets/
 processed-data/07_MAGMA/Input_GWAS_data/
 processed-data/07_MAGMA/geneloc/
 processed-data/08_GSEA/
 
-!processed-data/05_DEA/common_DEGs_hab_amyg.tsv
 !raw-data/sample_metadata_and_QCmetrics.csv
 !raw-data/covariate_sample_info.xlsx
 !raw-data/rat_behavioral_data.csv
