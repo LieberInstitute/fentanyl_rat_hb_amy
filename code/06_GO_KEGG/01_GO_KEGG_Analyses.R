@@ -162,8 +162,15 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     }
 
     ## Plots
+    if(name != "Hb_and_Amyg_Up_and_Down_unique_and_shared_DEGs"){
+        h = 10
+        w = 14
+    } else{
+        h = 35
+        w = 49
+    }
     plot_grid(p1, p2, p3, p4, ncol=2, align = 'vh')
-    ggsave(paste("plots/06_GO_KEGG/GO_KEGG_", name, ".pdf", sep=""), height = 10, width = 14)
+    ggsave(paste("plots/06_GO_KEGG/GO_KEGG_", name, ".pdf", sep=""), height = h, width = w)
 
     ## Save results
     goList <- list(
@@ -177,7 +184,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 }
 
 
-## Analysis for all DEGs from each brain region
+## A. Analysis for all DEGs from each brain region
 
 ######################
 #      Habenula
@@ -194,7 +201,7 @@ goList_amygdala_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_all_DEGs'
 save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_all_DEGs.Rdata")
 
 
-## Analysis for up- and down-regulated DEGs from each brain region
+## B. Analysis for up- and down-regulated DEGs from each brain region
 
 ######################
 #      Habenula
@@ -243,6 +250,37 @@ go_kegg_results_amy <- go_kegg_results_amy[, c("Ontology", "DEGs_set", "ID", "De
                                                "BgRatio", "FoldEnrichment", "pvalue", "p.adjust", "geneID")]
 go_kegg_results_amy <- go_kegg_results_amy[order(go_kegg_results_amy$Ontology, go_kegg_results_amy$DEGs_set, go_kegg_results_amy$p.adjust), ]
 write.table(go_kegg_results_amy, "processed-data/Supplementary_Tables/TableS9_GO_KEGG_results_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+
+
+## C. Analysis for up/down DEGs unique/shared in Hb and Amyg
+
+sigGeneList <- list("Unique in Hb - Up" = only_up_hab_genes,
+                    "Unique in Hb - Down" = only_down_hab_genes,
+                    "Unique in Amyg - Up" = only_up_amy_genes,
+                    "Unique in Amyg - Down" = only_down_amy_genes,
+                    "Shared: Up in Hb, Up in Amyg" = shared_up_hab_up_amy_genes,
+                    "Shared: Up in Hb, Down in Amyg" = shared_up_hab_down_amy_genes,
+                    "Shared: Down in Hb, Up in Amyg" = shared_down_hab_up_amy_genes,
+                    "Shared: Down in Hb, Down in Amyg" = shared_down_hab_down_amy_genes)
+
+goList_hb_and_amyg_DEGs <- GO_KEGG(sigGeneList, geneUniverse,
+                                   'Hb_and_Amyg_Up_and_Down_unique_and_shared_DEGs')
+save(goList_hb_and_amyg_DEGs, file="processed-data/06_GO_KEGG/goList_Hb_and_Amyg_Up_and_Down_unique_and_shared_DEGs.Rdata")
+
+## Merge
+go_kegg_results <- rbind(cbind(goList_hb_and_amyg_DEGs$BP, Ontology = "BP"),
+                         cbind(goList_hb_and_amyg_DEGs$MF, Ontology = "MF"),
+                         cbind(goList_hb_and_amyg_DEGs$CC, Ontology = "CC"),
+                         cbind(goList_hb_and_amyg_DEGs$KEGG[colnames(goList_hb_and_amyg_DEGs$BP)], Ontology = "KEGG"))
+
+go_kegg_results$DEGs_set <- go_kegg_results$Cluster
+go_kegg_results$Cluster <- NULL
+
+go_kegg_results <- go_kegg_results[, c("Ontology", "DEGs_set", "ID", "Description", "Count", "GeneRatio",
+                                               "BgRatio", "FoldEnrichment", "pvalue", "p.adjust", "geneID")]
+go_kegg_results <- go_kegg_results[order(go_kegg_results$Ontology, go_kegg_results$DEGs_set, go_kegg_results$p.adjust), ]
+
+write.table(go_kegg_results, "processed-data/Supplementary_Tables/TableS10_GO_KEGG_results_hab_vs_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 
