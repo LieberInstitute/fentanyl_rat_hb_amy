@@ -5,7 +5,6 @@
 raw-data/count_objects/*
 processed-data/03_Data_preparation/
 processed-data/04_EDA/
-processed-data/06_GO_KEGG/
 processed-data/07_MAGMA/Input_Gene_Sets/
 processed-data/07_MAGMA/Input_GWAS_data/
 processed-data/07_MAGMA/geneloc/

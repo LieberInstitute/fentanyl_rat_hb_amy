@@ -1,4 +1,5 @@
 
+library(dplyr)
 library(here)
 library(SummarizedExperiment)
 library(clusterProfiler)
@@ -22,20 +23,50 @@ load(here('processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata'),
 ##    Habenula DEGs
 ########################
 ## Up and down habenula DEGs from model with uncorrelated sample variables
-up_hab <- de_genes_habenula[which(de_genes_habenula$logFC>0), ]
-down_hab <- de_genes_habenula[which(de_genes_habenula$logFC<0), ]
+up_hab <- de_genes_habenula[which(de_genes_habenula$logFC>0),]
+down_hab <- de_genes_habenula[which(de_genes_habenula$logFC<0),]
 
 ########################
 ##    Amygdala DEGs
 ########################
 ## Up and down amygdala DEGs from model with uncorrelated sample variables
-up_amy <- de_genes_amygdala[which(de_genes_amygdala$logFC>0), ]
-down_amy <- de_genes_amygdala[which(de_genes_amygdala$logFC<0), ]
+up_amy <- de_genes_amygdala[which(de_genes_amygdala$logFC>0),]
+down_amy <- de_genes_amygdala[which(de_genes_amygdala$logFC<0),]
 
+#########################################
+##   Up/Down unique/shared in Hb/Amyg
+#########################################
+only_up_hab <- de_genes_habenula[which(!de_genes_habenula$ensemblID %in% de_genes_amygdala$ensemblID & de_genes_habenula$logFC>0),]
+only_down_hab <- de_genes_habenula[which(!de_genes_habenula$ensemblID %in% de_genes_amygdala$ensemblID & de_genes_habenula$logFC<0),]
+
+only_up_amy <- de_genes_amygdala[which(!de_genes_amygdala$ensemblID %in% de_genes_habenula$ensemblID & de_genes_amygdala$logFC>0),]
+only_down_amy <- de_genes_amygdala[which(!de_genes_amygdala$ensemblID %in% de_genes_habenula$ensemblID & de_genes_amygdala$logFC<0),]
+
+shared_hab_amy <- inner_join(de_genes_habenula, de_genes_amygdala, by = colnames(de_genes_amygdala)[1:9], suffix = c(".hb", ".amyg"))
+
+shared_up_hab_up_amy <- shared_hab_amy[shared_hab_amy$logFC.hb>0 & shared_hab_amy$logFC.amyg>0, ]
+shared_up_hab_down_amy <- shared_hab_amy[shared_hab_amy$logFC.hb>0 & shared_hab_amy$logFC.amyg<0, ]
+shared_down_hab_up_amy <- shared_hab_amy[shared_hab_amy$logFC.hb<0 & shared_hab_amy$logFC.amyg>0, ]
+shared_down_hab_down_amy <- shared_hab_amy[shared_hab_amy$logFC.hb<0 & shared_hab_amy$logFC.amyg<0, ]
+
+
+## Retrieve valid Entrez IDs
+only_up_hab_genes <- only_up_hab %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+only_down_hab_genes <- only_down_hab %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+only_up_amy_genes <- only_up_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+only_down_amy_genes <- only_down_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+shared_up_hab_up_amy_genes <- shared_up_hab_up_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+shared_up_hab_down_amy_genes <- shared_up_hab_down_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+shared_down_hab_up_amy_genes <- shared_down_hab_up_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+shared_down_hab_down_amy_genes <- shared_down_hab_down_amy %>% dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
+
+
+## Background genes (all genes assessed for DGE) -- same genes in Hb and Amyg DGE
+geneUniverse <- results_Substance_uncorr_vars_amygdala[[1]] %>%
+    dplyr::filter(!is.na(EntrezID) & !is.null(EntrezID) & EntrezID != "NULL" & EntrezID != "") %>% pull(EntrezID) %>% unique()
 
 
 ## Function to find enriched GO and KEGG terms
-
 GO_KEGG<- function(sigGeneList, geneUniverse, name){
 
     ## GO terms
@@ -146,37 +177,24 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 }
 
 
-## 1. Analysis for all DEGs from each brain region
+## Analysis for all DEGs from each brain region
 
 ######################
 #      Habenula
 ######################
-
-## List of DEGs
-sigGeneList <- list("All"= de_genes_habenula[which(!is.na(de_genes_habenula$EntrezID) & !de_genes_habenula$EntrezID=='NULL'), 'EntrezID'])
-## Background genes (all genes assessed for DGE)
-geneUniverse <- as.character(results_Substance_uncorr_vars_amygdala[[1]]$EntrezID)
-geneUniverse <- geneUniverse[!is.na(geneUniverse) & !geneUniverse=='NULL']
-
+sigGeneList <- list("All"= unique(de_genes_habenula[which(!is.na(de_genes_habenula$EntrezID) & !de_genes_habenula$EntrezID=='NULL' & !de_genes_habenula$EntrezID==''), 'EntrezID']))
 goList_habenula_all_DEGs <- GO_KEGG(sigGeneList, geneUniverse, 'habenula_all_DEGs')
 save(goList_habenula_all_DEGs, file="processed-data/06_GO_KEGG/goList_habenula_all_DEGs.Rdata")
-
-
 
 ######################
 #      Amygdala
 ######################
-
 sigGeneList <- list("All"= de_genes_amygdala[which(!is.na(de_genes_amygdala$EntrezID) & !de_genes_amygdala$EntrezID=='NULL'), 'EntrezID'])
-
 goList_amygdala_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_all_DEGs')
 save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_all_DEGs.Rdata")
 
 
-
-
-
-## 2. Analysis for up- and down-regulated DEGs from each brain region
+## Analysis for up- and down-regulated DEGs from each brain region
 
 ######################
 #      Habenula
@@ -203,7 +221,6 @@ go_kegg_results_hab <- go_kegg_results_hab[order(go_kegg_results_hab$Ontology, g
 
 
 write.table(go_kegg_results_hab, "processed-data/Supplementary_Tables/TableS8_GO_KEGG_results_hab.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
-
 
 ######################
 #      Amygdala
