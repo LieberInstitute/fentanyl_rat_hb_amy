@@ -1,5 +1,7 @@
 
 library(dplyr)
+library(tidyr)
+library(tibble)
 library(here)
 library(SummarizedExperiment)
 library(clusterProfiler)
@@ -14,6 +16,7 @@ library(sessioninfo)
 
 load(here('processed-data/05_DEA/de_genes_Substance_habenula.Rdata'), verbose = TRUE)
 load(here('processed-data/05_DEA/de_genes_Substance_amygdala.Rdata'), verbose = TRUE)
+load(here('processed-data/05_DEA/results_Substance_uncorr_vars_habenula.Rdata'), verbose = TRUE)
 load(here('processed-data/05_DEA/results_Substance_uncorr_vars_amygdala.Rdata'), verbose = TRUE)
 
 
@@ -183,7 +186,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
     return(goList)
 }
 
-
+#-------------------------------------------------------------------------------
 ## A. Analysis for all DEGs from each brain region
 
 ######################
@@ -200,7 +203,7 @@ sigGeneList <- list("All"= unique(de_genes_amygdala[which(!is.na(de_genes_amygda
 goList_amygdala_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_all_DEGs')
 save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_all_DEGs.Rdata")
 
-
+#-------------------------------------------------------------------------------
 ## B. Analysis for up- and down-regulated DEGs from each brain region
 
 ######################
@@ -251,7 +254,7 @@ go_kegg_results_amy <- go_kegg_results_amy[, c("Ontology", "DEGs_set", "ID", "De
 go_kegg_results_amy <- go_kegg_results_amy[order(go_kegg_results_amy$Ontology, go_kegg_results_amy$DEGs_set, go_kegg_results_amy$p.adjust), ]
 write.table(go_kegg_results_amy, "processed-data/Supplementary_Tables/TableS9_GO_KEGG_results_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
-
+#-------------------------------------------------------------------------------
 ## C. Analysis for up/down DEGs unique/shared in Hb and Amyg
 
 sigGeneList <- list("Unique in Hb - Up" = only_up_hab_genes,
@@ -282,9 +285,419 @@ go_kegg_results <- go_kegg_results[order(go_kegg_results$Ontology, go_kegg_resul
 
 write.table(go_kegg_results, "processed-data/Supplementary_Tables/TableS10_GO_KEGG_results_hab_vs_amyg.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
+## ------
+## Heatmap with GO & KEGG enrichment results for Hb vs Amyg
+
+## Find enriched terms of interest (list provided by Kristen and Robin)
+
+## For Hb:
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "regulation of synapse structure or activity") %>% .[,1:4]
+#   Ontology            DEGs_set         ID                                 Description
+# 1       BP   Unique in Hb - Up GO:0050803 regulation of synapse structure or activity
+# 2       BP Unique in Amyg - Up GO:0050803 regulation of synapse structure or activity
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "regulation of presynaptic membrane potential") %>% .[,1:4]
+#   Ontology                     DEGs_set         ID                                  Description
+# 1       BP            Unique in Hb - Up GO:0099505 regulation of presynaptic membrane potential
+# 2       BP Shared: Up in Hb, Up in Amyg GO:0099505 regulation of presynaptic membrane potential
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "regulation of postsynaptic membrane potential") %>% .[,1:4]
+#   Ontology          DEGs_set         ID                                   Description
+# 1       BP Unique in Hb - Up GO:0060078 regulation of postsynaptic membrane potential
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "extracellular matrix organization") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID                       Description
+# 1       BP              Unique in Hb - Down GO:0030198 extracellular matrix organization
+# 2       BP            Unique in Amyg - Down GO:0030198 extracellular matrix organization
+# 3       BP Shared: Down in Hb, Down in Amyg GO:0030198 extracellular matrix organization
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "oligodendrocyte differentiation") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID                     Description
+# 1       BP            Unique in Amyg - Down GO:0048709 oligodendrocyte differentiation
+# 2       BP Shared: Down in Hb, Down in Amyg GO:0048709 oligodendrocyte differentiation
+
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "presynaptic membrane") %>% .[,1:4]
+#   Ontology                     DEGs_set         ID          Description
+# 1       CC            Unique in Hb - Up GO:0042734 presynaptic membrane
+# 2       CC Shared: Up in Hb, Up in Amyg GO:0042734 presynaptic membrane
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "postsynaptic membrane") %>% .[,1:4]
+#   Ontology                     DEGs_set         ID           Description
+# 1       CC            Unique in Hb - Up GO:0045211 postsynaptic membrane
+# 2       CC Shared: Up in Hb, Up in Amyg GO:0045211 postsynaptic membrane
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "collagen-containing extracellular matrix") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID                              Description
+# 1       CC              Unique in Hb - Down GO:0062023 collagen-containing extracellular matrix
+# 2       CC            Unique in Amyg - Down GO:0062023 collagen-containing extracellular matrix
+# 3       CC Shared: Down in Hb, Down in Amyg GO:0062023 collagen-containing extracellular matrix
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "myelin sheath") %>% .[,1:4]
+# Ontology                         DEGs_set         ID   Description
+# 1       CC            Unique in Amyg - Down GO:0043209 myelin sheath
+# 2       CC Shared: Down in Hb, Down in Amyg GO:0043209 myelin sheath
+#
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "voltage-gated monoatomic cation channel activity") %>% .[,1:4]
+#   Ontology                     DEGs_set         ID                                      Description
+# 1       MF            Unique in Hb - Up GO:0022843 voltage-gated monoatomic cation channel activity
+# 2       MF Shared: Up in Hb, Up in Amyg GO:0022843 voltage-gated monoatomic cation channel activity
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "metal ion transmembrane transporter activity") %>% .[,1:4]
+# Ontology          DEGs_set         ID                                  Description
+# 1       MF Unique in Hb - Up GO:0046873 metal ion transmembrane transporter activity
+
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Morphine addiction") %>% .[,1:4]
+#   Ontology          DEGs_set       ID        Description
+# 1     KEGG Unique in Hb - Up rno05032 Morphine addiction
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Glutamatergic synapse") %>% .[,1:4]
+#   Ontology                       DEGs_set       ID           Description
+# 1     KEGG              Unique in Hb - Up rno04724 Glutamatergic synapse
+# 2     KEGG            Unique in Amyg - Up rno04724 Glutamatergic synapse
+# 3     KEGG Shared: Up in Hb, Down in Amyg rno04724 Glutamatergic synapse
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Gastric acid secretion") %>% .[,1:4]
+# Ontology                       DEGs_set       ID            Description
+# 1     KEGG              Unique in Hb - Up rno04971 Gastric acid secretion
+# 2     KEGG            Unique in Hb - Down rno04971 Gastric acid secretion
+# 3     KEGG Shared: Up in Hb, Down in Amyg rno04971 Gastric acid secretion
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "ECM-receptor interaction") %>% .[,1:4]
+#   Ontology                       DEGs_set       ID              Description
+# 1     KEGG            Unique in Hb - Down rno04512 ECM-receptor interaction
+# 2     KEGG          Unique in Amyg - Down rno04512 ECM-receptor interaction
+# 3     KEGG Shared: Up in Hb, Down in Amyg rno04512 ECM-receptor interaction
+
+
+## For Amyg:
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "aerobic respiration") %>% .[,1:4]
+#   Ontology            DEGs_set         ID         Description
+# 1       BP Unique in Amyg - Up GO:0009060 aerobic respiration
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "vesicle-mediated transport in synapse") %>% .[,1:4]
+#   Ontology            DEGs_set         ID                           Description
+# 1       BP Unique in Amyg - Up GO:0099003 vesicle-mediated transport in synapse
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "glial cell differentiation") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID                Description
+# 1       BP            Unique in Amyg - Down GO:0010001 glial cell differentiation
+# 2       BP Shared: Down in Hb, Down in Amyg GO:0010001 glial cell differentiation
+
+go_kegg_results %>% dplyr::filter(Ontology == "BP", Description == "extracellular matrix organization") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID                       Description
+# 1       BP              Unique in Hb - Down GO:0030198 extracellular matrix organization
+# 2       BP            Unique in Amyg - Down GO:0030198 extracellular matrix organization
+# 3       BP Shared: Down in Hb, Down in Amyg GO:0030198 extracellular matrix organization
+
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "mitochondrial inner membrane") %>% .[,1:4]
+#   Ontology            DEGs_set         ID                  Description
+# 1       CC Unique in Amyg - Up GO:0005743 mitochondrial inner membrane
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "exocytic vesicle") %>% .[,1:4]
+#   Ontology            DEGs_set         ID      Description
+# 1       CC Unique in Amyg - Up GO:0070382 exocytic vesicle
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "extracellular matrix") %>% .[,1:4]
+#   Ontology              DEGs_set         ID          Description
+# 1       CC   Unique in Hb - Down GO:0031012 extracellular matrix
+# 2       CC Unique in Amyg - Down GO:0031012 extracellular matrix
+
+go_kegg_results %>% dplyr::filter(Ontology == "CC", Description == "myelin sheath") %>% .[,1:4]
+#   Ontology                         DEGs_set         ID   Description
+# 1       CC            Unique in Amyg - Down GO:0043209 myelin sheath
+# 2       CC Shared: Down in Hb, Down in Amyg GO:0043209 myelin sheath
+
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "structural constituent of ribosome") %>% .[,1:4]
+#   Ontology            DEGs_set         ID                        Description
+# 1       MF Unique in Amyg - Up GO:0003735 structural constituent of ribosome
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "proton-transporting ATP synthase activity, rotational mechanism") %>% .[,1:4]
+#   Ontology            DEGs_set         ID                                                     Description
+# 1       MF Unique in Amyg - Up GO:0046933 proton-transporting ATP synthase activity, rotational mechanism
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "cytoskeletal motor activity") %>% .[,1:4]
+#   Ontology              DEGs_set         ID                 Description
+# 1       MF Unique in Amyg - Down GO:0003774 cytoskeletal motor activity
+
+go_kegg_results %>% dplyr::filter(Ontology == "MF", Description == "extracellular matrix structural constituent") %>% .[,1:4]
+#   Ontology                       DEGs_set         ID                                 Description
+# 1       MF          Unique in Amyg - Down GO:0005201 extracellular matrix structural constituent
+# 2       MF Shared: Up in Hb, Down in Amyg GO:0005201 extracellular matrix structural constituent
+
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Oxidative phosphorylation") %>% .[,1:4]
+#   Ontology            DEGs_set       ID               Description
+# 1     KEGG Unique in Amyg - Up rno00190 Oxidative phosphorylation
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Parkinson disease") %>% .[,1:4]
+#   Ontology            DEGs_set       ID       Description
+# 1     KEGG Unique in Amyg - Up rno05012 Parkinson disease
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "ECM-receptor interaction") %>% .[,1:4]
+#   Ontology                       DEGs_set       ID              Description
+# 1     KEGG            Unique in Hb - Down rno04512 ECM-receptor interaction
+# 2     KEGG          Unique in Amyg - Down rno04512 ECM-receptor interaction
+# 3     KEGG Shared: Up in Hb, Down in Amyg rno04512 ECM-receptor interaction
+
+go_kegg_results %>% dplyr::filter(Ontology == "KEGG", Description == "Regulation of actin cytoskeleton") %>% .[,1:4]
+#   Ontology              DEGs_set       ID                      Description
+# 1     KEGG   Unique in Amyg - Up rno04810 Regulation of actin cytoskeleton
+# 2     KEGG Unique in Amyg - Down rno04810 Regulation of actin cytoskeleton
+
+
+enriched_terms <- list("only_up_hab" = c("regulation of synapse structure or activity", "regulation of presynaptic membrane potential",
+                                         "regulation of postsynaptic membrane potential",
+                                            "presynaptic membrane", "postsynaptic membrane", "voltage-gated monoatomic cation channel activity",
+                                            "metal ion transmembrane transporter activity", "Morphine addiction", "Glutamatergic synapse",
+                                            "Gastric acid secretion"),
+                           "only_down_hab" = c("extracellular matrix organization", "collagen-containing extracellular matrix", "Gastric acid secretion",
+                                               "ECM-receptor interaction", "extracellular matrix"),
+                           "only_up_amy" = c("regulation of synapse structure or activity", "Glutamatergic synapse", "aerobic respiration",
+                                             "vesicle-mediated transport in synapse", "mitochondrial inner membrane", "exocytic vesicle",
+                                             "structural constituent of ribosome", "proton-transporting ATP synthase activity, rotational mechanism",
+                                             "Oxidative phosphorylation", "Parkinson disease", "Regulation of actin cytoskeleton"),
+                           "only_down_amy" = c("extracellular matrix organization", "oligodendrocyte differentiation",
+                                               "collagen-containing extracellular matrix", "myelin sheath", "ECM-receptor interaction",
+                                               "glial cell differentiation", "extracellular matrix", "cytoskeletal motor activity",
+                                               "extracellular matrix structural constituent", "Regulation of actin cytoskeleton"),
+                           "shared_up_hab_up_amy" = c("regulation of presynaptic membrane potential", "presynaptic membrane",
+                                                      "postsynaptic membrane", "voltage-gated monoatomic cation channel activity"),
+                           "shared_up_hab_down_amy" = c("Glutamatergic synapse", "Gastric acid secretion", "ECM-receptor interaction",
+                                                        "extracellular matrix structural constituent"),
+                           "shared_down_hab_up_amy" = c(),
+                           "shared_down_hab_down_amy" = c("extracellular matrix organization", "oligodendrocyte differentiation",
+                                                          "collagen-containing extracellular matrix", "myelin sheath", "glial cell differentiation")
+                       )
+
+## Annotate DEGs of interest in each term of interest (Kristen and Robin list) in specific group(s) (up/down unique/shared in Hb/Amyg)
+
+only_up_hab_genes_2_show = list()
+only_down_hab_genes_2_show = list()
+only_up_amy_genes_2_show = list()
+only_down_amy_genes_2_show = list()
+
+shared_up_hab_up_amy_genes_2_show = list("regulation of presynaptic membrane potential" = c("Kcnj3", "Kcnc2", "Kcnj9", "Kctd16"),
+                                         "presynaptic membrane" = c("Kcnj3", "Kcnc2", "Kcnj9", "Kctd16"),
+                                         "postsynaptic membrane" = c("Kcnc2", "LRRTM1", "Epha4", "Lrrtm2"),
+                                         "voltage-gated monoatomic cation channel activity" = c("Kcnj3", "Kcnc2", "Kcnj9"))
+
+shared_up_hab_down_amy_genes_2_show = list("Glutamatergic synapse",
+                                           "Gastric acid secretion",
+                                           "extracellular matrix structural constituent" = c("Col4a3"),
+                                           "ECM-receptor interaction" = c("Col4a3"))
+
+shared_down_hab_down_amy_genes_2_show  = list("extracellular matrix organization" = c("Tgfbi", "Antxr1", "Col9a3", "Loxl4", "Sox9"),
+                                              "oligodendrocyte differentiation" = c("Cnp", "Sox8", "Gsn", "Sox9", "Opalin"),
+                                              "collagen-containing extracellular matrix" = c("Tgfbi", "Col9a3", "Loxl4", "Fgfr2"),
+                                              "myelin sheath" = c("Cnp", "Tubb4a", "Gsn", "Tspan2"),
+                                              "glial cell differentiation" = c("Cnp", "Gsn", "Sox9", "Opalin", "Tspan2"))
 
 
 
+## Show additional top 5 most signif DEGs in each group
+only_up_hab_genes_additional_top = list("regulation of synapse structure or activity" = c(),
+                                "regulation of presynaptic membrane potential" = c(),
+                                "regulation of postsynaptic membrane potential" = c(),
+                                "presynaptic membrane" = c(),
+                                "postsynaptic membrane" = c(),
+                                "voltage-gated monoatomic cation channel activity" = c(),
+                                "metal ion transmembrane transporter activity" = c(),
+                                "Morphine addiction" = c(),
+                                "Glutamatergic synapse" = c(),
+                                "Gastric acid secretion" = c())
+
+
+only_down_hab_genes_additional_top = list("extracellular matrix organization" = c(),
+                                  "collagen-containing extracellular matrix" = c(),
+                                  "Gastric acid secretion" = c(),
+                                  "ECM-receptor interaction" = c(),
+                                  "extracellular matrix" = c(),
+                                  "ECM-receptor interaction" = c())
+
+only_up_amy_genes_additional_top = list("regulation of synapse structure or activity" = c(),
+                                "Glutamatergic synapse" = c(),
+                                "aerobic respiration" = c(),
+                                "vesicle-mediated transport in synapse" = c(),
+                                "mitochondrial inner membrane" = c(),
+                                "exocytic vesicle" = c(),
+                                "structural constituent of ribosome" = c(),
+                                "proton-transporting ATP synthase activity, rotational mechanism" = c(),
+                                "Oxidative phosphorylation" = c(),
+                                "Parkinson disease" = c(),
+                                "Regulation of actin cytoskeleton" = c())
+
+only_down_amy_genes_2_show = list("extracellular matrix organization",
+                                  "oligodendrocyte differentiation",
+                                  "collagen-containing extracellular matrix",
+                                  "myelin sheath",
+                                  "ECM-receptor interaction",
+                                  "glial cell differentiation",
+                                  "extracellular matrix",
+                                  "cytoskeletal motor activity",
+                                  "extracellular matrix structural constituent",
+                                  "ECM-receptor interaction",
+                                  "Regulation of actin cytoskeleton")
+
+
+## Extract DEGs of interest terms across DEG groups (include interest DEGs from Kristen and Robin list)
+genes_2_show_x_term_x_group <- list(list(), list(), list(), list(), list(), list(), list(), list())
+names(genes_2_show_x_term_x_group) <- unique(go_kegg_results$DEGs_set)
+
+## Specific DEGs to highlight
+interest_genes <- unique(c("Ptpn3", "Kcnc2", "Kcnj9", "Kcnj3", "Kctd16",
+                    "LRRTM1", "Lrrtm1", "Epha4", "Lrrn3", "Fam107a", "LRRTM2", "Lrrtm2",
+                    "Loxl4", "Antxr1", "Tgfbi", "Col9a3", "Sox9",
+                    "Cnp", "Gsn", "Sox8", "Sox9", "Opalin",
+                    "Kcnc2", "Npy1r", "Kcnj9", "Epha4", "Kcnj3",
+                    "Kcnc2", "LRRTM1", "Epha4", "Kctd16", "Cdh10",
+                    "Loxl4", "Col9a3", "Tgfbi", "Fgfr2",
+                    "Cnp", "Gsn", "Tspan2", "Tubb4a",
+                    "Kcnc2", "Kcnj9", "Kcnj3",
+                    "Slc13a5", "Kcnc2", "Kcnj9", "Kcnj3",
+                    "Col9a3",
+                    "Ap3s1",
+                    "Col4a3"))
+
+## Terms of interest
+terms <- c("regulation of presynaptic membrane potential",  "regulation of postsynaptic membrane potential",
+           "regulation of synapse structure or activity", "extracellular matrix organization", "oligodendrocyte differentiation",
+           "presynaptic membrane", "postsynaptic membrane", "collagen-containing extracellular matrix", "myelin sheath",
+           "voltage-gated monoatomic cation channel activity", "metal ion transmembrane transporter activity",
+           "Morphine addiction", "Glutamatergic synapse", "Gastric acid secretion", "ECM-receptor interaction",
+           "aerobic respiration", "vesicle-mediated transport in synapse", "glial cell differentiation", "extracellular matrix organization",
+           "mitochondrial inner membrane", "exocytic vesicle", "extracellular matrix", "structural constituent of ribosome",
+           "proton-transporting ATP synthase activity, rotational mechanism", "cytoskeletal motor activity",
+           "extracellular matrix structural constituent", "Oxidative phosphorylation", "Parkinson disease",
+           "Regulation of actin cytoskeleton")
+
+for(term in terms){
+
+    ## Extract groups of DEGs where term is enriched
+    DEG_groups_with_term <- go_kegg_results %>% dplyr::filter(Description == term) %>% pull(DEGs_set)
+
+    for(group in DEG_groups_with_term){
+
+        ## Genes in term and group
+        intersection_genes <- strsplit(go_kegg_results %>% dplyr::filter(Description == term & DEGs_set == group) %>% pull(geneID), ", ") %>% unlist
+        ## Subset to the specific genes of interest
+        genes_of_interest_2_show <- intersect(intersection_genes, interest_genes)
+
+        if(length(genes_of_interest_2_show) >= 3){
+            genes_2_show_x_term_x_group[[group]][[term]] = genes_of_interest_2_show
+        }
+
+        else{
+            ## Add top n most signif genes in group and term
+            n = 3 - length(genes_of_interest_2_show)
+
+            if(group == "Unique in Hb - Up"){
+                top3_intersection_genes <- only_up_hab %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>% arrange(adj.P.Val) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Unique in Hb - Down"){
+                top3_intersection_genes <- only_down_hab %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>% arrange(adj.P.Val) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Unique in Amyg - Up"){
+                top3_intersection_genes <- only_up_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>% arrange(adj.P.Val) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Unique in Amyg - Down"){
+                top3_intersection_genes <- only_down_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>% arrange(adj.P.Val) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Shared: Up in Hb, Up in Amyg"){
+                top3_intersection_genes <- shared_up_hab_up_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>%
+                    mutate(min_p = pmin(adj.P.Val.hb, adj.P.Val.amyg)) %>% arrange(min_p) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Shared: Up in Hb, Down in Amyg"){
+                top3_intersection_genes <- shared_up_hab_down_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>%
+                    mutate(min_p = pmin(adj.P.Val.hb, adj.P.Val.amyg)) %>% arrange(min_p) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Shared: Down in Hb, Up in Amyg"){
+                top3_intersection_genes <- shared_down_hab_up_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>%
+                    mutate(min_p = pmin(adj.P.Val.hb, adj.P.Val.amyg)) %>% arrange(min_p) %>% slice(1:n) %>% pull(Symbol)
+            }
+            else if(group == "Shared: Down in Hb, Down in Amyg"){
+                top3_intersection_genes <- shared_down_hab_down_amy %>% dplyr::filter(Symbol %in% intersection_genes, !Symbol %in% interest_genes) %>%
+                    mutate(min_p = pmin(adj.P.Val.hb, adj.P.Val.amyg)) %>% arrange(min_p) %>% slice(1:n) %>% pull(Symbol)
+            }
+
+            genes_2_show_x_term_x_group[[group]][[term]] = c(genes_of_interest_2_show, top3_intersection_genes)
+        }
+
+    }
+}
+
+l <- sapply(names(genes_2_show_x_term_x_group), function(set){
+    imap_dfr(genes_2_show_x_term_x_group[[set]], ~ enframe(.x, value = "Symbol") %>% mutate(term = .y, DEGs_set = set))
+})
+
+l <- do.call(rbind, l)
+
+
+## Add logFC of selected genes in Hb and Amyg
+df <- l %>% left_join(results_Substance_uncorr_vars_habenula[[1]][, c("Symbol", "logFC", "t",  "P.Value", "adj.P.Val")], by = "Symbol", multiple = "any") %>% left_join(results_Substance_uncorr_vars_amygdala[[1]][, c("Symbol", "logFC", "t",  "P.Value", "adj.P.Val")], by = "Symbol", multiple = "any", suffix = c(".Hb", ".Amy"))
+
+df$DEGs_set <- factor(df$DEGs_set, levels =  unique(df$DEGs_set))
+
+## Order terms by alp order x group
+df <- df %>% arrange(DEGs_set, term) %>% as.data.frame()
+
+num_genes_x_term_x_group <- df %>% group_by(DEGs_set, term) %>% summarise(count = length(unique(Symbol)))
+term_indices <- map2(.x = c(1, head(cumsum(num_genes_x_term_x_group$count), -1)+1),
+                     .y = cumsum(num_genes_x_term_x_group$count),
+                     ~(1:dim(df)[1])[.x:.y])
+names(term_indices) <- num_genes_x_term_x_group$term
+
+la = rowAnnotation(Group = df$DEGs_set)
+ra = rowAnnotation(term = anno_block(align_to = term_indices,
+                                     panel_fun = function(index, nm){
+                                         grid.text(nm, rot = 0, just = "left", name = "term",
+                                                   gp = gpar(fontsize = 7), x = 3.2)}))
+
+h <- Heatmap(as.matrix(df[, c("logFC.Hb", "logFC.Amy")]),
+        name = "logFC",
+        border = T,
+        row_labels = df$Symbol,
+        row_names_side = "right",
+        column_labels = c("logFC in Hb", "logFC in Amyg"),
+        column_names_rot = 90,
+        column_names_centered = F,
+        column_names_gp = gpar(fontsize = 7),
+        row_names_gp = gpar(fontsize = 5, fontface = "italic"),
+        row_split = df[, c("DEGs_set", "term")],
+        gap = unit(0.75, "mm"),
+        left_annotation = la,
+        right_annotation = ra,
+        row_title_gp = gpar(fontsize = 0),
+        cluster_rows = FALSE,
+        cluster_columns = FALSE,
+        height = unit(35, "cm"),
+        heatmap_width = unit(5, "cm"))
+
+
+pdf(file = paste0("plots/06_GO_KEGG/GO_KEGG_heatmap_Hb_vs_Amyg.pdf"), height = 15, width = 10)
+draw(h, heatmap_legend_side = "left")
+dev.off()
+
+
+
+
+df_wide <- l %>% select(Symbol, DEGs_set, term) %>%
+    mutate(present = 1) %>%
+    pivot_wider(
+        names_from = term,
+        values_from = present,
+        values_fill = 0
+    )
+
+df_longer <- df_wide %>% pivot_longer(cols = setdiff(colnames(df_wide), c("Symbol", "DEGs_set")))
+
+ggplot(df_longer, aes(x = Symbol, y = term, fill = value)) +
+    geom_tile() +
+    scale_fill_continuous(low="blue", high="red", name = "fold change")
 
 
 
