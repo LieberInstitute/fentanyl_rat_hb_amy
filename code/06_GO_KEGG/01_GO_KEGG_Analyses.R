@@ -575,6 +575,19 @@ terms <- c("regulation of presynaptic membrane potential",  "regulation of posts
            "extracellular matrix structural constituent", "Oxidative phosphorylation", "Parkinson disease",
            "Regulation of actin cytoskeleton")
 
+BP_terms <- c("regulation of presynaptic membrane potential",  "regulation of postsynaptic membrane potential",
+              "regulation of synapse structure or activity", "extracellular matrix organization",
+              "oligodendrocyte differentiation", "aerobic respiration", "vesicle-mediated transport in synapse",
+              "glial cell differentiation", "extracellular matrix organization")
+CC_terms <- c("presynaptic membrane", "postsynaptic membrane", "collagen-containing extracellular matrix", "myelin sheath", "mitochondrial inner membrane", "exocytic vesicle", "extracellular matrix")
+MF_terms <- c("voltage-gated monoatomic cation channel activity", "metal ion transmembrane transporter activity",
+              "structural constituent of ribosome",
+              "proton-transporting ATP synthase activity, rotational mechanism",
+              "cytoskeletal motor activity", "extracellular matrix structural constituent")
+KEGG_terms <- c("Morphine addiction", "Glutamatergic synapse", "Gastric acid secretion", "ECM-receptor interaction",
+                "Oxidative phosphorylation", "Parkinson disease",
+                "Regulation of actin cytoskeleton")
+
 for(term in terms){
 
     ## Extract groups of DEGs where term is enriched
@@ -683,8 +696,7 @@ draw(h, heatmap_legend_side = "left")
 dev.off()
 
 
-
-
+## Tile plot
 df_wide <- l %>% select(Symbol, DEGs_set, term) %>%
     mutate(present = 1) %>%
     pivot_wider(
@@ -695,9 +707,35 @@ df_wide <- l %>% select(Symbol, DEGs_set, term) %>%
 
 df_longer <- df_wide %>% pivot_longer(cols = setdiff(colnames(df_wide), c("Symbol", "DEGs_set")))
 
-ggplot(df_longer, aes(x = Symbol, y = term, fill = value)) +
-    geom_tile() +
-    scale_fill_continuous(low="blue", high="red", name = "fold change")
+df_longer$DEGs_set <- factor(df_longer$DEGs_set, levels = unique(l$DEGs_set))
+df_longer <- df_longer %>% arrange(DEGs_set, name)
+df_longer$Symbol <- factor(df_longer$Symbol, levels = unique(df_longer$Symbol))
+df_longer$name <- factor(df_longer$name, levels = rev(unique(df_longer$name)))
+
+df_longer <- df_longer %>% mutate("Ontology" = case_when(name %in% BP_terms ~ "BP", name %in% CC_terms ~ "CC", name %in% MF_terms ~ "MF", name %in% KEGG_terms ~ "KEGG"))
+
+df_longer$Ontology <- factor(df_longer$Ontology, levels = c("BP", "CC", "MF", "KEGG"))
+
+
+ggplot(df_longer, aes(x = Symbol, y = name, fill = value)) +
+geom_tile(color = "gray80", linewidth = 0.005) +
+facet_grid(rows = vars(Ontology), cols = vars(DEGs_set),
+           scales = "free", space = "free") +
+scale_fill_gradient(low = "white", high = "gray40") +
+guides(fill = "none") +
+theme_bw() +
+labs(y = "Enriched term") +
+theme(axis.text.x = element_text(size = 6, angle = 90, hjust = 1, face = 3),
+      axis.text.y = element_text(size = 7),
+      strip.text.x = element_text(size = 8, angle = 90, hjust = 0),
+      strip.background = element_rect(fill="white", color = "white"),
+      panel.spacing = unit(0.1, "lines"))
+
+ggsave("plots/06_GO_KEGG/GO_KEGG_tile_Hb_vs_Amyg.pdf", height = 8, width = 15)
+
+
+
+
 
 
 
