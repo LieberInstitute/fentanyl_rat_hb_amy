@@ -6,3 +6,4 @@ Habenula and amygdala DEGs for substance obtained in [05_DEA/01_Modeling.R](../0
 * [`01_GO_KEGG_Analyses.R`](01_GO_KEGG_Analyses.R): GO biological processes (BP), molecular functions (MF), cellular components (CC), and KEGG pathways (KEGG) enriched in the clusters of DEGs were identified, specifically performing:  
     * **1\. Analysis for all DEGs from each brain region**: all habenula and amygdala DEGs were tested. 
     * **2\. Analysis for up- and down-regulated DEGs from each brain region**: habenula and amygdala up- and down-regulated DEGs were separately tested. 
+    * **3\. Analysis for up/down DEGs unique/shared in habenula and amygdala**: DEGs up- and down-regulated, unique or shared, between habenula and amygdala were tested.

@@ -187,7 +187,7 @@ GO_KEGG<- function(sigGeneList, geneUniverse, name){
 }
 
 #-------------------------------------------------------------------------------
-## A. Analysis for all DEGs from each brain region
+## 1. Analysis for all DEGs from each brain region
 
 ######################
 #      Habenula
@@ -204,7 +204,7 @@ goList_amygdala_all_DEGs<-GO_KEGG(sigGeneList, geneUniverse, 'amygdala_all_DEGs'
 save(goList_amygdala_all_DEGs, file="processed-data/06_GO_KEGG/goList_amygdala_all_DEGs.Rdata")
 
 #-------------------------------------------------------------------------------
-## B. Analysis for up- and down-regulated DEGs from each brain region
+## 2. Analysis for up- and down-regulated DEGs from each brain region
 
 ######################
 #      Habenula
@@ -255,7 +255,7 @@ go_kegg_results_amy <- go_kegg_results_amy[order(go_kegg_results_amy$Ontology, g
 write.table(go_kegg_results_amy, "processed-data/Supplementary_Tables/TableS9_GO_KEGG_results_amy.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 #-------------------------------------------------------------------------------
-## C. Analysis for up/down DEGs unique/shared in Hb and Amyg
+## 3. Analysis for up/down DEGs unique/shared in Hb and Amyg
 
 sigGeneList <- list("Unique in Hb - Up" = only_up_hab_genes,
                     "Unique in Hb - Down" = only_down_hab_genes,
