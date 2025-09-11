@@ -144,25 +144,15 @@ length(which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05))
 #  3041
 
 
-
+#-----------------
 ## Plots for DEGs
+top_genes_habenula <- results_Substance_uncorr_vars_habenula[[1]]
+top_genes_habenula$symbol_or_ensemblID <- unlist(apply(top_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+de_genes_habenula <- top_genes_habenula[which(top_genes_habenula$adj.P.Val<0.05),]
 
-de_genes_habenula <- results_Substance_uncorr_vars_habenula[[1]][which(results_Substance_uncorr_vars_habenula[[1]]$adj.P.Val<0.05),]
-de_genes_habenula$symbol_or_ensemblID <- unlist(apply(de_genes_habenula, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
-
-de_genes_amygdala <- results_Substance_uncorr_vars_amygdala[[1]][which(results_Substance_uncorr_vars_amygdala[[1]]$adj.P.Val<0.05),]
-de_genes_amygdala$symbol_or_ensemblID <- unlist(apply(de_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
-
-
-## Gene symbols (or ensemblID if missing) for specific DEGs to highlight
-hab_DEGs <- c("Grik1", "Grm1", "Kcnj3", "Kcnj9", "Kcnc2", "Kcnip4", "Cacna1i", "Cacna2d3",
-              "Cacna1c", "Scn1a", "Clic6", "Chrm3", "Crhr2", "Adora1", "Npy1r", "Cdh10",
-              "Itgal", "Tmem88b", "Col9a3", "Hspa5", "Aifm3", "Hyou1", "Stip1", "Mapk13")
-amy_DEGs <- c("Cacna2d1", "Cacnb3", "Chrna5", "Mmp9", "CCK", "Bdnf", "Crhbp", "Snca", "Cnr1",
-              "Htr2a", "Bmper", "Arc", "Kcnj6", "Chrna4", "Gabbr2", "Calm2", "Grk3", "Calm1",
-              "Homer2", "Homer1", "Gria2", "Gabrg2", "Cdk5", "Syt13", "Egln2", "Uqcrq",
-              "Atp5mk", "Ndufv2", "Ndufa2", "Isca1", "Taco1", "Rrm2b", "Mapk1", "Mapk8",
-              "Abat", "Acad10", "Gad2", "Crhr2", "Drd3")
+top_genes_amygdala <- results_Substance_uncorr_vars_amygdala[[1]]
+top_genes_amygdala$symbol_or_ensemblID <- unlist(apply(top_genes_amygdala, 1, function(x){if(is.na(x['Symbol'])){x['ensemblID']} else{x['Symbol']}}))
+de_genes_amygdala <- top_genes_amygdala[which(top_genes_amygdala$adj.P.Val<0.05),]
 
 ## Common DEGs
 common_DEGs <- intersect(de_genes_habenula$ensemblID, de_genes_amygdala$ensemblID)
@@ -407,11 +397,11 @@ DEG_expression_plot <- function (variable, brain_region, gene){
         rse_gene <- rse_gene[which(rse_gene$Substance=='Fentanyl'), ]
     }
 
-    de_genes <- eval(parse_expr(paste("de_genes", brain_region, sep="_")))
+    top_genes <- eval(parse_expr(paste0("top_genes_", brain_region)))
     vGene <- eval(parse_expr(paste0("results_", variable, "_uncorr_vars_", brain_region, "[[2]]")))
 
     ## Sample colors
-    colors = list("Substance"= c('Fentanyl'='turquoise3', 'Saline'='yellow3'),
+    colors = list("Substance"= c('Fentanyl'="#851C84", 'Saline'="#505050"),
                   "Total_Intake" = "yellow2",
                   "Last_Session_Intake" = "pink",
                   "First_Hour_Infusion_Slope" = "lightblue2")
@@ -421,13 +411,13 @@ DEG_expression_plot <- function (variable, brain_region, gene){
                "First_Hour_Infusion_Slope" = "First hour infusion slope")
 
     ## q-value for the gene
-    q_value <-signif(de_genes[which(de_genes$symbol_or_ensemblID==gene), "adj.P.Val"], digits = 2)
+    q_value <-signif(top_genes[which(top_genes$symbol_or_ensemblID==gene)[1], "adj.P.Val"], digits = 2)
 
     ## FC
-    FC <-signif(2**(de_genes[which(de_genes$symbol_or_ensemblID==gene), "logFC"]), digits=2)
+    FC <-signif(2**(top_genes[which(top_genes$symbol_or_ensemblID==gene)[1], "logFC"]), digits=2)
 
     # Gene symbol + ensemblID
-    ensemblID <- de_genes[which(de_genes$symbol_or_ensemblID==gene), "ensemblID"]
+    ensemblID <- top_genes[which(top_genes$symbol_or_ensemblID==gene)[1], "ensemblID"]
     if (length(ensemblID)!=0 && gene!=ensemblID){
         gene_title <- paste(gene, ensemblID, sep="-")
     }else {
@@ -438,6 +428,7 @@ DEG_expression_plot <- function (variable, brain_region, gene){
     lognorm_DE <- regress_covs(ensemblID, variable, brain_region)
     lognorm_DE <- as.vector(t(lognorm_DE))
     lognorm_DE <- data.frame(deg = lognorm_DE, variable=colData(rse_gene)[variable])
+    lognorm_DE$Substance <- factor(lognorm_DE$Substance, levels = c("Saline", "Fentanyl"))
 
     ## Boxplot for Substance DGE
     if (variable == 'Substance'){
@@ -455,37 +446,19 @@ DEG_expression_plot <- function (variable, brain_region, gene){
                     scale_fill_manual(values=colors[[variable]]) +
                     labs(x = x_labs[variable], y = "log(cpm) - covariates",
                          title = gene,
-                         subtitle = paste("FDR:", q_value, '    ', 'FC:', FC)) +
+                         subtitle = paste("FDR-adjusted p:", q_value, '    ', 'FC:', FC)) +
                     theme(legend.position = "none",
                           plot.title = element_text(hjust=0.5, size=10, face="bold"),
                           plot.subtitle = element_text(size = 9),
                           axis.title = element_text(size = (10)),
                           axis.text = element_text(size = 8.5))
     }
-    # else{
-    #     plot <- ggplot(data=lognorm_DE,
-    #                    aes(x=eval(parse_expr(variable)),
-    #                        y=eval(parse_expr(DEG)))) +
-    #                 geom_point(aes(color=colors[[variable]]), size=2) +
-    #                 stat_smooth (geom="line", alpha=0.4, size=0.85, span=0.25, method = lm, color='orangered3') +
-    #                 theme_bw() +
-    #                 guides(color="none") +
-    #                 labs(title = gene_title,
-    #                      subtitle = paste("FDR:", q_value, '    ', 'FC:', FC),
-    #                      y = 'lognorm counts', x =  x_labs[variable]) +
-    #                 theme(plot.margin=unit (c(0.25,0.25,0.25,0.25), 'cm'),
-    #                       legend.position = "none",
-    #                       plot.title = element_text(hjust=0.5, size=12, face="bold"),
-    #                       plot.subtitle = element_text(size = 11),
-    #                       axis.title = element_text(size = (12)),
-    #                       axis.text = element_text(size = 10.5))
-    # }
 
     return(plot)
 }
 
 ## Plot expression of multiple DEGs of interest
-DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, name){
+DEG_expression_plots <- function(DEGs, variable, brain_region, name, w = 15, h = 11){
 
     plots<-list()
     for (i in 1:length(DEGs)){
@@ -494,32 +467,67 @@ DEG_expression_plots <- function(DEGs, de_genes, vGene, variable, brain_region, 
     }
     plot_grid(plotlist = plots, ncol = 3, align = 'hv')
     ggsave(here(paste("plots/05_DEA/01_Modeling/", name, "DEGs_expression_", brain_region, "_", variable, ".pdf", sep="")),
-           width = 15, height = 11, units = "cm")
+           width = w, height = h, units = "cm")
 }
 
 
-## Top 5 most downregulated DEGs for Substance in habenula
+## Top 5 most downregulated DEGs for Substance in Hb
 down_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC<0), ]
 down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(down_DEGs, de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'down')
-## Top 5 most upregulated DEGs for Substance in habenula
+DEG_expression_plots(down_DEGs, 'Substance', 'habenula', 'down_', w = 21, h = 14)
+## Top 5 most upregulated DEGs for Substance in Hb
 up_DEGs <- de_genes_habenula[which(de_genes_habenula$logFC>0), ]
 up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(up_DEGs, de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'up')
+DEG_expression_plots(up_DEGs, 'Substance', 'habenula', 'up_', w = 21, h = 14)
 
-## Top 5 most downregulated DEGs for Substance in amygdala
+## Top 5 most downregulated DEGs for Substance in Amyg
 down_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC<0), ]
 down_DEGs <- down_DEGs[order(down_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(down_DEGs, de_genes_amygdala, results_Substance_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'down')
-## Top 5 most upregulated DEGs for Substance in amygdala
+DEG_expression_plots(down_DEGs, 'Substance', 'amygdala', 'down_', w = 21, h = 14)
+## Top 5 most upregulated DEGs for Substance in Amyg
 up_DEGs <- de_genes_amygdala[which(de_genes_amygdala$logFC>0), ]
 up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ensemblID'][1:5]
-DEG_expression_plots(up_DEGs, de_genes_amygdala, results_Substance_uncorr_vars_amygdala[[2]], 'Substance', 'amygdala', 'up')
+DEG_expression_plots(up_DEGs, 'Substance', 'amygdala', 'up_', w = 21, h = 14)
 
-## Boxplots for specific unique and shared genes
-# DEG_expression_plots(c(), de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'habenula', 'unique')
-# DEG_expression_plots(c(), de_genes_habenula, results_Substance_uncorr_vars_habenula[[2]], 'Substance', 'amygdala', 'unique')
+## Unique/shared up/down DEGs in Hb and Amyg (relevant from GO & KEGG terms)
 
+unique_up_Hb <- c("Grik1", "Scn1a", "Gria4", "Grm1", "Rgs7", "Cttnbp2", "Zfp804a", "Cacna1i",
+                  "Kcnj10", "Kcnq3", "Adora1", "Gabra4", "Adcy8", "Chrm3")
+unique_down_Hb <- c("Sulf1", "Pbxip1", "Spint2", "Lama3", "Col8a2", "Sod3", "Ezr", "Slc4a2",
+                    "Calml4", "Itgb6", "Itga2")
+unique_up_Amyg <- c("Snca", "Itpka", "Lrfn5", "Gria2", "Ppp3cb", "Adcy1", "Cox6b1", "Uqcrq", "Calm1",
+                    "Arpc3", "Mpv17l2", "Mal2", "Slc2a3", "Mrpl45", "Mrps18a", "Mrpl21", "Atp5mg", "Atp5me",
+                    "Atp5mf", "Atp6v1e1", "Atp5mc2", "Atp6v0e2", "Slc39a10", "Nckap1", "Cfl1")
+unique_down_Amyg <- c("Phldb1", "Col15a1", "Col14a1", "Abca2", "Sox13", "Notch1", "Lama4", "Myo1d", "Scrib", "Llgl1",
+                      "Tnc", "Lama5", "Arsg", "Abcc1", "Stard9", "Kif13a", "Myo9b", "Col5a3", "Vcl", "C6", "Wasf2")
+shared_up_Hb_up_Amyg <- c("Kcnj3", "Kcnc2", "Kcnj9", "Kctd16", "Cdh10", "Npy1r", "Epha4",
+                          "Lrrtm2", "LRRTM1")
+shared_up_Hb_down_Amyg <- c("Plcb4", "Col4a3")
+shared_down_Hb_down_Amyg <- c("Tgfbi", "Antxr1", "Col9a3", "Loxl4", "Sox9", "Cnp", "Sox8",
+                              "Gsn", "Opalin", "Tspan2", "Fgfr2", "Tubb4a")
+
+## Unique up DEGs in Hb
+DEG_expression_plots(unique_up_Hb, 'Substance', 'habenula', 'unique_up_Hb_', w = 21, h = 35)
+DEG_expression_plots(unique_up_Hb, 'Substance', 'amygdala', 'unique_up_Hb_', w = 21, h = 35)
+## Unique down DEGs in Hb
+DEG_expression_plots(unique_down_Hb, 'Substance', 'habenula', 'unique_down_Hb_', w = 21, h = 28)
+DEG_expression_plots(unique_down_Hb, 'Substance', 'amygdala', 'unique_down_Hb_', w = 21, h = 28)
+## Unique up DEGs in Amyg
+DEG_expression_plots(unique_up_Amyg, 'Substance', 'habenula', 'unique_up_Amyg_', w = 21, h = 63)
+DEG_expression_plots(unique_up_Amyg, 'Substance', 'amygdala', 'unique_up_Amyg_', w = 21, h = 63)
+## Unique down DEGs in Amyg
+DEG_expression_plots(unique_down_Amyg, 'Substance', 'habenula', 'unique_down_Amyg_', w = 21, h = 49)
+DEG_expression_plots(unique_down_Amyg, 'Substance', 'amygdala', 'unique_down_Amyg_', w = 21, h = 49)
+## Shared up DEGs in Hb and Amyg
+DEG_expression_plots(shared_up_Hb_up_Amyg, 'Substance', 'habenula', 'shared_up_Hb_up_Amyg_', w = 21, h = 21)
+DEG_expression_plots(shared_up_Hb_up_Amyg, 'Substance', 'amygdala', 'shared_up_Hb_up_Amyg_', w = 21, h = 21)
+## Shared DEGs: up in Hb and down in Amyg
+DEG_expression_plots(shared_up_Hb_down_Amyg, 'Substance', 'habenula', 'shared_up_Hb_down_Amyg_', w = 21, h = 7)
+DEG_expression_plots(shared_up_Hb_down_Amyg, 'Substance', 'amygdala', 'shared_up_Hb_down_Amyg_', w = 21, h = 7)
+## Shared down DEGs in Hb and Amyg
+DEG_expression_plots(shared_down_Hb_down_Amyg, 'Substance', 'habenula', 'shared_down_Hb_down_Amyg_', w = 21, h = 28)
+DEG_expression_plots(shared_down_Hb_down_Amyg, 'Substance', 'amygdala', 'shared_down_Hb_down_Amyg_', w = 21, h = 28)
+#-----------------
 
 
 ## Add Ensembl info of DEGs
