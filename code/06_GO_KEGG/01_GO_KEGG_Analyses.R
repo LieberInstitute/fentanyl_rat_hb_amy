@@ -713,7 +713,11 @@ df_longer <- df_longer %>% arrange(DEGs_set, name)
 df_longer$Symbol <- factor(df_longer$Symbol, levels = unique(df_longer$Symbol))
 df_longer$name <- factor(df_longer$name, levels = rev(unique(df_longer$name)))
 
-df_longer <- df_longer %>% mutate("Ontology" = case_when(name %in% BP_terms ~ "BP", name %in% CC_terms ~ "CC", name %in% MF_terms ~ "MF", name %in% KEGG_terms ~ "KEGG"))
+df_longer <- df_longer %>%
+    mutate("Ontology" = case_when(name %in% BP_terms ~ "BP",
+                                  name %in% CC_terms ~ "CC",
+                                  name %in% MF_terms ~ "MF",
+                                  name %in% KEGG_terms ~ "KEGG"))
 
 df_longer$Ontology <- factor(df_longer$Ontology, levels = c("BP", "CC", "MF", "KEGG"))
 
@@ -782,7 +786,56 @@ p2 <- ggplot(bottomplot, aes(x = Symbol, y = name, fill = value)) +
 
 plot_grid(p2, p1, nrow = 2, align = "v", axis = "tblr", rel_heights = c(0.7, 1))
 
-ggsave("plots/06_GO_KEGG/GO_KEGG_tile_Hb_vs_Amyg.pdf", height = 6, width = 10)
+ggsave("plots/06_GO_KEGG/GO_tile_Hb_vs_Amyg.pdf", height = 6, width = 10)
+
+
+## Supp table for KEGG
+KEGGgenes <- df_longer %>%
+    dplyr::filter(Ontology %in% c("KEGG")) %>%
+    dplyr::group_by(Symbol) %>%
+    summarise(sum(value)) %>%
+    .[.[,2]> 0, ] %>%
+    dplyr::select(Symbol) %>% unlist()
+
+df_longer_KEGGgenes <- df_longer %>% dplyr::filter(Symbol %in% KEGGgenes)
+toplot <- df_longer_KEGGgenes %>% dplyr::filter(Ontology %in% c("KEGG"))
+bottomplot <- df_longer_KEGGgenes %>% dplyr::filter(Ontology %in% c("LogFC in Hb", "LogFC in Amyg"))
+
+p1 <- ggplot(toplot, aes(x = Symbol, y = name, fill = value)) +
+    geom_tile(color = "gray80", linewidth = 0.005) +
+    facet_grid(rows = vars(Ontology), cols = vars(DEGs_set),
+               scales = "free", space = "free") +
+    scale_fill_gradient(low = "white", high = "gray40") +
+    guides(fill = "none") +
+    theme_bw() +
+    labs(y = "Enriched term") +
+    theme(axis.text.x = element_text(size = 6, angle = 90, hjust = 1, face = 3),
+          axis.text.y = element_text(size = 7),
+          strip.text.x = element_blank(),
+          strip.background = element_rect(fill="white", color = "white"),
+          panel.spacing = unit(0.1, "lines"))
+
+p2 <- ggplot(bottomplot, aes(x = Symbol, y = name, fill = value)) +
+    geom_tile(color = "gray80", linewidth = 0.00) +
+    facet_grid(cols = vars(DEGs_set),
+               scale = "free", space = "free") +
+    scale_x_discrete(expand=c(0,0)) +
+    scale_y_discrete(expand=c(0,0)) +
+    scale_fill_gradient2(low = "blue3",
+                         mid = "gray90",
+                         high = "red3") +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.text.y = element_text(size = 7),
+          strip.text.x = element_text(size = 8, angle = 90, hjust = 0, face = 3),
+          strip.background = element_rect(fill="white", color = "white"),
+          panel.spacing = unit(0.1, "lines"))
+
+plot_grid(p2, p1, nrow = 2, align = "v", axis = "tblr", rel_heights = c(0.9, 1))
+
+ggsave("plots/06_GO_KEGG/KEGG_tile_Hb_vs_Amyg.pdf", height = 5, width = 6)
+
 
 
 
