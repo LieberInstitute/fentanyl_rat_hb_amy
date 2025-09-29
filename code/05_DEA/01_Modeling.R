@@ -173,6 +173,9 @@ plots_DEGs<-function(brain_region, top_genes, vGene, name, DEGs_list) {
         FClab='log2FC(Fentanyl vs. Saline)'
     }
 
+    ## FDR
+    FDR = 0.05
+
     ## n.s./Down/Upregulated genes
     DE<-vector()
     for (i in 1:dim(top_genes)[1]) {
@@ -259,13 +262,13 @@ plots_DEGs<-function(brain_region, top_genes, vGene, name, DEGs_list) {
         sm_hgrid(legends = TRUE) +
         geom_point(shape = 21) +
         geom_hline(yintercept = -log10(maxP),
-                   linetype = "dashed", color = 'gray35', linewidth=0.5) +
+                   linetype = "dashed", color = 'gray35', linewidth=0.3, alpha = 0.8) +
         geom_vline(xintercept = c(-1,1),
-                   linetype = "dashed", color = 'gray35', linewidth=0.5) +
+                   linetype = "dashed", color = 'gray35', linewidth=0.3, alpha = 0.8) +
         ## Label top DEGs
         geom_text_repel(data = subset(top_genes, symbol_or_ensemblID %in% genes_to_label),
                         aes(label = symbol_or_ensemblID),
-                        size=2.7,
+                        size=3,
                         color='black',
                         alpha = 1,
                         max.overlaps = Inf,
@@ -401,7 +404,7 @@ DEG_expression_plot <- function (variable, brain_region, gene){
     vGene <- eval(parse_expr(paste0("results_", variable, "_uncorr_vars_", brain_region, "[[2]]")))
 
     ## Sample colors
-    colors = list("Substance"= c('Fentanyl'="#851C84", 'Saline'="#505050"),
+    colors = list("Substance"= c('Fentanyl'="#800080", 'Saline'="#4C4C4C"),
                   "Total_Intake" = "yellow2",
                   "Last_Session_Intake" = "pink",
                   "First_Hour_Infusion_Slope" = "lightblue2")
@@ -490,7 +493,6 @@ up_DEGs <- up_DEGs[order(up_DEGs$adj.P.Val, decreasing = FALSE), 'symbol_or_ense
 DEG_expression_plots(up_DEGs, 'Substance', 'amygdala', 'up_', w = 21, h = 14)
 
 ## Unique/shared up/down DEGs in Hb and Amyg (relevant from GO & KEGG terms)
-
 unique_up_Hb <- c("Grik1", "Scn1a", "Gria4", "Grm1", "Rgs7", "Cttnbp2", "Zfp804a", "Cacna1i",
                   "Kcnj10", "Kcnq3", "Adora1", "Gabra4", "Adcy8", "Chrm3")
 unique_down_Hb <- c("Sulf1", "Pbxip1", "Spint2", "Lama3", "Col8a2", "Sod3", "Ezr", "Slc4a2",
