@@ -46,7 +46,7 @@ row_gene_anno <- ComplexHeatmap::rowAnnotation(
     'n genes' = ComplexHeatmap::anno_barplot(num_DEGs$Freq))
 
 ## With significance cutoff at 5%
-pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_05.pdf"), width = 6.4, height = 4)
+pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_05.pdf"), width = 5.5, height = 3)
 Heatmap(log_pvals,
         name = "-log10(p-val)",
         col = colorRampPalette(c('azure2', 'dodgerblue4'))(50),
@@ -71,7 +71,7 @@ dev.off()
 
 
 ## With significance cutoff at 10%
-pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_10.pdf"), width = 6.4, height = 4)
+pdf(here("plots/07_MAGMA/MAGMA_pval_heatmap_pval_10.pdf"), width = 5.5, height = 3)
 Heatmap(log_pvals,
         name = "-log10(p-val)",
         col = colorRampPalette(c('azure2', 'dodgerblue4'))(50),

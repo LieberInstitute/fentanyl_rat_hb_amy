@@ -2436,7 +2436,7 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
                  { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 17, col='yellow1'))} }
     )
 
-    pdf(file=here(paste0('plots/08_GSEA/', dir, filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 5, width = width)
+    pdf(file=here(paste0('plots/08_GSEA/', dir, filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 3.1, width = width)
     print(h)
     dev.off()
 }
@@ -2450,28 +2450,28 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
 results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[1]]
 heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala fine cell type markers',
-              'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 11)
+              'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 14.4)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_100_broad_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'broad', 'amygdala')
 p_values_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[1]]
 heatmap_pvals(p_values_MeanRatio_100_broad_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala broad cell type markers',
-              'MeanRatio_top100_broad_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 6.7)
+              'MeanRatio_top100_broad_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 5.5)
 ms_MeanRatio_100_broad_amyg <- results_MeanRatio_100_broad_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[1]]
 heatmap_pvals(p_values_lvsALL_fine_amyg, 'amygdala', '1vsALL-based human amygdala fine cell type markers',
-              'lvsALL_fine_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 11)
+              'lvsALL_fine_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 14)
 ms_lvsALL_fine_amyg <- results_lvsALL_fine_amyg[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_amyg <- enrichment_analysis('amy', 'human', 'lvsALL', NULL, 'broad', 'amygdala')
 p_values_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[1]]
 heatmap_pvals(p_values_lvsALL_broad_amyg, 'amygdala', '1vsALL-based human amygdala broad cell type markers',
-              'lvsALL_broad_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 6.7)
+              'lvsALL_broad_amy', 'enrichment_heatmaps/human_amygdala_Yu/', 5.5)
 ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 
 
@@ -2483,28 +2483,28 @@ ms_lvsALL_broad_amyg <- results_lvsALL_broad_amyg[[2]]
 results_MeanRatio_50_fine_hab <- enrichment_analysis('hab', 'human', 'MeanRatio', 'top50', 'fine', 'habenula')
 p_values_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_50_fine_hab, 'habenula', 'Top50 MeanRatio-based human habenula fine cell type markers',
-              'MeanRatio_top50_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
+              'MeanRatio_top50_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 12)
 ms_MeanRatio_50_fine_hab <- results_MeanRatio_50_fine_hab[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_50_broad_hab <- enrichment_analysis('hab', 'human', 'MeanRatio', 'top50', 'broad', 'habenula')
 p_values_MeanRatio_50_broad_hab <- results_MeanRatio_50_broad_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_50_broad_hab, 'habenula', 'Top50 MeanRatio-based human habenula broad cell type markers',
-              'MeanRatio_top50_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
+              'MeanRatio_top50_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 7.5)
 ms_MeanRatio_50_broad_hab <- results_MeanRatio_50_broad_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'fine', 'habenula')
 p_values_lvsALL_fine_hab <- results_lvsALL_fine_hab[[1]]
 heatmap_pvals(p_values_lvsALL_fine_hab, 'habenula', '1vsALL-based human habenula fine cell type markers',
-              'lvsALL_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 8)
+              'lvsALL_fine_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 11)
 ms_lvsALL_fine_hab <- results_lvsALL_fine_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_hab <- enrichment_analysis('hab', 'human', 'lvsALL', NULL, 'broad', 'habenula')
 p_values_lvsALL_broad_hab <- results_lvsALL_broad_hab[[1]]
 heatmap_pvals(p_values_lvsALL_broad_hab, 'habenula', '1vsALL-based human habenula broad cell type markers',
-              'lvsALL_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 6)
+              'lvsALL_broad_hab', 'enrichment_heatmaps/human_habenula_Yalcinbas/', 7.5)
 ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 
 
@@ -2516,28 +2516,28 @@ ms_lvsALL_broad_hab <- results_lvsALL_broad_hab[[2]]
 results_MeanRatio_100_all_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'all', 'habenula')
 p_values_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_100_all_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for all cell types',
-              'MeanRatio_top100_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
+              'MeanRatio_top100_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 12)
 ms_MeanRatio_100_all_hab <- results_MeanRatio_100_all_hab[[2]]
 
 #   * MeanRatio-based cell type marker genes for habenula neuronal cell types
 results_MeanRatio_100_neu_hab <- enrichment_analysis('hab', 'mouse', 'MeanRatio', 'top100', 'neu', 'habenula')
 p_values_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[1]]
 heatmap_pvals(p_values_MeanRatio_100_neu_hab, 'habenula', 'Top100 MeanRatio-based mouse habenula markers for neuronal cell types',
-              'MeanRatio_top100_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
+              'MeanRatio_top100_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 10)
 ms_MeanRatio_100_neu_hab <- results_MeanRatio_100_neu_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes for all cell types
 results_lvsALL_all_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'all', 'habenula')
 p_values_lvsALL_all_hab <- results_lvsALL_all_hab[[1]]
 heatmap_pvals(p_values_lvsALL_all_hab, 'habenula', '1vsALL-based mouse habenula markers for all cell types',
-              'lvsALL_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
+              'lvsALL_all_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 12)
 ms_lvsALL_all_hab <- results_lvsALL_all_hab[[2]]
 
 #   * 1vsALL-based cell type marker genes for habenula neuronal cell types
 results_lvsALL_neu_hab <- enrichment_analysis('hab', 'mouse', 'lvsALL', NULL, 'neu', 'habenula')
 p_values_lvsALL_neu_hab <- results_lvsALL_neu_hab[[1]]
 heatmap_pvals(p_values_lvsALL_neu_hab, 'habenula', '1vsALL-based mouse habenula markers for neuronal cell types',
-              'lvsALL_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 8)
+              'lvsALL_neu_hab', 'enrichment_heatmaps/mouse_habenula_Hashikawa/', 10)
 ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 
 
@@ -2549,28 +2549,28 @@ ms_lvsALL_neu_hab <- results_lvsALL_neu_hab[[2]]
 results_MeanRatio_100_fine_amy_rat <- enrichment_analysis('amy', 'rat', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amy_rat[[1]]
 heatmap_pvals(p_values_MeanRatio_100_fine_amy_rat, 'amygdala', 'Top100 MeanRatio-based rat amygdala fine cell type markers',
-              'MeanRatio_top100_fine_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 7)
+              'MeanRatio_top100_fine_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 8)
 ms_MeanRatio_100_fine_amy_rat <- results_MeanRatio_100_fine_amy_rat[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
 results_MeanRatio_100_broad_amy_rat <- enrichment_analysis('amy', 'rat', 'MeanRatio', 'top100', 'main', 'amygdala')
 p_values_MeanRatio_100_broad_amy_rat <- results_MeanRatio_100_broad_amy_rat[[1]]
 heatmap_pvals(p_values_MeanRatio_100_broad_amy_rat, 'amygdala', 'Top100 MeanRatio-based rat amygdala main cell type markers',
-              'MeanRatio_top100_main_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 6.7)
+              'MeanRatio_top100_main_amy_rat_genes', 'enrichment_heatmaps/rat_amygdala_Zhou/', 5.6)
 ms_MeanRatio_100_broad_amy_rat <- results_MeanRatio_100_broad_amy_rat[[2]]
 
 #   * 1vsALL-based cell type marker genes at fine resolution
 results_lvsALL_fine_amy_rat <- enrichment_analysis('amy', 'rat', 'lvsALL', NULL, 'fine', 'amygdala')
 p_values_lvsALL_fine_amy_rat <- results_lvsALL_fine_amy_rat[[1]]
 heatmap_pvals(p_values_lvsALL_fine_amy_rat, 'amygdala', '1vsALL-based rat amygdala fine cell type markers',
-              'lvsALL_fine_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 7)
+              'lvsALL_fine_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 8)
 ms_lvsALL_fine_amy_rat <- results_lvsALL_fine_amy_rat[[2]]
 
 #   * 1vsALL-based cell type marker genes at broad resolution
 results_lvsALL_broad_amy_rat <- enrichment_analysis('amy', 'rat', 'lvsALL', NULL, 'main', 'amygdala')
 p_values_lvsALL_broad_amy_rat <- results_lvsALL_broad_amy_rat[[1]]
 heatmap_pvals(p_values_lvsALL_broad_amy_rat, 'amygdala', '1vsALL-based rat amygdala broad cell type markers',
-              'lvsALL_main_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 6.7)
+              'lvsALL_main_amy_rat_genes_DEGs', 'enrichment_heatmaps/rat_amygdala_Zhou/', 5.6)
 ms_lvsALL_broad_amy_rat <- results_lvsALL_broad_amy_rat[[2]]
 
 
