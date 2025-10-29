@@ -150,8 +150,12 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
     alphas <- c( 1, 1, 1, 0.5)
     names(alphas) <- names(cols)
 
+    ## Shared genes to show
+    up_shared <- c("Dio2", "Kiaa0408L", "Hspa5", "Ap3s1", "Kcnj3")
+    down_shared <- c("Ccdc187", "Itpkb", "Flnc", "Itgal", "Sox8")
+
     ## Merge t-stats
-    t_stats<-data.frame(t1=t_stats_1$t, t2=t_stats_2$t)
+    t_stats<-data.frame(symbol = t_stats_1$Symbol, t1=t_stats_1$t, t2=t_stats_2$t)
     ## Add DE info for the genes in both DEAs
     t_stats$DEG<-add_DE_info(t_stats_1, t_stats_2, name_1, name_2)
     t_stats$DEG <- factor(t_stats$DEG, levels=names(cols))
@@ -172,6 +176,20 @@ t_stat_plot <- function(t_stats_1, t_stats_2, name_1, name_2, brain_region){
               axis.text = element_text(size = 10),
               legend.text = element_text(size=11),
               legend.title = element_text(size=12))
+
+
+    if(brain_region == "hab_amy"){
+        plot <- plot + geom_text_repel(data = subset(t_stats, symbol %in% c(up_shared, down_shared)),
+                                               aes(label = symbol),
+                                               size=3,
+                                               color='black',
+                                               alpha = 1,
+                                               max.overlaps = Inf,
+                                               box.padding = 0.15,
+                                               segment.size = unit(0.35, 'mm'),
+                                               segment.alpha = 0.4,
+                                               show.legend=FALSE)
+    }
     plot
 
     name1 <- gsub(' ', '_', name_1)
