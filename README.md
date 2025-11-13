@@ -7,7 +7,7 @@ Fentanyl is a potent synthetic opioid associated with overdose. However, little 
 ## Experimental design
 
 <p align="center">
-  <img src= "images/Fig1_RM.png" width="1000" >
+  <img src= "images/Fig1.png" width="800" >
 </p>
 
 **Chronic long-access intravenous self-administration**. (**A**) Experimental timeline. (**B**) Intravenous self-administration task design. (**C**) Schematic of bilateral habenula and amygdala tissue collection for bulk RNA sequencing.  (**D**) Mean number of infusions per LgA session for saline and fentanyl rats. (**E**) Individual rat infusion slopes across the LgA sessions. (**F**) Mean number of infusions occurring within the first hour of each LgA session for saline and fentanyl rats. (**G**) Mean cumulative fentanyl intake (µg) across LgA sessions. 
@@ -15,7 +15,7 @@ Fentanyl is a potent synthetic opioid associated with overdose. However, little 
 
 
 ## Supplementary Tables
-See [processed-data/SupplementaryTables](processed-data/SupplementaryTables/) to access all supplementary tables for this project.
+See [processed-data/Supplementary_Tables](processed-data/Supplementary_Tables/) to access all supplementary tables for this project.
 
 
 ## Data access
