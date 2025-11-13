@@ -569,7 +569,7 @@ save(MeanRatio_top100_fine_amy_rat_genes, file = here('processed-data/08_GSEA/Me
 MeanRatio_markers_top100_amy_rat <- rbind(cbind(MeanRatio_top100_main_amy_rat_genes[, -c(9,10)], "Cell_type_resolution" = "Main"),
                                             cbind(MeanRatio_top100_fine_amy_rat_genes[, -c(9:11)], "Cell_type_resolution" = "Fine"))
 save(MeanRatio_markers_top100_amy_rat, file = here('processed-data/08_GSEA/MeanRatio_markers/rat_amygdala_Zhou/MeanRatio_markers_top100_amy_rat.Rdata'))
-write.table(MeanRatio_markers_top100_amy_rat, "processed-data/Supplementary_Tables/TableS12_MeanRatio_markers_top100_amy_rat.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(MeanRatio_markers_top100_amy_rat, "processed-data/Supplementary_Tables/TableS13_MeanRatio_markers_top100_amy_rat.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -754,7 +754,7 @@ MeanRatio_markers_top50_hab_human <- rbind(cbind(MeanRatio_top50_broad_hab_human
 
 colnames(MeanRatio_markers_top50_hab_human)[4:8] <- c("cellType.2nd", "mean.2nd", "MeanRatio", "MeanRatio.rank", "MeanRatio.anno")
 save(MeanRatio_markers_top50_hab_human, file = here('processed-data/08_GSEA/MeanRatio_markers/human_habenula_Yalcinbas/MeanRatio_markers_top50_hab_human.Rdata'))
-write.table(MeanRatio_markers_top50_hab_human, "processed-data/Supplementary_Tables/TableS13_MeanRatio_markers_top50_hab_human.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
+write.table(MeanRatio_markers_top50_hab_human, "processed-data/Supplementary_Tables/TableS12_MeanRatio_markers_top50_hab_human.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
 
 ## Cell types/clusters included

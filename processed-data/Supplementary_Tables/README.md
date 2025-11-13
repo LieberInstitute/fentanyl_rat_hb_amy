@@ -97,7 +97,18 @@ Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/76baa
 
 
 
-## [Supplementary Table 12](TableS12_MeanRatio_markers_top100_amy_rat.tsv)
+## [Supplementary Table 12](TableS12_MeanRatio_markers_top50_hab_human.tsv)
+
+**Top 50 *MeanRatio* marker genes per cell type in human habenula** 
+
+For broad and fine cell types in the human habenula-enriched epithalamus of neurotypical control donors obtained in [Yalcinbas et al., 2024](https://doi.org/10.1101/2024.02.26.582081), the top 50 most specific marker genes for each based on the *MeanRatio* method, are reported. See [_DeconvoBuddies_](http://research.libd.org/DeconvoBuddies/) documentation for column description. `Cell_type_resolution` column corresponds to the resolution of the cell type for which the gene is a marker.
+
+Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/1e526a8f559e6675dbf3f228d5794667b9065434/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L757).
+
+
+
+
+## [Supplementary Table 13](TableS13_MeanRatio_markers_top100_amy_rat.tsv)
 
 **Top 100 *MeanRatio* marker genes per cell type in rat amygdala** 
 
@@ -105,15 +116,6 @@ For main cell types and inhibitory neuronal subtypes in the amygdala of control 
 
 Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/3d6ff603b91963e03458b2dd238e60be1a3465c6/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L572).
 
-
-
-## [Supplementary Table 13](TableS13_MeanRatio_markers_top50_hab_human.tsv)
-
-**Top 50 *MeanRatio* marker genes per cell type in human habenula** 
-
-For broad and fine cell types in the human habenula-enriched epithalamus of neurotypical control donors obtained in [Yalcinbas et al., 2024](https://doi.org/10.1101/2024.02.26.582081), the top 50 most specific marker genes for each based on the *MeanRatio* method, are reported. See [_DeconvoBuddies_](http://research.libd.org/DeconvoBuddies/) documentation for column description. `Cell_type_resolution` column corresponds to the resolution of the cell type for which the gene is a marker.
-
-Created [here](https://github.com/LieberInstitute/fentanyl_rat_hb_amy/blob/1e526a8f559e6675dbf3f228d5794667b9065434/code/08_GSEA/01_enrich_DEGs_vs_cell_type_markers.R#L757).
 
 
 ## [Supplementary Table 14](TableS14_MeanRatio_markers_top100_amy_human.tsv)
