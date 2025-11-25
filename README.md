@@ -26,7 +26,11 @@ Raw sequence data can be accessed through the National Institutes of Health (NIH
 
 ## Citation
 
-Please use the following [BibTeX](https://en.wikipedia.org/wiki/BibTeX) information to cite this code repository as well as the data released by this project. 
+Please use the following information to cite this code repository as well as the data released by this project:
+
+> Daianna Gonzalez, Nick-Eagles, & Leonardo Collado-Torres. (2025). LieberInstitute/fentanyl_rat_hb_amy: v0_preprint (v0_preprint). Zenodo. https://doi.org/10.5281/zenodo.17573971
+
+For citing the article:
 
 > **Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala**
 
@@ -34,17 +38,7 @@ Please use the following [BibTeX](https://en.wikipedia.org/wiki/BibTeX) informat
  
 > bioRxiv 2025.11.25.690517; doi: https://doi.org/10.1101/2025.11.25.690517
 
-```
-@article {Magnard2025.11.25.690517,
-	author = {Robin Magnard† and Daianna Gonzalez-Padilla† and Ege A. Yalcinbas and Emma Chaloux-Pinette and
-	Nicholas J. Eagles and Michael S. Totty and Patricia H. Janak and Leonardo Collado-Torres and Kristen R. Maynard.},
-	title = {Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala},
-	year = {2025},
-	doi = {https://doi.org/10.1101/2025.11.25.690517},
-	publisher = {Cold Spring Harbor Laboratory},
-	journal = {bioRxiv}
-}
-```
+
 
 ## File organization
 Files are organized following the structure from [LieberInstitute/template_project](https://github.com/LieberInstitute/template_project). Scripts include the R session information with details about version numbers of the packages we used.
