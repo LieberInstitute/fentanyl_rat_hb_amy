@@ -1,6 +1,8 @@
 
 # fentanyl_rat_hb_amy
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17573970.svg)](https://doi.org/10.5281/zenodo.17573970)
+
 ## Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala
 Fentanyl is a potent synthetic opioid associated with overdose. However, little is known about fentanyl-induced molecular adaptations in the habenula (Hb) and amygdala (Amyg), two brain regions implicated in opioid use and withdrawal. We performed bulk RNA-sequencing in the rat Hb and Amyg to identify transcriptomic changes associated with fentanyl intake. Rats self-administered intravenous saline or fentanyl over 16-18 days. Ninety minutes following the final session, Hb and Amyg were collected for transcriptomic profiling. In Hb, we identified 453 differentially expressed genes (DEGs) between saline and fentanyl rats, with upregulated genes associated with synaptic transmission and ionic conductance. In Amyg, we identified 3,041 fentanyl-associated DEGs with upregulated genes implicated in metabolic and vesicular functions. Downregulated genes in both regions were enriched for extracellular matrix functions. Integration of DEGs with single-cell RNA-sequencing data from rodents and humans revealed that fentanyl DEGs were enriched in specific Hb and Amyg cell type markers. Furthermore, fentanyl downregulated DEGs in Amyg were enriched in genes associated with risk for substance use disorders. Together, we define how fentanyl intake alters transcriptional programs in the Hb and Amyg, and we link these changes to specific human cell types and risk genes for neuropsychiatric disorders and addiction. 
 
@@ -18,8 +20,8 @@ Fentanyl is a potent synthetic opioid associated with overdose. However, little 
 See [processed-data/Supplementary_Tables](processed-data/Supplementary_Tables/) to access all supplementary tables for this project.
 
 
-## Data access
-TBD
+## Raw data access
+Raw sequence data can be accessed through the National Institutes of Health (NIH) Sequence Read Archive (SRA) under Accession: [PRJNA1179901](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1179901). 
 
 
 ## Citation
@@ -30,14 +32,15 @@ Please use the following [BibTeX](https://en.wikipedia.org/wiki/BibTeX) informat
 
 > Robin Magnard†, Daianna Gonzalez-Padilla†, Ege A. Yalcinbas, Emma Chaloux-Pinette, Nicholas J. Eagles, Michael S. Totty, Patricia H. Janak, Leonardo Collado-Torres, Kristen R. Maynard.	 .
  
-> bioRxiv TODO; doi: <TODO>
+> bioRxiv 2025.11.25.690517; doi: https://doi.org/10.1101/2025.11.25.690517
 
 ```
-@article {TODO,
-	author = {TODO},
+@article {Magnard2025.11.25.690517,
+	author = {Robin Magnard† and Daianna Gonzalez-Padilla† and Ege A. Yalcinbas and Emma Chaloux-Pinette and
+	Nicholas J. Eagles and Michael S. Totty and Patricia H. Janak and Leonardo Collado-Torres and Kristen R. Maynard.},
 	title = {Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala},
 	year = {2025},
-	doi = {TODO},
+	doi = {https://doi.org/10.1101/2025.11.25.690517},
 	publisher = {Cold Spring Harbor Laboratory},
 	journal = {bioRxiv}
 }
