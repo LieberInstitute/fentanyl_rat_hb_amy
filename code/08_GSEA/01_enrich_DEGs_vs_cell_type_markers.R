@@ -907,6 +907,9 @@ colnames(MeanRatio_markers_top100_amy_human)[4:8] <- c("cellType.2nd", "mean.2nd
 save(MeanRatio_markers_top100_amy_human, file = here('processed-data/08_GSEA/MeanRatio_markers/human_amygdala_Yu/MeanRatio_markers_top100_amy_human.Rdata'))
 write.table(MeanRatio_markers_top100_amy_human, "processed-data/Supplementary_Tables/TableS14_MeanRatio_markers_top100_amy_human.tsv", row.names = FALSE, col.names = TRUE, sep = '\t')
 
+## Correct "TSHZ1 CALCRL" --> "TSHZ1 DRD1"
+MeanRatio_genes[, c("cellType.target", "cellType", "anno_ratio")] <- apply(MeanRatio_genes[, c("cellType.target", "cellType", "anno_ratio")], 2,
+                                                                           function(col){gsub("TSHZ1 CALCRL", "TSHZ1 DRD1", col)})
 
 ## Fine cell types
 cell_types <- names(table(MeanRatio_genes$cellType.target))
@@ -917,9 +920,8 @@ cell_types
 # [19] "Human_Oligo_1 OPALIN" "Human_Oligo_2 OPALIN" "Human_Oligo_3 OPALIN" "Human_Oligo_4 OPALIN" "Human_Oligo_5 OPALIN" "Human_Oligo_6 OPALIN"
 # [25] "Human_OPC_1 PDGFRA"   "Human_OPC_2 PDGFRA"   "Human_OPC_3 PDGFRA"   "Human_OPC_4 PDGFRA"   "Human_PRKCD"          "Human_PVALB ADAMTS5"
 # [31] "Human_RXFP2 RSPO2"    "Human_SATB2 CALCRL"   "Human_SATB2 IL15"     "Human_SATB2 ST8SIA2"  "Human_SOX11 EBF2"     "Human_SST EPYC"
-# [37] "Human_SST HGF"        "Human_STRIP2"         "Human_TFAP2C"         "Human_TSHZ1 CALCRL"   "Human_TSHZ1 SEMA3C"   "Human_VGLL3 CNGB1"
+# [37] "Human_SST HGF"        "Human_STRIP2"         "Human_TFAP2C"         "Human_TSHZ1 DRD1"   "Human_TSHZ1 SEMA3C"   "Human_VGLL3 CNGB1"
 # [43] "Human_VGLL3 MEPE"     "Human_VIP ABI3BP"     "Human_VIP NDNF"
-
 
 ## Top 100 markers per cell type
 unique(table(MeanRatio_genes$cellType.target))
@@ -970,7 +972,7 @@ for (cell_type in cell_types){
 # [1] "Range of ratios of marker genes for Human_SST HGF: 0.97 - 1.5"
 # [1] "Range of ratios of marker genes for Human_STRIP2: 1.1 - 4.1"
 # [1] "Range of ratios of marker genes for Human_TFAP2C: 1.2 - 26"
-# [1] "Range of ratios of marker genes for Human_TSHZ1 CALCRL: 0.98 - 1.3"
+# [1] "Range of ratios of marker genes for Human_TSHZ1 DRD1: 0.98 - 1.3"
 # [1] "Range of ratios of marker genes for Human_TSHZ1 SEMA3C: 1 - 1.8"
 # [1] "Range of ratios of marker genes for Human_VGLL3 CNGB1: 1 - 1.3"
 # [1] "Range of ratios of marker genes for Human_VGLL3 MEPE: 0.94 - 1.3"
@@ -1043,6 +1045,7 @@ for (cell_type in cell_types){
 # [1] "Number of Human_VIP ABI3BP marker genes in rat: 59"
 # [1] "Number of Human_VIP NDNF marker genes in rat: 60"
 
+names(MeanRatio_top100_fine_amyg_ratIDs)[40] <- "Human_TSHZ1 DRD1"
 save(MeanRatio_top100_fine_amyg_ratIDs, file = here('processed-data/08_GSEA/marker_genes_ratIDs/human_amygdala_Yu/MeanRatio_top100_fine_amyg_human_ratIDs.Rdata'))
 
 
@@ -2409,6 +2412,7 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
     else{
         markers <- eval(parse_expr(paste0(filename, '_ratIDs')))
         markers <- lapply(markers, function(x){unique(x[which(x %in% all_genes)])})
+        markers <- markers[colnames(p_values)]
     }
     num_markers_cell_type <- data.frame('Freq'= unlist(lapply(markers, length)))
 
@@ -2449,6 +2453,18 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
 #   * MeanRatio-based cell type marker genes at fine resolution
 results_MeanRatio_100_fine_amyg <- enrichment_analysis('amyg', 'human', 'MeanRatio', 'top100', 'fine', 'amygdala')
 p_values_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[1]]
+## Re order clusters as in original publication
+ExN <- c("Human_SATB2 ST8SIA2", "Human_SATB2 IL15", "Human_SATB2 CALCRL", "Human_HGF ESR1", "Human_HGF NPSR1", "Human_HGF C11orf87",
+         "Human_LAMP5 ABO", "Human_LAMP5 COL25A1", "Human_LAMP5 BDNF", "Human_RXFP2 RSPO2", "Human_VGLL3 MEPE", "Human_VGLL3 CNGB1",
+         "Human_SOX11 EBF2", "Human_STRIP2", "Human_TFAP2C")
+InN <- c("Human_PRKCD", "Human_TSHZ1 DRD1", "Human_TSHZ1 SEMA3C", "Human_DRD2 PAX6", "Human_DRD2 ISL1", "Human_SST HGF",
+         "Human_CALCR LHX8", "Human_HTR3A DRD2","Human_VIP NDNF", "Human_VIP ABI3BP", "Human_LAMP5 COL14A1", "Human_LAMP5 NDNF",
+         "Human_SST EPYC", "Human_PVALB ADAMTS5")
+Others <- c("Human_Oligo_1 OPALIN", "Human_Oligo_2 OPALIN", "Human_Oligo_3 OPALIN", "Human_Oligo_4 OPALIN", "Human_Oligo_5 OPALIN",
+            "Human_Oligo_6 OPALIN", "Human_OPC_1 PDGFRA", "Human_OPC_2 PDGFRA", "Human_OPC_3 PDGFRA", "Human_OPC_4 PDGFRA",
+            "Human_Astro_1 FGFR3", "Human_Astro_2 FGFR3", "Human_Astro_3 FGFR3", "Human_Astro_4 FGFR3", "Human_Endo NOSTRIN", "Human_Micro CTSS")
+p_values_MeanRatio_100_fine_amyg <- p_values_MeanRatio_100_fine_amyg[, c(ExN, InN, Others)]
+
 heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala fine cell type markers',
               'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 14.4)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
