@@ -2420,6 +2420,19 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
     row_gene_anno <- ComplexHeatmap::rowAnnotation('n genes' = ComplexHeatmap::anno_barplot(num_DEGs_group$Freq))
     col_gene_anno <- ComplexHeatmap::columnAnnotation('n markers' = ComplexHeatmap::anno_barplot(num_markers_cell_type$Freq))
 
+    if(filename == "MeanRatio_top100_fine_amyg"){
+        num_markers_cell_type$Class <- rep(c("ExN", "InN", "Glia"), c(15, 14, 16))
+        # col_gene_anno <- HeatmapAnnotation(
+        #     "n markers" = anno_barplot(num_markers_cell_type$Freq),
+        #     Class = num_markers_cell_type$Class,
+        #     col = list("Class" = c("ExN" = "forestgreen", "InN" = "brown2", "Glia" = "steelblue2")))
+        #
+        bottom_anno <- HeatmapAnnotation(
+            Class = num_markers_cell_type$Class,
+            col = list("Class" = c("ExN" = "forestgreen", "InN" = "brown2", "Glia" = "steelblue2")))
+
+    }
+
     h <- Heatmap(log_p_values,
                  name='-log10(p-value)',
                  col= colorRampPalette(c('aliceblue', 'dodgerblue3'))(50),
@@ -2435,9 +2448,10 @@ heatmap_pvals <- function(p_values, DEGs_region, marker_set_name, filename, dir,
                  row_names_gp = gpar(fontsize = 9),
                  right_annotation = row_gene_anno,
                  top_annotation = col_gene_anno,
+                 bottom_annotation = bottom_anno,
                  ## Add '*' if p<0.05
                  cell_fun = function(j, i, x, y,  w, h, col)
-                 { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y, gp = gpar(fontsize = 17, col='yellow1'))} }
+                 { if(log_p_values[i,j]>(-log10(0.05))){ grid.text('*', x, y/1.1, gp = gpar(fontsize = 17, col='black'))} }
     )
 
     pdf(file=here(paste0('plots/08_GSEA/', dir, filename, '_vs_', DEGs_region, 'DEGs.pdf')), height = 3.1, width = width)
@@ -2466,7 +2480,7 @@ Others <- c("Human_Oligo_1 OPALIN", "Human_Oligo_2 OPALIN", "Human_Oligo_3 OPALI
 p_values_MeanRatio_100_fine_amyg <- p_values_MeanRatio_100_fine_amyg[, c(ExN, InN, Others)]
 
 heatmap_pvals(p_values_MeanRatio_100_fine_amyg, 'amygdala', 'Top100 MeanRatio-based human amygdala fine cell type markers',
-              'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 14.4)
+              'MeanRatio_top100_fine_amyg', 'enrichment_heatmaps/human_amygdala_Yu/', 11.4)
 ms_MeanRatio_100_fine_amyg <- results_MeanRatio_100_fine_amyg[[2]]
 
 #   * MeanRatio-based cell type marker genes at broad resolution
