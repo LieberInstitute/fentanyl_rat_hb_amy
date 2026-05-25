@@ -665,6 +665,12 @@ save(results_Intake_Slope_binary_habenula, file = 'processed-data/05_DEA/results
 dim(de_genes_Intake_Slope_binary_habenula)[1]
 ##  0
 
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Intake_slope_binary
+results <-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
+
 
 ##############################
 ## Amygdala fentanyl samples
@@ -691,7 +697,11 @@ save(results_Intake_Slope_binary_amygdala, file = 'processed-data/05_DEA/results
 dim(de_genes_Intake_Slope_binary_amygdala)[1]
 ##  0
 
-
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Intake_slope_binary
+results <-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
 
 
 
@@ -820,6 +830,13 @@ save(results_FirstHrIntakeSlope_habenula, file = 'processed-data/05_DEA/results_
 length(which(results_FirstHrIntakeSlope_habenula[[1]]$adj.P.Val<0.05))
 #  0
 
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  First_Hour_Infusion_Slope
+results <-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
+
+
 #####################
 ## Amygdala samples
 #####################
@@ -834,6 +851,12 @@ results_FirstHrIntakeSlope_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', for
 save(results_FirstHrIntakeSlope_amygdala, file = 'processed-data/05_DEA/results_FirstHrIntakeSlope_amygdala.Rdata')
 length(which(results_FirstHrIntakeSlope_amygdala[[1]]$adj.P.Val<0.1))
 #  0
+
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  First_Hour_Infusion_Slope
+results <-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
 
 
 
@@ -891,6 +914,12 @@ save(results_TotalIntake_habenula, file = 'processed-data/05_DEA/results_TotalIn
 length(which(results_TotalIntake_habenula[[1]]$adj.P.Val<0.1))
 #  0
 
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Total_Intake
+results <-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
+
 #####################
 ## Amygdala samples
 #####################
@@ -904,6 +933,11 @@ save(results_TotalIntake_amygdala, file = 'processed-data/05_DEA/results_TotalIn
 length(which(results_TotalIntake_amygdala[[1]]$adj.P.Val<0.1))
 #  0
 
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Total_Intake
+results <-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
 
 
 ########  1.5.2 Analysis without samples from negative outlier fentanyl rat #######
@@ -957,6 +991,12 @@ save(results_LastSessionIntake_habenula, file = 'processed-data/05_DEA/results_L
 length(which(results_LastSessionIntake_habenula[[1]]$adj.P.Val<0.1))
 #  0
 
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Last_Session_Intake
+results <-DEA(rse_gene_habenula_fent, 'habenula', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
+
 #####################
 ## Amygdala samples
 #####################
@@ -969,6 +1009,12 @@ results_LastSessionIntake_amygdala<-DEA(rse_gene_amygdala_fent, 'amygdala', form
 save(results_LastSessionIntake_amygdala, file = 'processed-data/05_DEA/results_LastSessionIntake_amygdala.Rdata')
 length(which(results_LastSessionIntake_amygdala[[1]]$adj.P.Val<0.1))
 #  0
+
+## Sensitivity analysis: exclude all covariates
+formula <-  ~  Last_Session_Intake
+results <-DEA(rse_gene_amygdala_fent, 'amygdala', formula, name, coef)
+dim(results[[1]][which(results[[1]]$adj.P.Val<0.05), ])[0]
+##  0
 
 
 
