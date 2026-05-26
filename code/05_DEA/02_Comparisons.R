@@ -4,6 +4,9 @@ library(SummarizedExperiment)
 library(ggplot2)
 library(cowplot)
 library(GGally)
+library(RRHO2)
+library(ComplexHeatmap)
+library(circlize)
 library(sessioninfo)
 
 
@@ -52,7 +55,239 @@ ggpairs(df_habenula, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_Total
 ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_habenula.pdf'))
 
 
+#===============================================================================
+#                  Rank-rank hypergeometric test (RRHO2)
+#===============================================================================
+## Create lists of genes with signed pval (-log10(p)*sign(logFC))
+gene_list_Substance_Hb <- data.frame(Genes = t_stats_Substance_habenula$ensemblID,
+                                     DDE = -log10(t_stats_Substance_habenula$P.Value)*
+                                          sign(t_stats_Substance_habenula$logFC),
+                                     stringsAsFactors = FALSE)
 
+gene_list_FirstHrIntakeSlope_Hb <- data.frame(Genes = t_stats_FirstHrIntakeSlope_habenula$ensemblID,
+                                              DDE = -log10(t_stats_FirstHrIntakeSlope_habenula$P.Value)*
+                                                     sign(t_stats_FirstHrIntakeSlope_habenula$logFC),
+                                              stringsAsFactors = FALSE)
+
+gene_list_TotalIntake_Hb <- data.frame(Genes = t_stats_TotalIntake_habenula$ensemblID,
+                                       DDE = -log10(t_stats_TotalIntake_habenula$P.Value)*
+                                              sign(t_stats_TotalIntake_habenula$logFC),
+                                       stringsAsFactors = FALSE)
+
+gene_list_LastSessionIntake_Hb <- data.frame(Genes = t_stats_LastSessionIntake_habenula$ensemblID,
+                                             DDE = -log10(t_stats_LastSessionIntake_habenula$P.Value)*
+                                                    sign(t_stats_LastSessionIntake_habenula$logFC),
+                                             stringsAsFactors = FALSE)
+
+#-------------------------------------------------------------------------------
+## Create RRHO2 object and run their function
+RRHO_obj <-  RRHO2_initialize(gene_list_Substance_Hb, gene_list_FirstHrIntakeSlope_Hb,
+                              labels = c("Substance, Hb", "First Hour Intake Slope, Hb"),
+                              log10.ind = TRUE, stepsize = stepsize)
+## Visualize the heatmap
+RRHO2_heatmap(RRHO_obj)
+mat <- RRHO_obj$hypermat
+#-------------------------------------------------------------------------------
+
+## Calculate overlap signif manually based on their source code in:
+## https://rdrr.io/github/RRHO2/RRHO2/src/R/RRHO2_initialize.R.
+## I don't trust their results!
+
+## Compute overlap signif between each pair top gene sets in condition 1 and 2
+overlap_hyper <- function(a,b) {
+
+    count<-as.integer(sum(as.numeric(sample1[1:a] %in% sample2[1:b])))
+    log.pval<- -phyper(q=count-1, m=a, n=n-a+1, k=b, lower.tail=FALSE, log.p=TRUE)
+
+    return(c(counts=count,
+             log.pval=as.numeric(log.pval)
+    ))
+}
+
+## Compute overlap signif between each pair top gene sets in condition 1 and 2,
+## inverting ranking of genes in condition 1 (to assess enrichment of top + genes in 2 among top - in 1)
+overlap_hyper_inverted_sample1 <- function(a,b) {
+
+    count<-as.integer(sum(as.numeric(rev(sample1)[1:a] %in% sample2[1:b])))
+    log.pval<- -phyper(q=count-1, m=a, n=n-a+1, k=b, lower.tail=FALSE, log.p=TRUE)
+
+    return(c(counts=count,
+             log.pval=as.numeric(log.pval)
+    ))
+}
+
+## Manual implementation of RRHO
+RRHO_manual <- function(list1, list2, title1, title2, filename){
+
+    ## Rank genes by signed pvalue
+    list1 <- list1[order(list1[, 2], decreasing = TRUE), ]
+    list2 <- list2[order(list2[, 2], decreasing = TRUE), ]
+
+    nlist1 <- length(list1[, 1])
+    nlist2 <- length(list2[, 1])
+
+    sample1 = list1[, 1]
+    sample2 = list2[, 1]
+    stepsize = ceiling(sqrt(dim(list1)[1]))
+
+    ## Gene universe size
+    n <- length(sample1)
+
+    ## Assess enrichment among each pair of top gene sets
+    indexes<- expand.grid(i=seq(1,n,by=stepsize), j=seq(1,n,by=stepsize))
+    overlaps<- apply(indexes, 1, function(x) c(x['i'], x['j'], overlap_hyper(x['i'], x['j'])))
+    ov <- as.data.frame(t(overlaps))
+
+    ## Signif overlaps
+    head(ov[which(ov$log.pval>2.995732), ])
+    #         i     j counts log.pval signs
+    # 14838 261 14951    243 3.538316     1
+    # 14967 261 15081    246 4.286130     1
+    tail(ov[which(ov$log.pval>2.995732), ])
+    #         i     j counts log.pval signs
+    # 16257 261 16381    260 3.373324     1
+    # 16258 391 16381    389 4.131022     1
+
+    ## Martrix with -log(pvals)
+    m <- matrix(ov$log.pval, ncol = sqrt(dim(indexes)[1]), byrow = F)
+    rownames(m) <- colnames(m) <- 1:sqrt(dim(indexes)[1])
+
+    ## Assess enrichment among each pair of top gene sets with inverted gene ranking in condition 1
+    overlaps_rev <- apply(indexes, 1, function(x) c(x['i'], x['j'], overlap_hyper_inverted_sample1(x['i'], x['j'])))
+    ov_rev <- as.data.frame(t(overlaps_rev))
+    m_rev <- matrix(ov_rev$log.pval, ncol = sqrt(dim(indexes)[1]), byrow = F)
+    rownames(m_rev) <- colnames(m_rev) <- 1:sqrt(dim(indexes)[1])
+
+    ## Signif enrichments
+    dim(ov_rev[which(ov_rev$log.pval>2.995732), ])
+    # [1] 15610     5
+
+    ## Final matrix with enrich pvals based on quadrant
+    stepList1 <- seq(1, nlist1, stepsize)
+    stepList2 <- seq(1, nlist2, stepsize)
+
+    len1 <- length(stepList1)
+    len2 <- length(stepList2)
+
+    boundary1 <- sum(list1[stepList1,2] > 0)
+    boundary2 <- sum(list2[stepList2,2] > 0)
+
+    hypermat <- matrix(NA, nrow=nrow(m), ncol=ncol(m))
+
+    ## Top + genes in 1 among Top + genes in 2
+    hypermat[1:boundary1, 1:boundary2] <- m[1:boundary1,1:boundary2]
+    ## Top - genes in 1 among Top - genes in 2
+    hypermat[(boundary1+1):len1, (boundary2+1):len2] <- m[(boundary1+1):len1, (boundary2+1):len2]
+    ## Top + genes in 1 among Top - genes in 2
+    hypermat[1:boundary1, (boundary2+1):len2] <- m_rev[len1:(len1 - boundary1 + 1), (boundary2+1):len2]
+    ## Top - genes in 1 among Top + genes in 2
+    hypermat[(boundary1+1):len1, 1:boundary2] <- m_rev[(len1 - boundary1):1, 1:boundary2]
+
+    ## Plot heatmap
+    col_fun <- colorRamp2(
+        breaks = c(min(hypermat), quantile(hypermat, 1:9/10), max(hypermat)),
+        colors = c("#FFFFF0", "lightyellow", "#FFEC8B", "#FFD700", "#FFB90F",
+                   "#FFA500", "#FF7B00FF", "#FF7B00FF", "#FF0000FF", "#CD0000",
+                   "#8B1A1A"))
+
+    ## Labels for top up and down genes contrasted
+    labs1 <- c(paste0("top up ", seq(1, nlist1, stepsize)[1:boundary1]),
+               paste0("top down ", N - (seq(1, nlist1, stepsize)[(boundary1+1):nrow(hypermat)])))
+
+    labs2 <- c(paste0("top up ", seq(1, nlist2, stepsize)[1:boundary2]),
+               paste0("top down ", N - (seq(1, nlist1, stepsize)[(boundary2+1):ncol(hypermat)])))
+
+    tolabel1 <- sort(unique(c(1, which(seq_len(nrow(hypermat)) %% 5 == 0), nrow(hypermat))))
+
+    tolabel2 <- sort(unique(c(1, which(seq_len(ncol(hypermat)) %% 5 == 0), ncol(hypermat))))
+
+    labs1_some <- rep("", nrow(hypermat))
+    labs2_some <- rep("", ncol(hypermat))
+
+    labs1_some[tolabel1] <- labs1[tolabel1]
+    labs2_some[tolabel2] <- labs2[tolabel2]
+
+
+    # 1. Draw heatmap
+    h <- Heatmap(
+        hypermat,
+        name = "-log(p)",
+        col = col_fun,
+
+        # preserve order
+        cluster_rows = FALSE,
+        cluster_columns = FALSE,
+
+        # cleaner labels
+        show_row_names = T,
+        show_column_names = T,
+
+        # labels every 10
+        row_labels = labs1_some,
+        column_labels = labs2_some,
+
+        row_names_gp = grid::gpar(fontsize = 6),
+        column_names_gp = grid::gpar(fontsize = 6),
+
+        # aesthetics
+        border = TRUE,
+        na_col = "grey95", row_names_side = "left",
+
+        heatmap_legend_param = list(
+            at = c(0,
+                   # signif(median(hypermat), 2),
+                   signif(max(hypermat), 2)),
+            title = "-log(p)",
+            legend_height = unit(4, "cm")
+        )
+    )
+
+    png(paste0(here("plots/05_DEA/02_Comparisons/RRHO_"), filename,  ".png"),
+        width = 1500, height = 1300, res = 300)
+    draw(h)
+
+    # Add grid elements
+    grid.text(title2,
+              x = unit(0.5, "npc"),
+              y = unit(0, "npc") + unit(4, "mm"),
+              gp = gpar(fontsize = 10, fontface = "bold"))
+
+    grid.text(title1,
+              x = unit(0, "mm"),
+              y = unit(0.5, "npc"),
+              rot = 90,
+              gp = gpar(fontsize = 10, fontface = "bold"))
+
+    # Close device
+    dev.off()
+
+}
+
+## Run analysis
+RRHO_manual(list1 = gene_list_Substance_Hb, list2 = gene_list_LastSessionIntake_Hb,
+            title1 = "Substance Hb", title2 = "Last session intake Hb",
+            filename = "Substance_vs_Last_Session_Intake_habenula")
+
+RRHO_manual(list1 = gene_list_Substance_Hb, list2 = gene_list_TotalIntake_Hb,
+            title1 = "Substance Hb", title2 = "Total intake Hb",
+            filename = "Substance_vs_Total_Intake_habenula")
+
+RRHO_manual(list1 = gene_list_Substance_Hb, list2 = gene_list_FirstHrIntakeSlope_Hb,
+            title1 = "Substance Hb", title2 = "First hr intake slope Hb",
+            filename = "Substance_vs_First_hr_infusion_slope_habenula")
+
+RRHO_manual(list1 = gene_list_TotalIntake_Hb, list2 = gene_list_LastSessionIntake_Hb,
+            title1 = "Total intake Hb", title2 = "Last session intake Hb",
+            filename = "Total_Intake_vs_Last_Session_Intake_habenula")
+
+RRHO_manual(list1 = gene_list_TotalIntake_Hb, list2 = gene_list_FirstHrIntakeSlope_Hb,
+            title1 = "Total intake Hb", title2 = "First hr intake slope Hb",
+            filename = "Total_Intake_vs_First_hr_infusion_slope_habenula")
+
+RRHO_manual(list1 = gene_list_FirstHrIntakeSlope_Hb, list2 = gene_list_LastSessionIntake_Hb,
+            title1 = "First hr intake slope Hb",  title2 = "Last session intake Hb",
+            filename = "First_hr_infusion_slope_vs_Last_Session_Intake_habenula")
+#===============================================================================
 
 
 ## 2.2 Comparison of gene DE signal for substance and behavior in amygdala
@@ -78,6 +313,52 @@ ggpairs(df_amygdala, columns = c("t_Substance", "t_FirstHrIntakeSlope", "t_Total
 ggsave(here('plots/05_DEA/02_Comparisons/t_stats_pairs_amygdala.pdf'))
 
 
+## RRHO analysis:
+
+## Create lists of genes with signed pval (-log10(p)*sign(logFC))
+gene_list_Substance_Amy <- data.frame(Genes = t_stats_Substance_amygdala$ensemblID,
+                                      DDE = -log10(t_stats_Substance_amygdala$P.Value)*
+                                            sign(t_stats_Substance_amygdala$logFC),
+                                            stringsAsFactors = FALSE)
+
+gene_list_FirstHrIntakeSlope_Amy <- data.frame(Genes = t_stats_FirstHrIntakeSlope_amygdala$ensemblID,
+                                               DDE = -log10(t_stats_FirstHrIntakeSlope_amygdala$P.Value)*
+                                                   sign(t_stats_FirstHrIntakeSlope_amygdala$logFC),
+                                                   stringsAsFactors = FALSE)
+
+gene_list_TotalIntake_Amy <- data.frame(Genes = t_stats_TotalIntake_amygdala$ensemblID,
+                                        DDE = -log10(t_stats_TotalIntake_amygdala$P.Value)*
+                                           sign(t_stats_TotalIntake_amygdala$logFC),
+                                            stringsAsFactors = FALSE)
+
+gene_list_LastSessionIntake_Amy <- data.frame(Genes = t_stats_LastSessionIntake_amygdala$ensemblID,
+                                              DDE = -log10(t_stats_LastSessionIntake_amygdala$P.Value)*
+                                                 sign(t_stats_LastSessionIntake_amygdala$logFC),
+                                                 stringsAsFactors = FALSE)
+
+RRHO_manual(list1 = gene_list_Substance_Amy, list2 = gene_list_LastSessionIntake_Amy,
+            title1 = "Substance Amyg", title2 = "Last session intake Amyg",
+            filename = "Substance_vs_Last_Session_Intake_amygdala")
+
+RRHO_manual(list1 = gene_list_Substance_Amy, list2 = gene_list_TotalIntake_Amy,
+            title1 = "Substance Amyg", title2 = "Total intake Amyg",
+            filename = "Substance_vs_Total_Intake_amygdala")
+
+RRHO_manual(list1 = gene_list_Substance_Amy, list2 = gene_list_FirstHrIntakeSlope_Amy,
+            title1 = "Substance Amyg", title2 = "First hr intake slope Amyg",
+            filename = "Substance_vs_First_hr_infusion_slope_amygdala")
+
+RRHO_manual(list1 = gene_list_TotalIntake_Amy, list2 = gene_list_LastSessionIntake_Amy,
+            title1 = "Total intake Amyg", title2 = "Last session intake Amyg",
+            filename = "Total_Intake_vs_Last_Session_Intake_amygdala")
+
+RRHO_manual(list1 = gene_list_TotalIntake_Amy, list2 = gene_list_FirstHrIntakeSlope_Amy,
+            title1 = "Total intake Amyg", title2 = "First hr intake slope Amyg",
+            filename = "Total_Intake_vs_First_hr_infusion_slope_amygdala")
+
+RRHO_manual(list1 = gene_list_FirstHrIntakeSlope_Amy, list2 = gene_list_LastSessionIntake_Amy,
+            title1 = "First hr intake slope Amyg",  title2 = "Last session intake Amyg",
+            filename = "First_hr_infusion_slope_vs_Last_Session_Intake_amygdala")
 
 
 
