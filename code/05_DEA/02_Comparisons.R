@@ -340,7 +340,7 @@ RRHO_manual <- function(list1, list2, title1, title2, filename){
         na_col = "grey95", row_names_side = "left",
 
         heatmap_legend_param = list(
-            at = c(0,
+            at = c(0, signif(max(hypermat)/2, 2),
                    # signif(median(hypermat), 2),
                    signif(max(hypermat), 2)),
             title = "-log(p)",
@@ -350,6 +350,10 @@ RRHO_manual <- function(list1, list2, title1, title2, filename){
 
     png(paste0(here("plots/05_DEA/02_Comparisons/RRHO_"), filename,  ".png"),
         width = 1500, height = 1300, res = 300)
+
+    pdf(paste0(here("plots/05_DEA/02_Comparisons/RRHO_"), filename,  ".pdf"),
+        width = 4, height = 3.5)
+
     draw(h)
 
     # Add grid elements
