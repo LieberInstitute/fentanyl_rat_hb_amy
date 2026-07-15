@@ -32,9 +32,7 @@ Please use the following information to cite this code repository as well as the
 
 For citing the article:
 
-> **Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala**
-
-> R. Magnard†, D. Gonzalez-Padilla†, E. A. Yalcinbas, et al., “ Transcriptional Response to Chronic Long-Access Fentanyl Self-Administration in Rat Habenula and Amygdala,” Addiction Biology 31, no. 7 (2026): e70179, https://doi.org/10.1111/adb.70179.
+> R. Magnard†, D. Gonzalez-Padilla†, E. A. Yalcinbas, et al., **Transcriptional Response to Chronic Long-Access Fentanyl Self-Administration in Rat Habenula and Amygdala**. Addiction Biology 31, no. 7 (2026): e70179, https://doi.org/10.1111/adb.70179.
 
 
 
