@@ -34,9 +34,7 @@ For citing the article:
 
 > **Transcriptional response to chronic long-access fentanyl self-administration in rat habenula and amygdala**
 
-> Robin Magnard†, Daianna Gonzalez-Padilla†, Ege A. Yalcinbas, Emma Chaloux-Pinette, Nicholas J. Eagles, Michael S. Totty, Patricia H. Janak, Leonardo Collado-Torres, Kristen R. Maynard.	 .
- 
-> bioRxiv 2025.11.25.690517; doi: https://doi.org/10.1101/2025.11.25.690517
+> R. Magnard†, D. Gonzalez-Padilla†, E. A. Yalcinbas, et al., “ Transcriptional Response to Chronic Long-Access Fentanyl Self-Administration in Rat Habenula and Amygdala,” Addiction Biology 31, no. 7 (2026): e70179, https://doi.org/10.1111/adb.70179.
 
 
 
